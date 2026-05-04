@@ -62,6 +62,14 @@ class Resolver(Protocol):
         Raise NotResolvable if it turns out you can't after all."""
 ```
 
+### How plugins should signal failures
+
+When a plugin call hits a recoverable problem (rate limit, transient outage, source returning empty results in a way the agent should know about), raise **`pydantic_ai.ModelRetry("reason")`** from the wrapper that exposes the plugin to the agent. This is fed back to the model as a recoverable signal — the agent can try a different source, fall back, or explain the failure to the user.
+
+For unrecoverable internal failures (DB unreachable, schema invariant violated, your code has a bug), raise a normal exception. It will propagate to the run loop and surface to the user — which is what you want for hard fail.
+
+This convention applies uniformly across `DiscoverySource` and `Resolver` implementations. See `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` for the underlying mechanism.
+
 Some plugins implement both — arXiv is both a discovery source and a resolver. Others are one-job — Crossref is metadata-only; Unpaywall is resolver-only.
 
 ## Registration

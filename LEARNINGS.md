@@ -10,6 +10,17 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-04 — Tool calling works; ModelRetry is the lever for graceful failure
+
+Pydantic AI's tool loop runs autonomously: type hints + docstring auto-derive the schema; `result.all_messages()` exposes the full exchange. **Parallel tool calls in a single turn work natively** — the orchestrator can fan out to N hunter tools in one round-trip. Important error-handling distinction: plain exceptions from tools propagate to the caller (model never sees them), while `pydantic_ai.ModelRetry("...")` is fed back as a `RetryPromptPart` so the model can recover. Binds: source plugins should use `ModelRetry` for graceful degradation on outages; judge/orchestrator internal failures should `raise` normally for hard fail.
+
+Also: OpenRouter routes through multiple Anthropic backends (direct, Vertex, Bedrock) — `tool_call_id` prefixes vary (`toolu_*`, `toolu_vrtx_*`, `toolu_bdrk_*`). Don't assume the prefix shape.
+
+Cost note: adding one tool with a one-line schema added ~1400 tokens of overhead per request. Implication: keep each agent's toolbox minimal and focused.
+
+- **Source**: [`experiments/02-pydantic-ai-tool-calling/LEARNINGS.md`](experiments/02-pydantic-ai-tool-calling/LEARNINGS.md)
+- **Affects**: `ARCHITECTURE.md` (source plugin contract should specify `ModelRetry` for graceful failures), `PLUGINS.md` (mention this in the Resolver/DiscoverySource Protocol docs).
+
 ### 2026-05-04 — Pydantic AI hello-world via OpenRouter green; Perplexity also on OpenRouter
 
 `openrouter:anthropic/claude-sonnet-4.6` works as the model string with `pydantic-ai-slim[openrouter]`. `OpenRouterProvider` reads `OPENROUTER_API_KEY` from env automatically. Result API: `result.output` for text, `result.usage()` for tokens (`input_tokens`/`output_tokens`). PEP 723 inline-script metadata + `uv run` validated as the experiment-deps convention. **OpenRouter is the default LLM access pattern**; Anthropic-direct stays available as a config option. Note: OpenRouter uses dot-notation versions (`4.6`); Anthropic-direct uses dash-notation (`4-6`) — naming conventions diverge across providers.
@@ -65,3 +76,7 @@ A separate, narrower table of decisions that have been made and where they're re
 | Canonical Sonnet 4.6 model string | `openrouter:anthropic/claude-sonnet-4.6` | `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
 | Experiment dependency convention | PEP 723 inline-script metadata, run via `uv run` | `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
 | Token field names (Pydantic AI) | `input_tokens` / `output_tokens` (not `request_/response_`) | `experiments/01-pydantic-ai-hello/run.py` |
+| Tool decorator | `@agent.tool_plain` (no context) or `@agent.tool` (with `RunContext`) | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` |
+| Tool schema source | type hints + docstring `Args:` section | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` |
+| Source plugin error contract | raise `pydantic_ai.ModelRetry("reason")` for graceful degradation; plain exceptions for hard failures | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` (to be reflected in `ARCHITECTURE.md` + `PLUGINS.md`) |
+| Parallel tool calls | one `ModelResponse` can carry multiple `ToolCallPart`s, executed in parallel by the framework | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` |

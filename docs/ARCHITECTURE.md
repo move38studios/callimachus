@@ -123,7 +123,7 @@ Not bundled, not in scope for core: Google Scholar (no API, scraping fragile and
 - Hunters call `search()` on their assigned sources in parallel.
 - Every candidate carries `provenance: { source_name, query, raw_score }`; the judge can weight by source reliability.
 - The pipeline's resolve step iterates resolvers in priority order; the first to return wins.
-- Plugin failures degrade gracefully: a source that times out or errors is logged and skipped for the rest of the run; a resolver that fails moves to the next in priority.
+- Plugin failures degrade gracefully: a source that times out or errors is logged and skipped for the rest of the run; a resolver that fails moves to the next in priority. The mechanism is `pydantic_ai.ModelRetry("reason")` raised from the plugin call (see `PLUGINS.md`) — the agent sees the failure as a recoverable signal rather than a crash.
 - Per-run plugin metrics (candidates contributed, PDFs fetched, errors, latency) are written to the run log and surfaced in `calli plugin doctor`.
 
 ### The orchestrator
