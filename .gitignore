@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+.installed.cfg
+*.manifest
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+env/
+.python-version
+
+# uv
+.uv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Secrets and local config
+.env
+.env.local
+.env.*.local
+
+# Experiment outputs (artifacts produced when running an experiment)
+experiments/**/output/
+experiments/**/_data/
+experiments/**/.cache/
+
+# Local model downloads (e.g. nomic-embed weights)
+models/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# ----- Library runtime artifacts -----
+# These apply to any Callimachus library directory living inside this repo
+# (e.g. for testing). Real user libraries live in ~/Callimachus/ and follow
+# the same rules via .gitignore copied into the library on init.
+
+# Original PDFs are rehydratable from source URLs in metadata
+works/*/original.pdf
+
+# Per-run runtime state and cache
+.callimachus/state.json
+.callimachus/cache/
+.callimachus/runs/
+
+# Local plugins are environment-specific, not committed
+plugins/
