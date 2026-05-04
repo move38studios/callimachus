@@ -470,6 +470,10 @@ class LLMProvider(Protocol):
 
 Pydantic AI implements this for all providers it supports. Switching is a config change. Provider-specific perks (e.g. Anthropic prompt caching) activate when available, transparently.
 
+**Provider-specific caveats the wrapper must handle:**
+
+- **Gemini + structured output**: per Pydantic AI docs, Gemini can't combine tools and structured output simultaneously. If a Gemini model is used for any agent that returns a Pydantic `output_type` (the judge in particular), the wrapper must select `NativeOutput` or `PromptedOutput` mode rather than the default `ToolOutput`. For other providers (Anthropic, OpenAI, OpenRouter routes), the default `ToolOutput` is fine.
+
 ## MCP server
 
 `calli serve --mcp` exposes the librarian's read tools (and optionally mutation tools) over the FastMCP stdio transport. Once registered with Claude Code / Cursor / Claude Desktop / any MCP host, the library becomes a first-class tool the host's chat agent can call.

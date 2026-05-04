@@ -10,6 +10,17 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-04 — Structured output (judge prototype) works via Tool Output mode
+
+Pydantic AI returns a typed Pydantic model via its **Tool Output mode** by default — the schema becomes a synthetic `final_result` tool that the model "calls" with structured args. Because OpenRouter relays tool calls cleanly, structured output is as reliable as tool calling here (sidestepping older OpenRouter issues with Native JSON mode). Single request, no retries needed. Sonnet 4.6 produced a thoughtful judgment of the Ho 2020 DDPM abstract (relevance=10, seminality=10, accept=True, snowball=True) with full reasoning. Type checks all pass — `int`/`bool`/`list[str]` preserved.
+
+**Caveat to track**: per Pydantic AI docs, Gemini can't combine tools and structured output. If we ever route the judge through Gemini, the LLMProvider wrapper must auto-select `NativeOutput` mode for that path.
+
+Schema design note: `Field(...)` descriptions are sent to the model and function as part of the prompt. Treat them with the same care as system-prompt wording.
+
+- **Source**: [`experiments/03-pydantic-ai-structured-output/LEARNINGS.md`](experiments/03-pydantic-ai-structured-output/LEARNINGS.md)
+- **Affects**: `ARCHITECTURE.md` provider abstraction (note Gemini caveat for judge path).
+
 ### 2026-05-04 — Tool calling works; ModelRetry is the lever for graceful failure
 
 Pydantic AI's tool loop runs autonomously: type hints + docstring auto-derive the schema; `result.all_messages()` exposes the full exchange. **Parallel tool calls in a single turn work natively** — the orchestrator can fan out to N hunter tools in one round-trip. Important error-handling distinction: plain exceptions from tools propagate to the caller (model never sees them), while `pydantic_ai.ModelRetry("...")` is fed back as a `RetryPromptPart` so the model can recover. Binds: source plugins should use `ModelRetry` for graceful degradation on outages; judge/orchestrator internal failures should `raise` normally for hard fail.
@@ -80,3 +91,6 @@ A separate, narrower table of decisions that have been made and where they're re
 | Tool schema source | type hints + docstring `Args:` section | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` |
 | Source plugin error contract | raise `pydantic_ai.ModelRetry("reason")` for graceful degradation; plain exceptions for hard failures | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` (to be reflected in `ARCHITECTURE.md` + `PLUGINS.md`) |
 | Parallel tool calls | one `ModelResponse` can carry multiple `ToolCallPart`s, executed in parallel by the framework | `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` |
+| Structured output mode | Tool Output (Pydantic AI default) — schema → synthetic `final_result` tool | `experiments/03-pydantic-ai-structured-output/LEARNINGS.md` |
+| Gemini caveat for structured output | Gemini can't combine tools + structured output; provider wrapper must auto-select `NativeOutput` mode if Gemini is ever used for the judge | `experiments/03-pydantic-ai-structured-output/LEARNINGS.md` |
+| Judge schema (v0) | `relevance: int(0-10)`, `seminality: int(0-10)`, `accept: bool`, `snowball_candidate: bool`, `reasoning: str`, `concerns: list[str]` | `experiments/03-pydantic-ai-structured-output/run.py` (refinement pending in M2/M3) |
