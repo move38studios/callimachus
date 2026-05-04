@@ -119,15 +119,15 @@ Then edit `.env` to add keys.
 
 | Key | Required? | Purpose |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | recommended default | LLM for planning, judging, summarising |
-| `OPENAI_API_KEY` | alternative | Set `CALLIMACHUS_LLM_PROVIDER=openai` to use GPT instead |
-| `GEMINI_API_KEY` | alternative | Set `CALLIMACHUS_LLM_PROVIDER=gemini` |
-| `OPENROUTER_API_KEY` | alternative | Any model via OpenRouter |
+| `OPENROUTER_API_KEY` | recommended default | LLM access via OpenRouter — one key for many models (Claude, GPT, Gemini, open weights). Default model: `anthropic/claude-sonnet-4.6`. |
+| `ANTHROPIC_API_KEY` | alternative | Skip OpenRouter and call Anthropic directly. Set `CALLIMACHUS_LLM_PROVIDER=anthropic`. |
+| `OPENAI_API_KEY` | alternative | Direct OpenAI. Set `CALLIMACHUS_LLM_PROVIDER=openai`. |
+| `GEMINI_API_KEY` | alternative | Direct Gemini. Set `CALLIMACHUS_LLM_PROVIDER=gemini`. |
 | `MISTRAL_API_KEY` | recommended | OCR for scanned/image-only PDFs (~$1/1000 pages) |
 | `EXA_API_KEY` | recommended | Neural web discovery (grey literature, blog posts, lab reports) |
-| `PERPLEXITY_API_KEY` | optional | Planning-phase synthesis ("lay of the land" before hunters spawn) |
 | `SEMANTIC_SCHOLAR_API_KEY` | optional | Higher rate limits on the citation graph |
 | `VOYAGE_API_KEY` | optional | Higher-quality embeddings (`--embeddings voyage`) |
+| `PERPLEXITY_API_KEY` | optional | Only if you want to call Perplexity directly. By default, Perplexity (`perplexity/sonar` etc.) is reached via OpenRouter — no separate key needed. |
 
 By default, embeddings run **locally** with `nomic-embed-text-v1.5` (no key, ~500MB downloaded on first run, runs on CPU). You only need Voyage for a quality bump.
 

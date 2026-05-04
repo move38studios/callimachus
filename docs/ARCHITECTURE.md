@@ -59,8 +59,8 @@ After the build, the same Callimachus agent is available for chat, query, extend
 | Language | Python 3.11+ | PDF/embeddings ecosystem is Python-native |
 | Package manager | `uv` | Fast, reproducible, increasingly standard |
 | Agent harness | **Pydantic AI** | Multi-provider, mature, agent-delegation primitives, structured outputs via Pydantic |
-| LLM (default) | Claude Sonnet 4.6 (workhorse), Opus 4.7 (synthesis) | Best for nuanced relevance/seminality judging |
-| LLM (alternatives) | OpenAI, Gemini, OpenRouter, local via Ollama | All supported through Pydantic AI |
+| LLM access (default) | OpenRouter → `anthropic/claude-sonnet-4.6` (workhorse), `anthropic/claude-opus-4.7` (synthesis) | One key for many models; matches open-source positioning; cleanly enables provider swap |
+| LLM access (alternatives) | Anthropic-direct, OpenAI-direct, Gemini-direct, local via Ollama | All supported through Pydantic AI's per-provider integrations |
 | TUI | **Textual** | Best-in-class Python TUI, async-native, streams cleanly |
 | Storage | **SQLite + sqlite-vec** | One file, universal tooling, vector + structured in one place |
 | ORM | **SQLModel + Alembic** | Pydantic-typed models, async support, proper migrations |
@@ -110,7 +110,7 @@ Plugins register via Python entry points (for distributed `pip`-installable plug
 
 **Neural web discovery** — what bibliographic indexes miss:
 - `exa` — semantic web search; finds grey literature, lab pages, technical reports, blog deep-dives, recent stuff that hasn't propagated
-- `perplexity` — used at the planning phase only: "lay of the land" synthesis before hunters spawn
+- `perplexity` — used at the planning phase only: "lay of the land" synthesis before hunters spawn. Default routing is **via OpenRouter** (`perplexity/sonar`) so users only need their existing `OPENROUTER_API_KEY`. A separate `PERPLEXITY_API_KEY` is supported as an opt-in for users who want to hit Perplexity's API directly (different rate limits / native search filters).
 
 **Local:**
 - `local_pdfs` — point at any directory of PDFs you already have; they become discoverable and resolvable

@@ -205,7 +205,7 @@ These ship with `callimachus` itself and are enabled by default:
 | `crossref` | discovery (metadata only) | DOI resolution, structured metadata |
 | `unpaywall` | resolver | Open-access PDF discovery for any DOI |
 | `exa` | discovery (web, neural) | Grey literature, blog posts, lab pages |
-| `perplexity` | discovery (planning-phase synthesis) | "Lay of the land" before hunters spawn |
+| `perplexity` | discovery (planning-phase synthesis) | "Lay of the land" before hunters spawn. Routes via OpenRouter (`perplexity/sonar`) by default; honours `PERPLEXITY_API_KEY` for direct API access if set. |
 | `local_pdfs` | discovery + resolver | Point at any directory of PDFs you already have |
 
 ## Known community plugins

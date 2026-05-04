@@ -30,7 +30,7 @@ The numbering is loose — it reflects the order in `DEV_PLAN.md` but doesn't ne
 | # | Name | Status | Notes |
 | --- | --- | --- | --- |
 | 00 | env-check | done (2026-05-04) | Python 3.11+ confirmed, stdlib .env parser sufficient for experiments |
-| 01 | pydantic-ai-hello | not started | First Pydantic AI agent |
+| 01 | pydantic-ai-hello | done (2026-05-04) | OpenRouter via Pydantic AI confirmed; `openrouter:anthropic/claude-sonnet-4.6` works |
 | 02 | pydantic-ai-tool-calling | not started | |
 | 03 | pydantic-ai-structured-output | not started | |
 | 04 | pydantic-ai-provider-swap | not started | |
