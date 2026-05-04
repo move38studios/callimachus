@@ -472,7 +472,7 @@ Pydantic AI implements this for all providers it supports. Switching is a config
 
 **Provider-specific caveats the wrapper must handle:**
 
-- **Gemini + structured output**: per Pydantic AI docs, Gemini can't combine tools and structured output simultaneously. If a Gemini model is used for any agent that returns a Pydantic `output_type` (the judge in particular), the wrapper must select `NativeOutput` or `PromptedOutput` mode rather than the default `ToolOutput`. For other providers (Anthropic, OpenAI, OpenRouter routes), the default `ToolOutput` is fine.
+- **Gemini + structured output**: Pydantic AI's docs warn that Gemini can't combine tools and structured output. In practice (experiment 04) Gemini 2.5 Pro routed via OpenRouter returned a valid structured `Verdict` with default `ToolOutput` mode, so the warning may not apply to current Gemini versions or may be auto-handled. **Don't pre-emptively code around it.** If we see real failures when routing the judge through Gemini, the wrapper can switch that path to `NativeOutput` or `PromptedOutput` mode at that point.
 
 ## MCP server
 

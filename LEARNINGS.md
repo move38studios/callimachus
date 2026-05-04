@@ -10,6 +10,19 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-04 — Provider swap works across 5 model families; Gemini caveat may not apply
+
+Same `Verdict` schema, same fixture, swapped across Claude Sonnet 4.6, Claude Haiku 4.5, GPT-5.1, Gemini 2.5 Pro, and Llama 3.3 70B via OpenRouter. **5/5 returned valid verdicts.** Provider swap is a one-line change as the docs promised. Verdict consistency is high — all four frontier models scored DDPM 10/10/Y/Y; Llama was slightly more conservative at 9/8 but still accepted+snowballed. Notable: GPT-5.1 used ~half the input tokens of Anthropic models (different schema encoding); Gemini was more verbose in output. Surprising: Haiku 4.5 was slowest (21.9s) — needs re-test on a different day before drawing latency conclusions.
+
+**Gemini caveat softened**: Gemini 2.5 Pro returned a valid structured output via the default Tool Output mode. The Pydantic AI docs warning may apply to older Gemini, or the framework auto-handles it, or OpenRouter normalises it. We don't need to pre-emptively code around it. ARCHITECTURE.md updated to soften this claim.
+
+Concern surfacing varies by model: only GPT-5.1 populated `concerns` with useful items; others returned empty. Implication: empty concerns means "no information" rather than "no concerns" — model-dependent.
+
+Default workhorse judge: **Sonnet 4.6**. Cheap-mode option: Llama 3.3 70B. Synthesis pass model TBD.
+
+- **Source**: [`experiments/04-pydantic-ai-provider-swap/LEARNINGS.md`](experiments/04-pydantic-ai-provider-swap/LEARNINGS.md)
+- **Affects**: `ARCHITECTURE.md` provider-caveats paragraph (softened); informs default model selection in M2.
+
 ### 2026-05-04 — Structured output (judge prototype) works via Tool Output mode
 
 Pydantic AI returns a typed Pydantic model via its **Tool Output mode** by default — the schema becomes a synthetic `final_result` tool that the model "calls" with structured args. Because OpenRouter relays tool calls cleanly, structured output is as reliable as tool calling here (sidestepping older OpenRouter issues with Native JSON mode). Single request, no retries needed. Sonnet 4.6 produced a thoughtful judgment of the Ho 2020 DDPM abstract (relevance=10, seminality=10, accept=True, snowball=True) with full reasoning. Type checks all pass — `int`/`bool`/`list[str]` preserved.
@@ -94,3 +107,6 @@ A separate, narrower table of decisions that have been made and where they're re
 | Structured output mode | Tool Output (Pydantic AI default) — schema → synthetic `final_result` tool | `experiments/03-pydantic-ai-structured-output/LEARNINGS.md` |
 | Gemini caveat for structured output | Gemini can't combine tools + structured output; provider wrapper must auto-select `NativeOutput` mode if Gemini is ever used for the judge | `experiments/03-pydantic-ai-structured-output/LEARNINGS.md` |
 | Judge schema (v0) | `relevance: int(0-10)`, `seminality: int(0-10)`, `accept: bool`, `snowball_candidate: bool`, `reasoning: str`, `concerns: list[str]` | `experiments/03-pydantic-ai-structured-output/run.py` (refinement pending in M2/M3) |
+| Default workhorse judge model | `openrouter:anthropic/claude-sonnet-4.6` | `experiments/04-pydantic-ai-provider-swap/LEARNINGS.md` |
+| Cheap-mode judge alternative | `openrouter:meta-llama/llama-3.3-70b-instruct` (open weights, slightly more conservative scores) | `experiments/04-pydantic-ai-provider-swap/LEARNINGS.md` |
+| Gemini structured-output caveat | softened — works in practice with default Tool Output mode for Gemini 2.5 Pro; only special-case if real failures observed | `experiments/04-pydantic-ai-provider-swap/LEARNINGS.md` |

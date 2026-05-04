@@ -33,7 +33,7 @@ The numbering is loose — it reflects the order in `DEV_PLAN.md` but doesn't ne
 | 01 | pydantic-ai-hello | done (2026-05-04) | OpenRouter via Pydantic AI confirmed; `openrouter:anthropic/claude-sonnet-4.6` works |
 | 02 | pydantic-ai-tool-calling | done (2026-05-04) | Single + parallel tool calls work; `ModelRetry` vs plain exceptions = graceful vs hard failure |
 | 03 | pydantic-ai-structured-output | done (2026-05-04) | Tool Output mode (default) works rock-solid via OpenRouter; Gemini needs `NativeOutput` mode (caveat) |
-| 04 | pydantic-ai-provider-swap | not started | |
+| 04 | pydantic-ai-provider-swap | done (2026-05-04) | 5/5 models (Sonnet, Haiku, GPT-5.1, Gemini 2.5, Llama 3.3) returned valid verdicts; Gemini caveat may not apply |
 | 05 | pydantic-ai-streaming | not started | |
 | 06 | pydantic-ai-sub-agents | not started | |
 | 07 | anthropic-prompt-caching | not started | |
