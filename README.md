@@ -36,7 +36,7 @@ A **run** is a single Callimachus operation that mutated the library — initial
 
 ```bash
 # Install once
-git clone https://github.com/<you>/callimachus
+git clone https://github.com/move38studios/callimachus
 cd callimachus && uv sync
 cp .env.example .env       # add API keys
 ```
@@ -107,7 +107,7 @@ calli export --collection diffusion-models       # share one collection
 Requires Python 3.11+ and [uv](https://github.com/astral-sh/uv) (or pip).
 
 ```bash
-git clone https://github.com/<you>/callimachus
+git clone https://github.com/move38studios/callimachus
 cd callimachus
 uv sync
 cp .env.example .env

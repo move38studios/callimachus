@@ -1,0 +1,94 @@
+[project]
+name = "callimachus"
+version = "0.1.0.dev0"
+description = "Your personal librarian — autonomously build, grow, and query a deep library of research on any topic."
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+license = { text = "MIT" }
+authors = [{ name = "Callimachus contributors" }]
+keywords = [
+  "research",
+  "librarian",
+  "ai-agent",
+  "literature-review",
+  "llm",
+  "rag",
+  "academic",
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Text Processing :: Indexing",
+]
+dependencies = []
+
+# Real CLI scripts will be wired up in M1 once src/callimachus/cli.py exists.
+# [project.scripts]
+# calli = "callimachus.cli:main"
+# callimachus = "callimachus.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "ruff>=0.7",
+  "pyright>=1.1.380",
+  "pre-commit>=3.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/callimachus"]
+
+# ----- ruff -----
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["experiments"]
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "SIM",  # flake8-simplify
+  "RUF",  # ruff-specific rules
+  "ASYNC",
+  "T20",  # flake8-print (no print in committed code)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["T20"]
+
+# ----- pyright -----
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = ["experiments", "**/__pycache__", ".venv"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+
+# ----- pytest -----
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+  "live: tests that hit real LLMs / external APIs (skipped by default; run with -m live)",
+]
+addopts = ["-ra", "--strict-markers", "-m", "not live"]
