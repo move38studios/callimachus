@@ -61,7 +61,8 @@ After the build, the same Callimachus agent is available for chat, query, extend
 | Agent harness | **Pydantic AI** | Multi-provider, mature, agent-delegation primitives, structured outputs via Pydantic |
 | LLM access (default) | OpenRouter → `anthropic/claude-sonnet-4.6` (workhorse), `anthropic/claude-opus-4.7` (synthesis) | One key for many models; matches open-source positioning; cleanly enables provider swap |
 | LLM access (alternatives) | Anthropic-direct, OpenAI-direct, Gemini-direct, local via Ollama | All supported through Pydantic AI's per-provider integrations |
-| TUI | **Textual** | Best-in-class Python TUI, async-native, streams cleanly |
+| Chat interface | **prompt_toolkit + Rich** (aider pattern) | Inline scrolling chat with streaming markdown; native terminal scrollback preserved; lightweight; matches what 2026 chat-first CLIs (aider, gptme) converge on |
+| Build dashboard | **Textual** | Multi-pane, async-native, real-time updates; right tool for the parallel-hunters dashboard where spatial layout matters |
 | Storage | **SQLite + sqlite-vec** | One file, universal tooling, vector + structured in one place |
 | ORM | **SQLModel + Alembic** | Pydantic-typed models, async support, proper migrations |
 | MCP server | **FastMCP** | Decorator-based, async-native, stdio + HTTP, the de-facto standard |
@@ -74,9 +75,15 @@ After the build, the same Callimachus agent is available for chat, query, extend
 
 Claude Agent SDK has the slickest agentic ergonomics, but Anthropic's Terms prohibit third-party developers from offering Claude.ai subscription auth, and the SDK is Claude-only. For an open-source tool we want users to plug in whatever model they have access to (Claude API, OpenAI, OpenRouter, local models). Pydantic AI gives us multi-provider support, mature agent + delegation primitives, and clean Pydantic-typed structured outputs, at the cost of some Claude-specific niceties (built-in MCP client, automatic compaction, sub-agent isolation). Those gaps are well-defined and easy to fill in our own code.
 
-### Why Textual
+### Why prompt_toolkit + Rich for chat (and not Textual)
 
-Pydantic AI streams events; Textual renders them. Built-in support for split panes, live tables, scrolling logs, keyboard shortcuts, mouse, async. The agentic-feel TUI — orchestrator pane, hunter subagent panes, live works list, status bar — is its sweet spot. Same framework powers the chat TUI for the long-lived librarian.
+The chat interface — the `calli` librarian you talk to over months — is conversational, not spatial. The 2026 reference for this category is aider's stack: **`prompt_toolkit` for input** (multi-line, history, completion, key bindings, editor escape) plus **`Rich` for output** (`Live` + `Markdown` for streaming-markdown rendering, syntax-highlighted code blocks). This pattern preserves native terminal scrollback — copy/paste, search, pipe — which is the single most-mentioned complaint about Textual/Ink-based chat tools that take the alt-screen and lose history on quit. Validated in experiment 05.
+
+### Why Textual for the build dashboard
+
+Pydantic AI streams events; Textual renders them. Built-in support for split panes, live tables, scrolling logs, keyboard shortcuts, mouse, async. The discovery dashboard — orchestrator pane, parallel hunter panes, live works list, status bar — is spatial and concurrent. Textual's sweet spot. The user watches this for the duration of a build run, not ambiently.
+
+The two tools serve genuinely different use cases — one conversation, one dashboard — and the docs treat them as such. A future Toad-style fully-Textual chat with citation/works-list panes is plausible but not in scope.
 
 ### Why SQLite + sqlite-vec + SQLModel
 
@@ -389,7 +396,7 @@ A long-lived Pydantic AI agent that owns the library. The chat interface (`calli
 
 | CLI | Librarian action |
 | --- | --- |
-| `calli` | Open chat TUI in default library |
+| `calli` | Open chat in default library |
 | `calli init [name]` | Create new library + first collection |
 | `calli collection add ...` | `add_collection(...)` |
 | `calli collection list` | List collections |
@@ -535,9 +542,13 @@ Mutation tools default to off over MCP. `calli serve --mcp --allow-mutations` op
 callimachus/
   src/callimachus/
     cli.py                           # entrypoints, all subcommands
+    chat/
+      app.py                         # the prompt_toolkit + Rich chat for the librarian
+      keybindings.py                 # Enter/Alt+Enter, Shift+Enter via CSI u, etc.
+      slash_commands.py              # /help /clear /save /history etc.
+      kitty_protocol.py              # enable/disable CSI u disambiguation mode
     tui/
-      chat_app.py                    # the long-lived librarian chat TUI
-      build_app.py                   # the discovery + pipeline TUI for runs
+      build_app.py                   # the Textual dashboard for discovery + pipeline runs
     librarian/
       agent.py                       # the Callimachus agent definition
       tools/
@@ -636,7 +647,7 @@ Same shape as papers, different ingestion. Both become new `kind` values for `wo
 - How aggressively to dedupe arXiv preprint vs published version (DOI mapping is imperfect)
 - Whether to support multiple topic embeddings *per* collection (e.g. allow two parallel themes within one collection)
 - Best chunking strategy for academic papers (semantic vs sliding-window vs section-aware)
-- How to expose the citation graph in the chat TUI (text-based vs terminal graphics)
+- How to expose the citation graph in the chat (text-based vs terminal graphics; chat is inline-scrolling so we lose alt-screen rendering options)
 - Whether to ship a Hermes Agent skill alongside the MCP server for the multi-platform messaging crowd
 - Per-collection model overrides (e.g. use Opus for "creativity", Sonnet for everything else)
 - When library scale demands migration off sqlite-vec (suggest LanceDB at ~50k chunks)

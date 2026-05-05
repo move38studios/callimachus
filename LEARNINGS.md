@@ -10,6 +10,22 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-04 — Streaming validated; chat = prompt_toolkit + Rich (aider pattern), dashboard = Textual
+
+All three Pydantic AI streaming surfaces (`run_stream() + stream_text()`, `agent.iter()`, `agent.run_stream_events()`) work cleanly and feel live. The aider-pattern chat — `prompt_toolkit` for input + `rich.live.Live` + `rich.markdown.Markdown` for streaming output — was judged solid by the user. Native terminal scrollback preserved.
+
+**Architecture decision**: chat and dashboard are different categories. Chat (`calli` librarian) = `prompt_toolkit` + `Rich`. Build dashboard (parallel hunters) = Textual. This split is real and the ARCHITECTURE.md tech stack now reflects it. A future Toad-style fully-Textual chat with side panes is plausible later but not in scope for v0.1.
+
+**Known limitation**: Shift+Enter is terminal-protocol-dependent (CSI u). We send `\x1b[>1u` on startup to ask the terminal to enable disambiguation mode (Claude Code's mechanism), but it didn't activate in the user's Zed terminal in this session. Alt+Enter is the universal multi-line fallback. Future polish: a `calli setup-terminal` analogous to Claude Code's, which writes the right config file per terminal.
+
+**Lessons captured**:
+- Don't shadow stdlib module names in experiments (initial `inspect.py` crashed `asyncio`'s import chain).
+- prompt_toolkit 3.0.52 lacks `Keys.ShiftEnter`; bind via `ANSI_SEQUENCES["\x1b[13;2u"] = Keys.WindowsMouseEvent` or similar hijack.
+- Live re-rendering streamed Markdown sometimes flickers; future optimization possible.
+
+- **Source**: [`experiments/05-pydantic-ai-streaming/LEARNINGS.md`](experiments/05-pydantic-ai-streaming/LEARNINGS.md)
+- **Affects**: `ARCHITECTURE.md` (chat = pt+Rich, dashboard = Textual; repo layout updated to add `chat/` directory).
+
 ### 2026-05-04 — Provider swap works across 5 model families; Gemini caveat may not apply
 
 Same `Verdict` schema, same fixture, swapped across Claude Sonnet 4.6, Claude Haiku 4.5, GPT-5.1, Gemini 2.5 Pro, and Llama 3.3 70B via OpenRouter. **5/5 returned valid verdicts.** Provider swap is a one-line change as the docs promised. Verdict consistency is high — all four frontier models scored DDPM 10/10/Y/Y; Llama was slightly more conservative at 9/8 but still accepted+snowballed. Notable: GPT-5.1 used ~half the input tokens of Anthropic models (different schema encoding); Gemini was more verbose in output. Surprising: Haiku 4.5 was slowest (21.9s) — needs re-test on a different day before drawing latency conclusions.
@@ -110,3 +126,7 @@ A separate, narrower table of decisions that have been made and where they're re
 | Default workhorse judge model | `openrouter:anthropic/claude-sonnet-4.6` | `experiments/04-pydantic-ai-provider-swap/LEARNINGS.md` |
 | Cheap-mode judge alternative | `openrouter:meta-llama/llama-3.3-70b-instruct` (open weights, slightly more conservative scores) | `experiments/04-pydantic-ai-provider-swap/LEARNINGS.md` |
 | Gemini structured-output caveat | softened — works in practice with default Tool Output mode for Gemini 2.5 Pro; only special-case if real failures observed | `experiments/04-pydantic-ai-provider-swap/LEARNINGS.md` |
+| Chat interface stack | `prompt_toolkit` + `Rich` (aider pattern); inline scrolling, native scrollback preserved | `experiments/05-pydantic-ai-streaming/LEARNINGS.md`, `ARCHITECTURE.md` |
+| Build dashboard stack | Textual (multi-pane, real-time hunters) | `ARCHITECTURE.md` |
+| Multi-line input convention | Alt+Enter universal; Shift+Enter is terminal-dependent (CSI u protocol) | `experiments/05-pydantic-ai-streaming/LEARNINGS.md` |
+| Don't shadow stdlib module names | never use `inspect.py`, `json.py`, `email.py` etc. as filenames | `experiments/05-pydantic-ai-streaming/LEARNINGS.md` |
