@@ -10,6 +10,16 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-05 — Pivoting from experiments to product (M1 build)
+
+After 6 agent-harness experiments (01–06, with 07 deferred), we paused and reassessed the remaining 24 experiments. Honest answer: the agent-harness phase earned its keep because Pydantic AI was unfamiliar and we found real things (provider swap mechanics, sub-agent budgets, ModelRetry pattern, streaming surfaces, model defaults per role, the chat-vs-dashboard split, the OpenRouter-via-Pydantic-AI gaps). The remaining 24 experiments — TUI, storage, embeddings, six discovery sources, five pipeline pieces, MCP, plugins — are mostly "use a well-documented library, confirm it works as advertised". Low surprise risk; low information-per-experiment ratio.
+
+**Decision**: defer experiments 07–30. Fold into the integration milestones in `DEV_PLAN.md`. When we hit something genuinely uncertain during M1+ work, spin a focused mini-experiment in the moment. Default is "build it and see."
+
+M1 broken into 6 sub-phases (`M1.0` storage scaffold → `M1.5` cost tracking) so each is demonstrable. Starting with M1.0.
+
+- **Affects**: `DEV_PLAN.md` (Phase 2 expanded with M1 sub-phases; direction-change note added to Phase 1).
+
 ### 2026-05-05 — Sub-agent delegation works; introduced `experiments/_common.py` logging
 
 Sub-agent delegation via `@orchestrator.tool` wrapping `hunter.run(brief)` works as documented. **Parallel tool calls execute truly in parallel** — orchestrator emits N `ToolCallParts` in one ModelResponse, framework runs hunters concurrently, returns all results in one round-trip from orchestrator's perspective (so orchestrator's own request count stays tiny — ~2). For cases where *we* (not the model) decide what to spawn, `asyncio.gather` over independent `hunter.run()`s gives the same parallelism with explicit control. Both patterns will be used in production: model-driven for orchestrator-led discovery, explicit for fixed sweeps.

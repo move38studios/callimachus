@@ -50,6 +50,10 @@ Before any experiments. ~1–2 hours.
 
 ## Phase 1 — Component experiments
 
+> **Direction change, 2026-05-05.** After completing experiments 00–06, we paused and reassessed. The agent-harness experiments (01–06) earned their keep — Pydantic AI was unfamiliar and we found real things (provider swap mechanics, sub-agent budgets, ModelRetry pattern, streaming surfaces, model defaults per role, the chat = pt+Rich / dashboard = Textual split). The remaining 24 experiments were mostly "use a well-documented library, confirm it works as advertised" — low information-per-experiment ratio.
+>
+> **New shape**: experiments 07–30 are **deferred and folded into the integration milestones below**. We learn faster by building M1 and bumping into real issues than by isolated probes. When we hit something genuinely uncertain during M1+ work, we'll spin a focused mini-experiment at that moment. The full original list is preserved below as record of what we considered.
+
 The order is risk-first: validate the riskiest assumptions earliest. Each experiment lives in `experiments/NN-name/` with `README.md`, runnable code, and `LEARNINGS.md`.
 
 ### Agent harness (Pydantic AI)
@@ -223,7 +227,9 @@ Each source gets a tiny experiment proving we can call it and parse the response
 
 ## Phase 2 — Integration milestones
 
-Once the experiments are green, build the real thing in milestones. Each milestone produces a working, demonstrable slice of the product.
+Now that the agent harness is validated (experiments 00–06), build the real thing in milestones. Each milestone produces a working, demonstrable slice of the product.
+
+The deferred experiments (07–30) get folded into the milestone that needs them. When we hit something genuinely uncertain, we may spin a focused mini-experiment in the moment, but the default is "build it and see."
 
 ### M1 — Foundations (deterministic pipeline only, no agents)
 
@@ -238,11 +244,26 @@ Scope:
 - CLI: `calli ingest <yaml-file>`, `calli query "<question>"` (one-shot, no chat yet)
 - Cost tracking per run
 
+Folds in deferred experiments: 11/12/13 (storage), 14/15/16 (embeddings), 17/19/20 (sources: openalex, arxiv, crossref+unpaywall), 23/24/25 (extract), 26 (enrich), 27 (chunking), 29/30 (plugin loader).
+
 Out of scope: agentic discovery, snowball, judge, chat TUI, MCP server, multi-collection.
 
 **Demo**: `calli ingest seed.yaml` (10 manually-curated diffusion-model papers) → `calli query "what's classifier-free guidance"` returns relevant excerpts with citations.
 
 **Tests**: `tests/` covers the pipeline end-to-end with a fixture set of 3 papers.
+
+### M1 sub-phases (working order)
+
+Cuts M1 into demonstrable slices, each green before moving on:
+
+- **M1.0 — Storage scaffold.** `src/callimachus/storage/` with SQLModel `Work`, `Chunk`, `Citation`, `Collection`, `Run` models. `db.py` opens SQLite + loads `sqlite-vec` extension. Alembic baseline migration. Tiny test: insert a Work + Chunk, run vector search, get the Work back.
+- **M1.1 — Plugin loader skeleton.** `src/callimachus/sources/{protocols,registry}.py`. Entry-point + local-file discovery. `local_pdfs` as the first bundled plugin (simplest — no network). Test: drop a PDF in a fixture dir, registry finds it as both DiscoverySource and Resolver.
+- **M1.2 — One source end-to-end (arxiv).** Bundled arxiv plugin: search by query, fetch metadata, download LaTeX source, extract markdown. Tests against a known arXiv ID.
+- **M1.3 — Pipeline, manual.** `src/callimachus/pipeline/` modules for `resolve / download / extract / enrich / embed / index`. Each idempotent + checkpointed. Wire them into a single `ingest_one(work_id)` function.
+- **M1.4 — CLI.** `src/callimachus/cli.py` with `calli ingest <yaml>` and `calli query "..."`. Use `click` or `typer` (decide in M1.0).
+- **M1.5 — Cost tracking + run log.** Per-run cost.json + the `runs` table. `calli cost` shows totals.
+
+Each sub-phase: write code → tests pass → commit → next.
 
 ### M2 — Discovery agent (single collection, no snowball)
 
