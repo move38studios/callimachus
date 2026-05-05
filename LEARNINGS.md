@@ -10,6 +10,19 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-05 — Sub-agent delegation works; introduced `experiments/_common.py` logging
+
+Sub-agent delegation via `@orchestrator.tool` wrapping `hunter.run(brief)` works as documented. **Parallel tool calls execute truly in parallel** — orchestrator emits N `ToolCallParts` in one ModelResponse, framework runs hunters concurrently, returns all results in one round-trip from orchestrator's perspective (so orchestrator's own request count stays tiny — ~2). For cases where *we* (not the model) decide what to spawn, `asyncio.gather` over independent `hunter.run()`s gives the same parallelism with explicit control. Both patterns will be used in production: model-driven for orchestrator-led discovery, explicit for fixed sweeps.
+
+**Per-agent budgets**: each sub-agent gets its own `request_limit` when `usage` is NOT shared via `ctx.usage`. We default to `request_limit=15-20` per hunter (loose enough for legitimate query refinement, tight enough to fail fast on real loops). Sub-agent failures (e.g. `UsageLimitExceeded`) should be caught and re-raised as `ModelRetry` so the parent orchestrator can recover gracefully — same convention as source-plugin failures from experiment 02.
+
+**Models for discovery**: Haiku 4.5 for hunters + orchestrator (cheap, fast, plenty good for mechanics), Sonnet 4.6 for the judge (quality matters), Opus 4.7 for end-of-build synthesis.
+
+**Infrastructure win**: introduced `experiments/_common.py` for env loading + Rich logging + canonical model constants (`MODEL_FAST`, `MODEL_SMART`, `MODEL_DEEP`). Convention added to `experiments/README.md`. Cleans up boilerplate; coloured structured logging makes diagnosing future experiments much easier than ad-hoc print.
+
+- **Source**: [`experiments/06-pydantic-ai-sub-agents/LEARNINGS.md`](experiments/06-pydantic-ai-sub-agents/LEARNINGS.md)
+- **Affects**: `ARCHITECTURE.md` discovery section (agent default = Haiku, judge = Sonnet, synthesis = Opus); experiments going forward use `_common.py`.
+
 ### 2026-05-04 — Streaming validated; chat = prompt_toolkit + Rich (aider pattern), dashboard = Textual
 
 All three Pydantic AI streaming surfaces (`run_stream() + stream_text()`, `agent.iter()`, `agent.run_stream_events()`) work cleanly and feel live. The aider-pattern chat — `prompt_toolkit` for input + `rich.live.Live` + `rich.markdown.Markdown` for streaming output — was judged solid by the user. Native terminal scrollback preserved.
@@ -130,3 +143,8 @@ A separate, narrower table of decisions that have been made and where they're re
 | Build dashboard stack | Textual (multi-pane, real-time hunters) | `ARCHITECTURE.md` |
 | Multi-line input convention | Alt+Enter universal; Shift+Enter is terminal-dependent (CSI u protocol) | `experiments/05-pydantic-ai-streaming/LEARNINGS.md` |
 | Don't shadow stdlib module names | never use `inspect.py`, `json.py`, `email.py` etc. as filenames | `experiments/05-pydantic-ai-streaming/LEARNINGS.md` |
+| Sub-agent budget isolation | each sub-agent gets its own `request_limit` (don't share `usage` via `ctx.usage` unless you want one combined pool) | `experiments/06-pydantic-ai-sub-agents/LEARNINGS.md` |
+| Default request_limit per hunter | 15-20 (loose for refinement, tight to fail fast on real loops) | `experiments/06-pydantic-ai-sub-agents/LEARNINGS.md` |
+| Sub-agent failure pattern | catch `UsageLimitExceeded` and similar, re-raise as `ModelRetry` so parent recovers gracefully | `experiments/06-pydantic-ai-sub-agents/LEARNINGS.md` |
+| Default models for discovery | hunters + orchestrator: Haiku 4.5; judge: Sonnet 4.6; synthesis: Opus 4.7 | `experiments/06-pydantic-ai-sub-agents/LEARNINGS.md` |
+| Shared experiments boilerplate | `experiments/_common.py` provides env loading, Rich logging, model constants. Only allowed shared module across experiments. | `experiments/_common.py`, `experiments/README.md` |

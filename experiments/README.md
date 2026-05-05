@@ -20,10 +20,25 @@ The numbering is loose — it reflects the order in `DEV_PLAN.md` but doesn't ne
 ## Rules
 
 - **One thing per experiment.** If you're testing two things, make two experiments.
-- **Self-contained.** An experiment should run with `cd experiments/NN-name && python run.py` (or `uv run python run.py` once we have a uv environment) without relying on `src/callimachus/` code. If you need a helper, copy it in.
+- **Self-contained.** An experiment should run with `uv run experiments/NN-name/run.py` without relying on `src/callimachus/` code. If you need a helper, copy it in — *with one exception below.*
+- **`experiments/_common.py` is the only allowed shared module.** Holds env-loading helpers, Rich logging setup, and canonical model constants (`MODEL_FAST`, `MODEL_SMART`, `MODEL_DEEP`). Experiments may import from it. Anything else still copies in.
 - **Capture LEARNINGS as you go**, not after. Even rough notes are better than nothing.
 - **Keep it small.** Aim for 1–3 hours per experiment. If it sprawls, split it.
 - **Don't delete experiments.** They're the evidence trail. If an experiment is superseded, note it in the local LEARNINGS but leave the directory.
+
+## Importing `_common.py` from a PEP 723 script
+
+```python
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from _common import setup_logging, find_repo_root, load_env_into_os, MODEL_FAST  # noqa: E402
+
+log = setup_logging(verbose=False)
+load_env_into_os()
+```
+
+Add `"rich>=13"` to your script's PEP 723 dependencies if you call `setup_logging`.
 
 ## Index
 
@@ -35,7 +50,7 @@ The numbering is loose — it reflects the order in `DEV_PLAN.md` but doesn't ne
 | 03 | pydantic-ai-structured-output | done (2026-05-04) | Tool Output mode (default) works rock-solid via OpenRouter; Gemini needs `NativeOutput` mode (caveat) |
 | 04 | pydantic-ai-provider-swap | done (2026-05-04) | 5/5 models (Sonnet, Haiku, GPT-5.1, Gemini 2.5, Llama 3.3) returned valid verdicts; Gemini caveat may not apply |
 | 05 | pydantic-ai-streaming | done (2026-05-04) | All 3 streaming surfaces validated; aider-pattern chat (prompt_toolkit + Rich) judged solid |
-| 06 | pydantic-ai-sub-agents | not started | |
+| 06 | pydantic-ai-sub-agents | done (2026-05-05) | Sub-agent delegation + parallel hunter pattern validated; ModelRetry for recoverable sub-agent failures; Haiku 4.5 default for mechanics |
 | 07 | anthropic-prompt-caching | not started | |
 | 08 | textual-hello | not started | |
 | 09 | textual-stream-agent | not started | |

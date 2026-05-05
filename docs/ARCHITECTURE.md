@@ -59,7 +59,7 @@ After the build, the same Callimachus agent is available for chat, query, extend
 | Language | Python 3.11+ | PDF/embeddings ecosystem is Python-native |
 | Package manager | `uv` | Fast, reproducible, increasingly standard |
 | Agent harness | **Pydantic AI** | Multi-provider, mature, agent-delegation primitives, structured outputs via Pydantic |
-| LLM access (default) | OpenRouter → `anthropic/claude-sonnet-4.6` (workhorse), `anthropic/claude-opus-4.7` (synthesis) | One key for many models; matches open-source positioning; cleanly enables provider swap |
+| LLM access (default) | OpenRouter (one key, many models). Per-role defaults: hunters + orchestrator = `anthropic/claude-haiku-4.5` (cheap, fast, plenty good for harness mechanics); judge = `anthropic/claude-sonnet-4.6` (quality matters for relevance/seminality scoring); end-of-build synthesis = `anthropic/claude-opus-4.7`. | Cost-optimized routing — Haiku for high-volume mechanics, Sonnet for nuanced judgment, Opus only for the final pass. Matches open-source positioning. |
 | LLM access (alternatives) | Anthropic-direct, OpenAI-direct, Gemini-direct, local via Ollama | All supported through Pydantic AI's per-provider integrations |
 | Chat interface | **prompt_toolkit + Rich** (aider pattern) | Inline scrolling chat with streaming markdown; native terminal scrollback preserved; lightweight; matches what 2026 chat-first CLIs (aider, gptme) converge on |
 | Build dashboard | **Textual** | Multi-pane, async-native, real-time updates; right tool for the parallel-hunters dashboard where spatial layout matters |
