@@ -10,6 +10,22 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-05 — M1.0 storage scaffold green (SQLModel + sqlite-vec + Alembic)
+
+`src/callimachus/storage/` lives. `Work`, `Chunk`, `Collection`, `WorkCollection`, `Run` SQLModel classes; `db.py` opens SQLite and auto-loads `sqlite-vec` on every connect via SQLAlchemy event listener; `vec.py` exposes `insert_chunk_embedding` and `search_chunks` returning typed `SearchHit(work, chunk, distance)` tuples; Alembic baseline migration generated and round-trips clean. 6/6 storage tests pass.
+
+**Lessons captured**:
+- `sqlite-vec v0.1.9` loads cleanly on macOS via `sqlite_vec.load(conn)` after `enable_load_extension(True)`. Standard pattern. Wired into the SQLAlchemy `connect` event so it's transparent to callers.
+- The `vec_chunks` virtual table is created in `init_db()` (not Alembic) — sqlite-vec virtual tables don't fit Alembic autogenerate. Document this in migration env.py.
+- SQLModel deprecates `Session.execute()` in favour of `Session.exec()`, but `exec()` is typed for ORM queries, not raw SQL. **Pattern for raw SQL: `session.connection().execute(text(...), {params})`** — uses the underlying SQLAlchemy connection directly.
+- Embedding bytes packed as `struct.pack(f"{N}f", *embedding)`. Dimension is `EMBEDDING_DIM = 768` (nomic-embed-text-v1.5). Changing the embedding model requires rebuilding `vec_chunks`.
+- `expire_on_commit=False` is the SQLModel-friendly default for sessions — lets callers read object fields outside the session context (matches FastAPI ergonomics).
+- `__tablename__ = "..."` triggers a SQLModel + pyright-strict mismatch (`declared_attr[Unknown]`). Use `# type: ignore[assignment]` on each — known issue in SQLModel + SQLAlchemy 2.0.
+- Alembic autogen forgets to import `sqlmodel` in generated migrations. Fixed: added `import sqlmodel` to `script.py.mako`. Also excluded `migrations/versions/` from ruff and pyright (autogen code, not our style).
+- pyright's `reportUnusedImport` doesn't honour ruff's `# noqa: F401`. Need `# pyright: ignore[reportUnusedImport]` separately.
+
+- **Affects**: `pyproject.toml` (excludes for autogen migrations), `src/callimachus/storage/`.
+
 ### 2026-05-05 — Pivoting from experiments to product (M1 build)
 
 After 6 agent-harness experiments (01–06, with 07 deferred), we paused and reassessed the remaining 24 experiments. Honest answer: the agent-harness phase earned its keep because Pydantic AI was unfamiliar and we found real things (provider swap mechanics, sub-agent budgets, ModelRetry pattern, streaming surfaces, model defaults per role, the chat-vs-dashboard split, the OpenRouter-via-Pydantic-AI gaps). The remaining 24 experiments — TUI, storage, embeddings, six discovery sources, five pipeline pieces, MCP, plugins — are mostly "use a well-documented library, confirm it works as advertised". Low surprise risk; low information-per-experiment ratio.
@@ -158,3 +174,9 @@ A separate, narrower table of decisions that have been made and where they're re
 | Sub-agent failure pattern | catch `UsageLimitExceeded` and similar, re-raise as `ModelRetry` so parent recovers gracefully | `experiments/06-pydantic-ai-sub-agents/LEARNINGS.md` |
 | Default models for discovery | hunters + orchestrator: Haiku 4.5; judge: Sonnet 4.6; synthesis: Opus 4.7 | `experiments/06-pydantic-ai-sub-agents/LEARNINGS.md` |
 | Shared experiments boilerplate | `experiments/_common.py` provides env loading, Rich logging, model constants. Only allowed shared module across experiments. | `experiments/_common.py`, `experiments/README.md` |
+| Embedding dimension (default) | 768 (nomic-embed-text-v1.5) — `EMBEDDING_DIM` in `storage/models.py`; changing requires rebuild of `vec_chunks` | `src/callimachus/storage/models.py` |
+| Raw SQL pattern in SQLModel | `session.connection().execute(text(...), {params})` — `session.execute()` is deprecated, `session.exec()` is typed for ORM only | `src/callimachus/storage/vec.py` |
+| Session ergonomics | `expire_on_commit=False` default in `make_session()` — objects usable after commit | `src/callimachus/storage/db.py` |
+| Alembic autogen quirks | Add `import sqlmodel` to `script.py.mako`; exclude `**/migrations/versions/` from ruff + pyright (autogen code) | `pyproject.toml`, `src/callimachus/storage/migrations/script.py.mako` |
+| `vec_chunks` virtual table | Created in `init_db()`, not Alembic — virtual tables don't fit autogenerate | `src/callimachus/storage/db.py` |
+| `__tablename__` + pyright strict | Use `# type: ignore[assignment]` per assignment — SQLModel + SQLAlchemy 2.0 known mismatch | `src/callimachus/storage/models.py` |

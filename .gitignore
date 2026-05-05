@@ -54,6 +54,13 @@ experiments/**/.cache/
 # Local model downloads (e.g. nomic-embed weights)
 models/
 
+# Local SQLite DBs (e.g. created by alembic without CALLIMACHUS_DATABASE_URL).
+# Real libraries live in ~/Callimachus/, not in the repo.
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
 # Notebooks
 .ipynb_checkpoints/
 
