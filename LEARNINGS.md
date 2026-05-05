@@ -10,6 +10,36 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-05 — M1.1 plugin loader green (sources + registry + local_pdfs)
+
+`src/callimachus/sources/` lives. `protocols.py` (DiscoverySource, CitationGraph, Resolver Protocols + WorkCandidate, ResolvedFile, Provenance, SourceUnavailable). `registry.py` (entry-point + local-file plugin loading, instance-cache so a class registered under both groups instantiates once, confidence-based `resolve()` loop, optional `start()/close()` lifecycle hooks). `bundled/local_pdfs.py` as the first plugin: implements both Protocols, scans configured paths for PDFs, crude title-substring matching. Registered as an entry point in `pyproject.toml` under both `discovery_sources` and `resolvers` groups. **35/35 tests pass** (29 sources, 6 storage).
+
+**Lessons captured**:
+- **Entry-point dedup**: when a plugin class is registered under multiple groups, the registry must cache by `ep.value` and instantiate once. Otherwise plugins like `local_pdfs` end up with two separate instances and divergent config state.
+- **Protocol invariance bites**: declaring `kind: str = "vault"` in a plugin trips pyright when the Protocol declares `kind: SourceKind` (a Literal type). Plugins must use the typed alias: `kind: SourceKind = "vault"`. Same for `kinds: list[WorkKind]` parameter on `search()`. Export `SourceKind`/`WorkKind` from the package so plugin authors can use them.
+- **`getattr(plugin, 'start', None)` returns `object`** under pyright strict — can't `await` directly. Helper `_maybe_call(plugin, "method_name")` that uses `inspect.isawaitable()` to type-narrow before awaiting.
+- **N818 (Exception naming)** flags `SourceUnavailable` (no `Error` suffix). Kept the name; it reads better and matches Pydantic AI's `ModelRetry`. `# noqa: N818` on the class.
+- **`del query, limit, ...`** is a clean way to "use" deliberately-unused parameters that exist for Protocol conformance — avoids ruff ARG002 noise more cleanly than per-arg `# noqa`.
+
+- **Affects**: `pyproject.toml` (entry points for bundled plugins), `src/callimachus/sources/`, `docs/PLUGINS.md` (contract spec already updated).
+
+### 2026-05-05 — Plugin protocol design locked (M1.1 prep)
+
+Worked through the architectural decisions for the source/resolver plugin contract before writing any code. Key calls:
+
+- **`typing.Protocol` (PEP 544), not ABC.** Plugin authors don't inherit anything; pyright catches mismatches structurally; `runtime_checkable` for `isinstance` when needed.
+- **`WorkCandidate` ≠ `Work`.** Candidate is pre-acceptance Pydantic, lightweight, source-agnostic. Work is the SQLModel in the DB. Conversion happens at admission.
+- **Optional capabilities = separate Protocols.** `DiscoverySource` (everyone) + `CitationGraph` (Semantic Scholar etc.). Plugins implement what they support; registry exposes capability checks. No `NotImplementedError` stubs.
+- **Local plugins live at `<library_root>/plugins/`** (not project-cwd). Library is the unit of configuration.
+- **Plugins raise `callimachus.sources.SourceUnavailable`**, not `pydantic_ai.ModelRetry`. Decouples plugins from `pydantic_ai`. Agent-tool wrappers translate at the boundary.
+- **Confidence-based resolver selection, not integer priority.** Each resolver self-reports `confidence(candidate) -> float` per call. Registry sorts descending, tries in order. Adaptive (depends on candidate), self-explanatory (no magic numbers), deterministic. LLM is **not** in the per-resolution loop — only re-enters if all resolvers fail.
+- **All async** (most plugins do I/O); **Pydantic** for boundary data; **long-lived** plugin instances with optional `start()/close()`; **explicit kwargs** on `search()` (limit, year_from, year_to, kinds) — no `**filters`; **both** entry-point and local-file plugin discovery.
+- **`ResolvedFile.bytes_: bytes`** for v0.1; revisit if we hit memory wall on large artifacts.
+
+PLUGINS.md updated with the locked contracts. Building M1.1 now.
+
+- **Affects**: `docs/PLUGINS.md` (canonical contract); upcoming `src/callimachus/sources/` modules.
+
 ### 2026-05-05 — M1.0 storage scaffold green (SQLModel + sqlite-vec + Alembic)
 
 `src/callimachus/storage/` lives. `Work`, `Chunk`, `Collection`, `WorkCollection`, `Run` SQLModel classes; `db.py` opens SQLite and auto-loads `sqlite-vec` on every connect via SQLAlchemy event listener; `vec.py` exposes `insert_chunk_embedding` and `search_chunks` returning typed `SearchHit(work, chunk, distance)` tuples; Alembic baseline migration generated and round-trips clean. 6/6 storage tests pass.
@@ -180,3 +210,8 @@ A separate, narrower table of decisions that have been made and where they're re
 | Alembic autogen quirks | Add `import sqlmodel` to `script.py.mako`; exclude `**/migrations/versions/` from ruff + pyright (autogen code) | `pyproject.toml`, `src/callimachus/storage/migrations/script.py.mako` |
 | `vec_chunks` virtual table | Created in `init_db()`, not Alembic — virtual tables don't fit autogenerate | `src/callimachus/storage/db.py` |
 | `__tablename__` + pyright strict | Use `# type: ignore[assignment]` per assignment — SQLModel + SQLAlchemy 2.0 known mismatch | `src/callimachus/storage/models.py` |
+| Plugin contract style | `typing.Protocol` + `@runtime_checkable`; plugins don't inherit | `src/callimachus/sources/protocols.py`, `docs/PLUGINS.md` |
+| Resolver selection | confidence-based (per-call `confidence(candidate) -> float`), not integer priority | `src/callimachus/sources/protocols.py`, `docs/PLUGINS.md` |
+| Plugin failure protocol | raise `callimachus.sources.SourceUnavailable` (recoverable) or normal `Exception` (hard fail). Agent boundary translates to `ModelRetry`. | `docs/PLUGINS.md` |
+| Local plugin location | `<library_root>/plugins/` (default `~/Callimachus/plugins/`) | `src/callimachus/sources/registry.py` |
+| Plugin Protocol attribute typing | export `SourceKind` / `WorkKind` from the package; plugins use them in attribute and parameter declarations to satisfy invariant Literal types | `src/callimachus/sources/protocols.py` |

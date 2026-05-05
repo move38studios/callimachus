@@ -11,21 +11,23 @@ This document covers:
 - Bundled and known community plugins
 - Trust model
 
-## The two interfaces
+## The interfaces
 
-A plugin can implement one or both.
+A plugin can implement one or more. All interfaces are `typing.Protocol` (PEP 544 structural typing) — plugins don't inherit anything, they just have the right shape. All methods are async (most plugins do I/O).
 
-### `DiscoverySource` — turns a topic into candidate works
+### `DiscoverySource` — turn a topic into candidate works
 
-Given a query, return candidates. Optionally expose citation-graph capabilities.
+Given a query, return candidates.
 
 ```python
-from typing import Protocol, Literal
-from callimachus.types import WorkCandidate, CitationContext
+from typing import Protocol, Literal, runtime_checkable
+from callimachus.sources import WorkCandidate
 
+@runtime_checkable
 class DiscoverySource(Protocol):
     name: str
     kind: Literal["bibliographic", "web", "preprint", "vault", "social"]
+    enabled: bool
 
     async def search(
         self,
@@ -33,44 +35,106 @@ class DiscoverySource(Protocol):
         *,
         limit: int = 50,
         year_from: int | None = None,
-        **filters,
+        year_to: int | None = None,
+        kinds: list[str] | None = None,
     ) -> list[WorkCandidate]: ...
-
-    # Optional capabilities — Callimachus checks with hasattr at runtime.
-    # Sources without these still work; they just don't contribute to snowball.
-    async def get_references(self, work_id: str) -> list[WorkCandidate]: ...
-    async def get_citations(self, work_id: str) -> list[WorkCandidate]: ...
-    async def get_citation_contexts(self, work_id: str) -> list[CitationContext]: ...
 ```
 
-Every `WorkCandidate` carries `provenance: { source_name, query, raw_score }` so downstream stages can weight by source if they want.
+Common filters (`year_from`, `year_to`, `kinds`) are explicit kwargs. Source-specific configuration goes through the plugin's `config_model` at construction time, not into `search()`.
 
-### `Resolver` — turns a known work into bytes
+### `CitationGraph` — optional capability for sources with citation data
 
-Given a work (DOI, arXiv ID, URL), return a downloadable file. Resolvers are tried in priority order; the first one that returns wins.
+Sources that expose references / citations / contexts implement this *additionally*. Most don't (only Semantic Scholar does well). The registry exposes `citation_graph_sources()` for callers that need this capability.
 
 ```python
+@runtime_checkable
+class CitationGraph(Protocol):
+    async def get_references(self, work_id: str) -> list[WorkCandidate]: ...
+    async def get_citations(self, work_id: str) -> list[WorkCandidate]: ...
+    async def get_citation_contexts(self, work_id: str) -> list[dict[str, str]]: ...
+```
+
+### `Resolver` — turn a known work into bytes
+
+Given a `WorkCandidate` with metadata (doi, arxiv_id, source_url, …), produce its file bytes. Multiple resolvers may be able to handle the same candidate; the registry picks per call by **confidence**.
+
+```python
+@runtime_checkable
 class Resolver(Protocol):
     name: str
-    priority: int  # higher = tried first
+    enabled: bool
 
-    async def can_resolve(self, work: WorkCandidate) -> bool:
-        """Cheap pre-check — does this resolver have a URL/access path for this work?"""
+    async def confidence(self, candidate: WorkCandidate) -> float:
+        """Self-report 0.0-1.0 for how well this resolver can fetch THIS candidate.
+        E.g. arxiv resolver returns 1.0 if arxiv_id is set, 0.0 otherwise.
+        unpaywall returns 0.9 if doi is set, 0.0 otherwise.
+        local_pdfs returns 1.0 if a matching file exists locally, 0.0 otherwise."""
 
-    async def resolve(self, work: WorkCandidate) -> ResolvedFile:
-        """Return the file bytes, content type, and source URL.
-        Raise NotResolvable if it turns out you can't after all."""
+    async def resolve(self, candidate: WorkCandidate) -> ResolvedFile: ...
 ```
+
+The registry sorts resolvers by descending confidence per call and tries them in order. First success wins. No magic priority numbers — confidence is adaptive (depends on the candidate) and self-explanatory.
+
+LLM is not in this loop. Per-resolution decisions are deterministic (cheap, predictable, reproducible). The orchestrator only re-enters when *all* resolvers fail and the work needs alternative strategy.
+
+### Optional lifecycle: `start()` / `close()`
+
+Plugins that own resources (HTTP clients with connection pools, long-lived database connections) should expose:
+
+```python
+async def start(self) -> None: ...   # called by registry at startup
+async def close(self) -> None: ...   # called by registry at shutdown
+```
+
+Registry checks via `hasattr` and calls them if present. Stateless plugins (e.g. a thin function-only plugin) can omit both.
 
 ### How plugins should signal failures
 
-When a plugin call hits a recoverable problem (rate limit, transient outage, source returning empty results in a way the agent should know about), raise **`pydantic_ai.ModelRetry("reason")`** from the wrapper that exposes the plugin to the agent. This is fed back to the model as a recoverable signal — the agent can try a different source, fall back, or explain the failure to the user.
+Two kinds of failure, two kinds of behaviour:
 
-For unrecoverable internal failures (DB unreachable, schema invariant violated, your code has a bug), raise a normal exception. It will propagate to the run loop and surface to the user — which is what you want for hard fail.
+| Failure | Raise | What happens |
+| --- | --- | --- |
+| Recoverable (rate limit, transient outage, source returning empty in a way the agent should know about) | `callimachus.sources.SourceUnavailable("reason")` | Caught at the agent boundary, re-raised as `pydantic_ai.ModelRetry`. Orchestrator can try a different source/angle. |
+| Unrecoverable internal failure (your code has a bug, schema invariant violated, dependency completely broken) | `Exception` (any normal exception) | Propagates to the run loop, surfaces to the user. Hard fail by design. |
 
-This convention applies uniformly across `DiscoverySource` and `Resolver` implementations. See `experiments/02-pydantic-ai-tool-calling/LEARNINGS.md` for the underlying mechanism.
+Plugins **don't depend on `pydantic_ai`** — they raise `callimachus.sources.SourceUnavailable` from our namespace. The wrapper that exposes the plugin to an agent translates to `ModelRetry`. This keeps plugins clean, swappable, testable.
 
-Some plugins implement both — arXiv is both a discovery source and a resolver. Others are one-job — Crossref is metadata-only; Unpaywall is resolver-only.
+### `WorkCandidate` ≠ `Work` (deliberately)
+
+A `WorkCandidate` (Pydantic, in `callimachus.sources`) is what plugins return — pre-acceptance, lightweight, source-agnostic, may be incomplete:
+
+```python
+class WorkCandidate(BaseModel):
+    title: str
+    source_url: str
+    provenance: Provenance              # {source_name, query, raw_score, retrieved_at}
+    doi: str | None = None
+    arxiv_id: str | None = None
+    authors: list[str] = Field(default_factory=list)
+    year: int | None = None
+    abstract: str | None = None
+    venue: str | None = None
+    pdf_url: str | None = None
+    kind: Literal["paper", "essay", "report", "talk", "chapter"] = "paper"
+    extras: dict[str, object] = Field(default_factory=dict)
+```
+
+A `Work` (SQLModel, in `callimachus.storage`) is what's stored in the library — has DB lifecycle (`added_at`, `archived_at`, `judge_score`, `markdown_path`, …). Conversion happens at admission time. Plugins never touch `Work`.
+
+### `ResolvedFile`
+
+```python
+class ResolvedFile(BaseModel):
+    candidate_id: str          # the candidate this was resolved for
+    bytes_: bytes              # the file content
+    content_type: str          # 'application/pdf', 'application/x-tex', 'text/html'
+    source_url: str            # where the bytes came from (may differ from candidate.source_url)
+    resolved_by: str           # plugin name
+```
+
+v0.1 ships with `bytes_: bytes`. If we hit a memory wall on large artifacts (book chapters, multi-volume reports), we'll add a `Path`-based variant later.
+
+Some plugins implement both `DiscoverySource` and `Resolver` — arXiv is both. Others are one-job — Crossref is metadata-only; Unpaywall is resolver-only.
 
 ## Registration
 
@@ -92,7 +156,7 @@ Callimachus enumerates these at startup with `importlib.metadata.entry_points()`
 
 ### Local files (for personal plugins, no packaging needed)
 
-Drop a `.py` file in `~/Callimachus/plugins/`:
+Drop a `.py` file in your library's `plugins/` directory — by default `~/Callimachus/plugins/`, or `<library_root>/plugins/` if you've configured `CALLIMACHUS_LIBRARY` elsewhere. Each library has its own plugin directory; the plugins are scoped to that library.
 
 ```python
 # ~/Callimachus/plugins/my_lab_pages.py

@@ -35,10 +35,18 @@ dependencies = [
   "rich>=13",
 ]
 
-# Real CLI scripts will be wired up in M1 once src/callimachus/cli.py exists.
+# Real CLI scripts will be wired up later in M1 once src/callimachus/cli.py exists.
 # [project.scripts]
 # calli = "callimachus.cli:main"
 # callimachus = "callimachus.cli:main"
+
+# Bundled source plugins — register via Python entry points the same way
+# third-party plugins do. There is no privileged "core" path.
+[project.entry-points."callimachus.discovery_sources"]
+local_pdfs = "callimachus.sources.bundled.local_pdfs:LocalPdfsPlugin"
+
+[project.entry-points."callimachus.resolvers"]
+local_pdfs = "callimachus.sources.bundled.local_pdfs:LocalPdfsPlugin"
 
 [dependency-groups]
 dev = [
