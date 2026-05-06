@@ -38,6 +38,8 @@ dependencies = [
   "mistralai>=1.5",
   "pydantic-ai-slim[openrouter]>=0.0.20",
   "pyyaml>=6.0",
+  "sentence-transformers>=3.3",
+  "einops>=0.8",
 ]
 
 # Real CLI scripts will be wired up later in M1 once src/callimachus/cli.py exists.

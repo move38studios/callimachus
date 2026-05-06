@@ -10,6 +10,30 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-06 — M1.3d chunk + embed + index (deterministic pipeline complete)
+
+Three modules close out M1.3:
+
+- **`pipeline/chunk.py`** — recursive paragraph-aware splitter, no LangChain dep. ~2000 char target with ~250 char overlap (~12%). Tracks section headings (markdown `#`/`##` and pylatexenc's `§ HEADING`). Splits at paragraph → sentence → arbitrary char boundaries in that order. YAML frontmatter stripped before chunking. Section change forces a chunk break (don't mix sections).
+- **`pipeline/embed.py`** — `Embedder` Protocol with `embed_documents()` and `embed_query()`. `NomicEmbedder` default impl, lazy-loads `sentence-transformers` + nomic-v1.5. Critical: applies `search_document:` / `search_query:` prefixes per the model card (skipping costs ~5 MTEB points). `apply_contextual_prefix(text, title=, section=)` is the cheap "Contextual Retrieval lite" helper — prepends `[Paper: ...] [Section: ...]\n\n` for retrieval gain at zero LLM cost.
+- **`pipeline/index.py`** — `index_work(...)` upserts `Work`, replaces all `Chunk` + `vec_chunks` rows for the work in one transaction. Idempotent — re-runs cleanly replace state rather than stacking.
+
+Total: 159 unit + 2 live (gated). Pipeline is complete: candidate → resolve → download → extract → enrich → chunk → embed → index → queryable library.
+
+**Lessons captured**:
+- **Recursive char splitting beats semantic chunking** on academic papers per Vecta/FloTorch's Feb 2026 benchmark (69% vs 54% accuracy). Don't waste compute on semantic chunking for v0.1.
+- **Nomic prefix discipline**: must use `search_document: ` for indexed text and `search_query: ` for queries. Tested explicitly to catch any future regression where someone might forget.
+- **Heading regex covers both pylatexenc `§ HEADING` and markdown `#` styles** in one pattern. Avoids needing to canonicalize extractor output.
+- **Section change forces chunk break** — chunks shouldn't mix content across section boundaries. Tested this directly.
+- **Embedding-side prefix vs storage-side text**: the `search_document:` prefix and the contextual prefix (`[Paper: ...] [Section: ...]`) are applied **only at embedding time**. The stored `Chunk.text` is clean — keeps it usable for full-text search, retrieval display, and future BM25 indexing without prefix garbage.
+- **Idempotent index_work**: transaction = upsert Work → delete old chunks (with vec_chunks too) → insert new chunks + embeddings. Tested re-runs replace cleanly.
+- **Contextual Retrieval lite vs full**: we ship the cheap (heading-prefix) variant. The Anthropic-style LLM-generated context per chunk would be next-step polish.
+- **`sentence-transformers` adds torch + transformers + scikit-learn etc.** — heavy but the cost of running embeddings locally without an external API.
+- **`del unused_arg` pattern** continues to be the cleanest way to "use" Protocol-required parameters without ARG002 noise.
+- **Pyright fixture typing**: `@pytest.fixture def engine(tmp_path: Path) -> Engine:` — annotate the return type so all `engine: Engine` parameters in tests check cleanly. Avoids `reportUnknownArgumentType` cascades.
+
+- **Affects**: `pyproject.toml` (sentence-transformers + einops), `src/callimachus/pipeline/{chunk,embed,index}.py`.
+
 ### 2026-05-06 — M1.3c enrich stage (LLM → metadata + frontmatter)
 
 `src/callimachus/pipeline/enrich.py` — single LLM call per work that takes the extracted markdown and produces a structured `Enrichment` (title, authors, year, venue, summary, key_claims, methods, datasets, keywords). Outputs:
