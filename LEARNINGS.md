@@ -10,6 +10,34 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-06 — M1.3c enrich stage (LLM → metadata + frontmatter)
+
+`src/callimachus/pipeline/enrich.py` — single LLM call per work that takes the extracted markdown and produces a structured `Enrichment` (title, authors, year, venue, summary, key_claims, methods, datasets, keywords). Outputs:
+
+- `works/<id>/metadata.yaml` — full Enrichment as YAML for programmatic access
+- `works/<id>/summary.md` — just the summary text
+- `works/<id>/paper.md` — same body, with YAML frontmatter prepended (Jekyll/Obsidian convention; renders cleanly in any markdown viewer)
+
+Re-running enrichment **strips and replaces** existing frontmatter rather than stacking. Idempotent for the rewriting; the LLM call itself isn't (per-work checkpointing at the orchestrator decides whether to re-run).
+
+Also new: `src/callimachus/llm.py` — model constants (`MODEL_FAST` / `SMART` / `DEEP`) shared between product code and `experiments/_common.py`. Pipeline gets `pydantic-ai-slim[openrouter]` as a project dep.
+
+**Decoupling from Pydantic AI**: `enrich_to_files` only requires an `EnrichFn = Callable[[str], Awaitable[Enrichment]]`. Tests pass stub functions; production uses `make_default_enricher()` which lazy-imports Pydantic AI and wraps an `Agent`. This means tests don't need any LLM mocking infrastructure.
+
+**16 new tests, 130 total green**.
+
+**Lessons captured**:
+- **`EnrichFn` callable abstraction** beats taking an `Agent` directly. Tests are dead-simple (`async def stub(text): return canned`), production wraps in `make_default_enricher()`. No `TestModel` plumbing needed.
+- **YAML frontmatter parser**: detect leading `---`, find the next `---` on its own line, treat anything between as the YAML block. Handle malformed (unclosed) blocks by leaving content alone — better than silently mangling.
+- **`exclude_none=False`** on Pydantic's `model_dump`: include null fields explicitly in YAML so consumers see what's known-missing vs not-yet-extracted.
+- **Truncation with a warning** is the right v0.1 answer for very long inputs (book chapters etc.). Real chunking is M2+. Cap at 400k chars (~100k tokens, well within Sonnet's 200k window).
+- **`ENRICHMENT_SYSTEM_PROMPT` discipline**: explicit anti-hedge rule ("don't say 'discusses' or 'addresses' — state the claim"), explicit format rules (full names, lowercase keywords, multi-word concept preference). These will need iteration on real corpora; recorded as M1.3c-v0 baseline.
+- **`Field(default_factory=lambda: [])` again** for the same `reportUnknownVariableType` reason as M1.3b. Pattern is settling; consider extracting to a `_empty_list` helper if it spreads further.
+
+Pipeline at end of M1.3c — read paper PDF → extract markdown → enrich → ready for embed/index in M1.3d.
+
+- **Affects**: `pyproject.toml` (pydantic-ai-slim + pyyaml deps), `src/callimachus/llm.py` (new), `src/callimachus/pipeline/enrich.py`.
+
 ### 2026-05-06 — M1.3b OCR provider abstraction + Mistral implementation
 
 `src/callimachus/pipeline/ocr/` — pluggable OCR layer. Protocol-based contract (`OcrProvider`) + first implementation (`MistralOcr`). The PDF path through `extract_to_markdown` now routes to whichever OCR provider is passed in.
