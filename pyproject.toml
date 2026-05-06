@@ -35,6 +35,7 @@ dependencies = [
   "rich>=13",
   "httpx>=0.27",
   "pylatexenc>=2.10",
+  "mistralai>=1.5",
 ]
 
 # Real CLI scripts will be wired up later in M1 once src/callimachus/cli.py exists.

@@ -1,23 +1,32 @@
 """Extract stage — turn a downloaded artifact into clean markdown.
 
-M1.3a: handles LaTeX source (`.tex` directly, or `.tar.gz` containing `.tex`
-files) via pylatexenc's `LatexNodes2Text`. PDF and HTML paths are
-intentionally not implemented yet — they raise `ExtractError` so the
-caller can route to M1.3b's OCR path when that lands.
+LaTeX path: pylatexenc's `LatexNodes2Text` (handles `.tex` directly and
+`.tar.gz` archives, picking the largest `.tex` containing `\\documentclass`).
+
+PDF path: routed to an `OcrProvider` (M1.3b — Mistral by default). Images
+extracted by the OCR provider are written under `works/<id>/images/` and
+the markdown's `![<id>](<id>)` placeholders are rewritten to point at the
+saved files.
+
+HTML, plain-text, and other types remain unsupported and raise
+`ExtractError`.
 """
 
 from __future__ import annotations
 
+import asyncio
 import gzip
 import io
 import logging
+import re
 import tarfile
 from pathlib import Path
 from typing import cast
 
 from pylatexenc.latex2text import LatexNodes2Text
 
-from callimachus.pipeline.paths import markdown_path
+from callimachus.pipeline.ocr.protocols import OcrImage, OcrProvider, OcrUnavailable
+from callimachus.pipeline.paths import markdown_path, work_dir
 
 log = logging.getLogger(__name__)
 
@@ -135,30 +144,91 @@ def latex_to_markdown(latex_text: str) -> str:
     return "\n".join(out_lines) + "\n"
 
 
-def extract_to_markdown(
-    library_root: Path, work_id: str, artifact_path: Path, content_type: str
+def _is_pdf(content_type: str) -> bool:
+    return content_type.split(";", 1)[0].strip().lower() == "application/pdf"
+
+
+def _rewrite_image_refs(markdown: str, prefix: str) -> str:
+    """Rewrite `![alt](name)` → `![alt](<prefix>/name)` for non-URL refs.
+
+    Leaves http(s):// and data: URLs alone. Used to redirect Mistral's
+    placeholder image references to the on-disk `images/` subfolder.
+    """
+    pattern = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
+
+    def _sub(match: re.Match[str]) -> str:
+        alt, target = match.group(1), match.group(2)
+        if target.startswith(("http://", "https://", "data:", "/", "#")):
+            return match.group(0)
+        # Don't double-prefix
+        if target.startswith(prefix):
+            return match.group(0)
+        return f"![{alt}]({prefix}{target})"
+
+    return pattern.sub(_sub, markdown)
+
+
+async def extract_to_markdown(
+    library_root: Path,
+    work_id: str,
+    artifact_path: Path,
+    content_type: str,
+    *,
+    ocr: OcrProvider | None = None,
 ) -> Path:
     """Read the downloaded artifact, extract markdown, write `paper.md`.
 
-    Returns the path to the written markdown file. Idempotent: if
-    `paper.md` already exists, skip and return the existing path.
+    LaTeX archives + raw `.tex` are handled in-process. PDFs route to the
+    `ocr` provider (required for the PDF path; raises `ExtractError` if
+    `ocr=None` is passed for a PDF artifact).
+
+    Idempotent: if `paper.md` already exists, skip and return the path.
+
+    Returns the path to the written markdown file.
     """
     dest = markdown_path(library_root, work_id)
     if dest.exists():
         log.debug("extract_to_markdown: %s already exists, skipping", dest)
         return dest
 
-    if not (_is_latex_archive(content_type) or _is_latex_source(content_type)):
-        raise ExtractError(
-            f"extract: content type {content_type!r} not supported in M1.3a "
-            f"(PDF + HTML support comes in M1.3b)"
-        )
+    artifact_bytes = await asyncio.to_thread(artifact_path.read_bytes)
 
-    artifact_bytes = artifact_path.read_bytes()
-    latex_text = _read_latex_source(artifact_bytes, content_type)
-    markdown = latex_to_markdown(latex_text)
+    if _is_latex_archive(content_type) or _is_latex_source(content_type):
+        latex_text = _read_latex_source(artifact_bytes, content_type)
+        markdown = latex_to_markdown(latex_text)
+    elif _is_pdf(content_type):
+        if ocr is None:
+            raise ExtractError(
+                f"extract: content type {content_type!r} requires an OCR provider; "
+                f"pass ocr=MistralOcr() (or another OcrProvider)."
+            )
+        try:
+            result = await ocr.extract(artifact_bytes, content_type)
+        except OcrUnavailable as exc:
+            raise ExtractError(f"extract: OCR provider failed: {exc}") from exc
+        markdown = _persist_ocr_images(library_root, work_id, result.markdown, result.images)
+    else:
+        raise ExtractError(
+            f"extract: content type {content_type!r} not supported (LaTeX and PDF only for now)."
+        )
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(markdown)
     log.debug("extract_to_markdown: wrote %d chars of markdown to %s", len(markdown), dest)
     return dest
+
+
+def _persist_ocr_images(
+    library_root: Path,
+    work_id: str,
+    markdown: str,
+    images: list[OcrImage],
+) -> str:
+    """Write OCR-extracted images to `works/<id>/images/` and rewrite refs."""
+    if not images:
+        return markdown
+    images_dir = work_dir(library_root, work_id) / "images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    for img in images:
+        (images_dir / img.id).write_bytes(img.bytes_)
+    return _rewrite_image_refs(markdown, "images/")

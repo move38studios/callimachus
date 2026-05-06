@@ -110,7 +110,7 @@ def test_latex_to_markdown_strips_leading_and_trailing_blanks() -> None:
 # ---------- extract_to_markdown end-to-end ----------
 
 
-def test_extract_from_targz_writes_paper_md(tmp_path: Path) -> None:
+async def test_extract_from_targz_writes_paper_md(tmp_path: Path) -> None:
     rf = ResolvedFile(
         candidate_id="arxiv:2006.11239",
         bytes_=_make_latex_targz(),
@@ -119,7 +119,7 @@ def test_extract_from_targz_writes_paper_md(tmp_path: Path) -> None:
         resolved_by="arxiv",
     )
     artifact_path = download_to_library(tmp_path, "ho-2020", rf)
-    md_path = extract_to_markdown(tmp_path, "ho-2020", artifact_path, rf.content_type)
+    md_path = await extract_to_markdown(tmp_path, "ho-2020", artifact_path, rf.content_type)
     assert md_path == markdown_path(tmp_path, "ho-2020")
     text = md_path.read_text().lower()
     assert "introduction" in text
@@ -127,7 +127,7 @@ def test_extract_from_targz_writes_paper_md(tmp_path: Path) -> None:
     assert "diffusion probabilistic models" in text
 
 
-def test_extract_picks_main_tex_from_multi_file_archive(tmp_path: Path) -> None:
+async def test_extract_picks_main_tex_from_multi_file_archive(tmp_path: Path) -> None:
     rf = ResolvedFile(
         candidate_id="arxiv:test",
         bytes_=_make_multi_file_targz(),
@@ -136,14 +136,14 @@ def test_extract_picks_main_tex_from_multi_file_archive(tmp_path: Path) -> None:
         resolved_by="arxiv",
     )
     artifact_path = download_to_library(tmp_path, "x", rf)
-    md_path = extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
+    md_path = await extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
     text = md_path.read_text().lower()
     # Should pick main.tex (the one with \documentclass), not the others
     assert "introduction" in text
     assert "appendix" not in text
 
 
-def test_extract_from_raw_tex_works(tmp_path: Path) -> None:
+async def test_extract_from_raw_tex_works(tmp_path: Path) -> None:
     rf = ResolvedFile(
         candidate_id="x",
         bytes_=LATEX_FIXTURE.encode("utf-8"),
@@ -152,12 +152,12 @@ def test_extract_from_raw_tex_works(tmp_path: Path) -> None:
         resolved_by="test",
     )
     artifact_path = download_to_library(tmp_path, "x", rf)
-    md_path = extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
+    md_path = await extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
     text = md_path.read_text().lower()
     assert "introduction" in text
 
 
-def test_extract_pdf_raises_extract_error_for_now(tmp_path: Path) -> None:
+async def test_extract_pdf_without_ocr_raises(tmp_path: Path) -> None:
     rf = ResolvedFile(
         candidate_id="x",
         bytes_=b"%PDF-1.4 stub",
@@ -166,11 +166,11 @@ def test_extract_pdf_raises_extract_error_for_now(tmp_path: Path) -> None:
         resolved_by="test",
     )
     artifact_path = download_to_library(tmp_path, "x", rf)
-    with pytest.raises(ExtractError, match=r"not supported in M1\.3a"):
-        extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
+    with pytest.raises(ExtractError, match="requires an OCR provider"):
+        await extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
 
 
-def test_extract_is_idempotent(tmp_path: Path) -> None:
+async def test_extract_is_idempotent(tmp_path: Path) -> None:
     rf = ResolvedFile(
         candidate_id="x",
         bytes_=_make_latex_targz(),
@@ -179,14 +179,14 @@ def test_extract_is_idempotent(tmp_path: Path) -> None:
         resolved_by="arxiv",
     )
     artifact_path = download_to_library(tmp_path, "x", rf)
-    first = extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
+    first = await extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
     mtime_after_first = first.stat().st_mtime_ns
-    second = extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
+    second = await extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
     assert second == first
     assert second.stat().st_mtime_ns == mtime_after_first
 
 
-def test_extract_archive_with_no_tex_files_raises(tmp_path: Path) -> None:
+async def test_extract_archive_with_no_tex_files_raises(tmp_path: Path) -> None:
     """Archive contains no .tex files."""
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as tf:
@@ -203,4 +203,4 @@ def test_extract_archive_with_no_tex_files_raises(tmp_path: Path) -> None:
     )
     artifact_path = download_to_library(tmp_path, "x", rf)
     with pytest.raises(ExtractError, match=r"no \.tex files"):
-        extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)
+        await extract_to_markdown(tmp_path, "x", artifact_path, rf.content_type)

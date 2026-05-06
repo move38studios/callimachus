@@ -10,6 +10,40 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-06 — M1.3b OCR provider abstraction + Mistral implementation
+
+`src/callimachus/pipeline/ocr/` — pluggable OCR layer. Protocol-based contract (`OcrProvider`) + first implementation (`MistralOcr`). The PDF path through `extract_to_markdown` now routes to whichever OCR provider is passed in.
+
+**Mistral flow** (per the cookbook): `files.upload(purpose="ocr")` → `files.get_signed_url()` → `ocr.process(document={"type":"document_url",...}, include_image_base64=True)` → `files.delete()` for cleanup. Image extraction: each `page.images[i].image_base64` is a **data URL** (`data:image/jpeg;base64,...`), not raw base64. Parser splits the prefix, decodes the payload, returns `(content_type, bytes)`.
+
+**On-disk layout for OCR'd works**:
+```
+works/<id>/
+  original.pdf
+  paper.md          # markdown with image refs rewritten to images/img-N.png
+  images/
+    img-0.png
+    img-1.png
+```
+
+`_rewrite_image_refs(markdown, "images/")` rewrites `![alt](img-0.png)` → `![alt](images/img-0.png)`, leaving absolute URLs and data URLs untouched. Idempotent re-runs preserved (already-prefixed paths aren't double-prefixed).
+
+**51 pipeline tests pass** (33 from M1.3a + 18 new for OCR + Mistral). Total: 114 unit + 1 live, all green.
+
+**Lessons captured**:
+- **`mistralai` import path**: `from mistralai.client import Mistral` (the top-level `from mistralai import Mistral` no longer works in v2.4+). The cookbook uses the `.client` form.
+- **Mistral data URLs**: `image_base64` is a full data URL string, not a raw base64 payload. Strip the `data:<ct>;base64,` prefix before decoding. Build a `parse_data_url()` helper.
+- **`asyncio.to_thread` is the bridge** for Mistral's sync SDK from our async pipeline. Wraps cleanly.
+- **`finally`-cleanup pattern for uploaded files** — file_id deletion runs even if OCR call raises, so we don't leak files on Mistral's side.
+- **Image dedup across pages**: same `img.id` can appear in multiple pages' `images` lists. Track `seen_ids` and emit each image only once.
+- **Bad data URLs from a single image shouldn't kill the whole result** — log a warning and skip that one image.
+- **`ASYNC240` ruff rule**: async functions calling `pathlib.Path.read_bytes()` block the event loop. Wrap with `await asyncio.to_thread(path.read_bytes)`. Also applies to `write_bytes`, but only for genuinely large I/O; for small writes the cost of switching threads exceeds the benefit (we kept download.py sync since it writes once per work).
+- **`Field(default_factory=list)` triggers pyright `reportUnknownVariableType`** in some cases (`list[Unknown]` inferred). Workaround: `Field(default_factory=lambda: [])` lets the annotation drive inference.
+- **Be deliberate with global renames** — `_parse_data_url` → `parse_data_url` would have broken `test_parse_data_url_*` test functions if I'd used `replace_all` (the leading-underscore would match the `_` between `test` and `parse` in test names). Used targeted `sed` instead, learned from the M1.2 incident.
+- **Removed `cast` calls** when SDK fields are now properly typed — pyright flags `reportUnnecessaryCast`. Sign that the SDK has improved its stubs.
+
+- **Affects**: `pyproject.toml` (mistralai dep), `src/callimachus/pipeline/ocr/`, `src/callimachus/pipeline/extract.py`.
+
 ### 2026-05-06 — M1.3a pipeline scaffold: paths + download + extract (LaTeX path)
 
 `src/callimachus/pipeline/`:
