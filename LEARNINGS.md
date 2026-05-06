@@ -10,6 +10,30 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-06 — M1.4a ingest orchestrator (full pipeline callable)
+
+`src/callimachus/pipeline/ingest.py` — single `ingest_one(candidate, …)` function that runs the seven pipeline stages end to end: resolve → download → extract → enrich → chunk → embed → index. Returns an `IngestResult(work_id, work, enrichment, chunks_indexed)` summary.
+
+`make_work_id(candidate)` derives a stable slug: `arxiv-2006-11239` for arxiv IDs, `doi-...` for DOIs, title-slug fallback (truncated at 60 chars), `untitled` last resort.
+
+The orchestrator applies **Contextual Retrieval lite** at embed-time — `apply_contextual_prefix(chunk.text, title=enrichment.title, section=chunk.section)` for each chunk, so the embedder sees `[Paper: title] [Section: section]\n\n<chunk text>` while `Chunk.text` in the DB stays clean (per the design from M1.3d).
+
+11 new tests, **170 unit + 2 live total**. Coverage:
+- Happy path (LaTeX archive end-to-end → DB has Work + Chunks + vec_chunks, FS has all artifacts)
+- PDF path with stub OCR (verifies images saved + paper.md written)
+- Embeddings searchable post-ingest
+- Failures propagate (resolver, enricher)
+- Re-runs idempotent (chunk count stable across runs)
+- `make_work_id` cases (arxiv new + old style, DOI, title fallback, truncation)
+
+**Lessons captured**:
+- **Pipeline is "thin glue"** — `ingest_one` is ~50 lines because each stage is well-typed and idempotent. Worth the front-loading on the M1.3 sub-stages.
+- **Stub-friendly design pays off**: every stage takes injected dependencies (`enricher`, `embedder`, `ocr` callable/Protocols + `registry` instance). Tests need zero LLM calls and zero network — full pipeline runs in tmp_path with stubs in <1s.
+- **Per-stage idempotency = no checkpoint state needed for v0.1**: each stage already detects "I've done this" (download via size check, extract via paper.md exists, enrich via overwrite, chunk/embed/index via delete-and-rewrite). Crash mid-paper → re-run resumes naturally. Real `state.json` checkpointing for *cost* tracking lands in M1.5.
+- **`cast()` for Protocol parameters in tests**: when test stub classes structurally satisfy a Protocol, pyright sometimes can't infer it through generic functions — `cast("Resolver", _StubResolver(...))` makes the intent explicit.
+
+- **Affects**: `src/callimachus/pipeline/ingest.py`. CLI in M1.4b will wrap this.
+
 ### 2026-05-06 — M1.3d chunk + embed + index (deterministic pipeline complete)
 
 Three modules close out M1.3:
