@@ -10,6 +10,25 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-06 — M1.3a pipeline scaffold: paths + download + extract (LaTeX path)
+
+`src/callimachus/pipeline/`:
+- `paths.py` — single source of truth for library + per-work paths. `get_library_root()` resolves from explicit override → `$CALLIMACHUS_LIBRARY` → `~/Callimachus/`. `extension_for_content_type()` maps Content-Type to file extensions for `original.{ext}`.
+- `download.py` — `download_to_library(library_root, work_id, ResolvedFile)` writes bytes to `works/<id>/original.{ext}`. Idempotent via size check.
+- `extract.py` — `extract_to_markdown(...)` for the LaTeX path (`.tar.gz` / `.tex`). Uses pylatexenc's `LatexNodes2Text` with math rendered as Unicode. Multi-file archives: picks the largest `.tex` containing `\documentclass`. PDF and HTML paths raise `ExtractError` for now (M1.3b).
+
+**33 new tests** (paths, download, extract end-to-end). Total: 96 unit + 1 live, all green.
+
+**Lessons captured**:
+- **pylatexenc renders section headings UPPERCASE** (e.g. `\section{Introduction}` → `§ INTRODUCTION`). Functionality is fine — content survives — but tests should case-insensitive match. If we want title-case headings we'd need a custom converter or post-process.
+- **Math via Unicode**: `math_mode="text"` renders `$\beta$` → `β`, `$\sqrt{x}$` → `√x`. Good for embedding/enrichment; unreadable-but-grep-able for users. Acceptable for v0.1.
+- **arxiv source archives are tar.gz, not just .tex**. `tarfile.open(mode="r:*")` auto-detects compression. Multi-file projects need a "pick the main .tex" heuristic; `\documentclass` presence + size is a workable signal.
+- **`pytest.raises(match=...)` with regex metacharacters needs raw strings or escaping** (RUF043). `match=r"M1\.3a"`, not `match="M1.3a"`.
+- **pylatexenc has no type stubs** — `latex_to_text()` returns `Unknown | str`. Pattern: assign to `object` with `# pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]`, then `cast("str", ...)`. Contained in one line.
+- **Pre-commit hook habit**: running `uv run pre-commit run --all-files` before `git commit` skips the abort-and-retry cycle when hooks reformat files.
+
+- **Affects**: `pyproject.toml` (pylatexenc dep), `src/callimachus/pipeline/`.
+
 ### 2026-05-05 — M1.2 arxiv plugin green (real network, both interfaces)
 
 `src/callimachus/sources/bundled/arxiv.py` — bundled `arxiv` plugin implementing both `DiscoverySource` (Atom-format query API) and `Resolver` (LaTeX source preferred, PDF fallback). Real `httpx` async client with connection pooling via `start()/close()` lifecycle hooks, ~1 req/3s rate limiting (arxiv's published policy), confidence-based selection (1.0 if `arxiv_id` present or `arxiv.org/abs/`-style URL). Registered as entry point under both `discovery_sources` and `resolvers` groups. **63/63 unit tests pass** (1 live test deselected by default).
