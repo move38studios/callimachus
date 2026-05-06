@@ -10,6 +10,23 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-05 — M1.2 arxiv plugin green (real network, both interfaces)
+
+`src/callimachus/sources/bundled/arxiv.py` — bundled `arxiv` plugin implementing both `DiscoverySource` (Atom-format query API) and `Resolver` (LaTeX source preferred, PDF fallback). Real `httpx` async client with connection pooling via `start()/close()` lifecycle hooks, ~1 req/3s rate limiting (arxiv's published policy), confidence-based selection (1.0 if `arxiv_id` present or `arxiv.org/abs/`-style URL). Registered as entry point under both `discovery_sources` and `resolvers` groups. **63/63 unit tests pass** (1 live test deselected by default).
+
+**Tests**: against a hand-crafted Atom-format fixture (`tests/sources/fixtures/arxiv_atom_response.xml`) that mirrors arxiv's real response shape — chose this over a captured-from-real-API fixture because arxiv 429'd me when I tried to fetch one (which itself confirmed rate-limit aggressiveness). 13-case parametrized `extract_arxiv_id` test covers new-style, old-style (`hep-th/0001234`), versioned (`v2`), URL forms (abs/pdf/e-print), and edge cases. `httpx.MockTransport` for search/resolve flow tests. Live test gated behind `pytest -m live`.
+
+**Lessons captured**:
+- **arxiv 429s aggressively** even on first requests with reasonable user-agent. Real client must wait between requests; tests must mock. The 3s-per-request limit is the real ceiling.
+- **`httpx.MockTransport`** is the clean way to test http-using code in pytest — assign to `plugin._client` (with `# pyright: ignore[reportPrivateUsage]`), no monkey-patching of internals required.
+- **arxiv ID regex** must handle both new-style (`2006.11239`) and old-style (`hep-th/0001234`) IDs, version suffixes (`v22` not just `v1`), and URL forms (abs/pdf/e-print). Single regex with alternation works.
+- **Atom XML namespacing** — must use `findtext("atom:id", namespaces=ATOM_NS)`. The `arxiv:` namespace adds metadata fields (`primary_category` etc.) but isn't strictly needed for our parsing.
+- **LaTeX source preferred over PDF** for arxiv — cleaner extraction (math intact, no OCR), and the `e-print` endpoint returns gzipped tar with the original LaTeX. PDF is the fallback.
+- **`# pyright: ignore[reportPrivateUsage]`** is the right way to allow legitimate test access to `_client` rather than relaxing the rule globally.
+- **Be careful with `replace_all`** — renaming `_parse_atom_response` → `parse_atom_response` also matched test function names like `test_parse_atom_response_*` because they share the prefix. Tests would silently stop being collected since pytest needs `test_` not `testparse_`. Cross-check test counts after a global rename.
+
+- **Affects**: `pyproject.toml` (httpx dep + arxiv entry points), `src/callimachus/sources/bundled/arxiv.py`, `tests/sources/`.
+
 ### 2026-05-05 — M1.1 plugin loader green (sources + registry + local_pdfs)
 
 `src/callimachus/sources/` lives. `protocols.py` (DiscoverySource, CitationGraph, Resolver Protocols + WorkCandidate, ResolvedFile, Provenance, SourceUnavailable). `registry.py` (entry-point + local-file plugin loading, instance-cache so a class registered under both groups instantiates once, confidence-based `resolve()` loop, optional `start()/close()` lifecycle hooks). `bundled/local_pdfs.py` as the first plugin: implements both Protocols, scans configured paths for PDFs, crude title-substring matching. Registered as an entry point in `pyproject.toml` under both `discovery_sources` and `resolvers` groups. **35/35 tests pass** (29 sources, 6 storage).

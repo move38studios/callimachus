@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <link href="http://arxiv.org/api/query?search_query=all:diffusion+models&amp;id_list=&amp;start=0&amp;max_results=3" rel="self" type="application/atom+xml"/>
+  <title type="html">ArXiv Query: search_query=all:diffusion models&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <id>http://arxiv.org/api/CALLIMACHUS-FIXTURE</id>
+  <updated>2026-05-05T00:00:00-04:00</updated>
+  <opensearch:totalResults xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">3</opensearch:totalResults>
+  <opensearch:startIndex xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">0</opensearch:startIndex>
+  <opensearch:itemsPerPage xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">3</opensearch:itemsPerPage>
+
+  <entry>
+    <id>http://arxiv.org/abs/2006.11239v2</id>
+    <updated>2020-12-16T18:00:00Z</updated>
+    <published>2020-06-19T17:24:44Z</published>
+    <title>Denoising Diffusion Probabilistic Models</title>
+    <summary>  We present high quality image synthesis results using diffusion
+probabilistic models, a class of latent variable models inspired by
+considerations from nonequilibrium thermodynamics.
+</summary>
+    <author>
+      <name>Jonathan Ho</name>
+    </author>
+    <author>
+      <name>Ajay Jain</name>
+    </author>
+    <author>
+      <name>Pieter Abbeel</name>
+    </author>
+    <link href="http://arxiv.org/abs/2006.11239v2" rel="alternate" type="text/html"/>
+    <link title="pdf" href="http://arxiv.org/pdf/2006.11239v2" rel="related" type="application/pdf"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="stat.ML" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+
+  <entry>
+    <id>http://arxiv.org/abs/2011.13456v2</id>
+    <updated>2021-02-10T05:02:55Z</updated>
+    <published>2020-11-26T19:41:48Z</published>
+    <title>Score-Based Generative Modeling through Stochastic Differential
+  Equations</title>
+    <summary>  Creating noise from data is easy; creating data from noise is generative
+modeling. We present a stochastic differential equation (SDE) that smoothly
+transforms a complex data distribution to a known prior distribution by slowly
+injecting noise, and a corresponding reverse-time SDE that transforms the prior
+distribution back into the data distribution by slowly removing the noise.
+</summary>
+    <author>
+      <name>Yang Song</name>
+    </author>
+    <author>
+      <name>Jascha Sohl-Dickstein</name>
+    </author>
+    <author>
+      <name>Diederik P. Kingma</name>
+    </author>
+    <author>
+      <name>Abhishek Kumar</name>
+    </author>
+    <author>
+      <name>Stefano Ermon</name>
+    </author>
+    <author>
+      <name>Ben Poole</name>
+    </author>
+    <link href="http://arxiv.org/abs/2011.13456v2" rel="alternate" type="text/html"/>
+    <link title="pdf" href="http://arxiv.org/pdf/2011.13456v2" rel="related" type="application/pdf"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+
+  <entry>
+    <id>http://arxiv.org/abs/2112.10752v2</id>
+    <updated>2022-04-13T16:20:56Z</updated>
+    <published>2021-12-20T18:55:25Z</published>
+    <title>High-Resolution Image Synthesis with Latent Diffusion Models</title>
+    <summary>  By decomposing the image formation process into a sequential application of
+denoising autoencoders, diffusion models (DMs) achieve state-of-the-art
+synthesis results on image data and beyond.
+</summary>
+    <author>
+      <name>Robin Rombach</name>
+    </author>
+    <author>
+      <name>Andreas Blattmann</name>
+    </author>
+    <author>
+      <name>Dominik Lorenz</name>
+    </author>
+    <author>
+      <name>Patrick Esser</name>
+    </author>
+    <author>
+      <name>Björn Ommer</name>
+    </author>
+    <link href="http://arxiv.org/abs/2112.10752v2" rel="alternate" type="text/html"/>
+    <link title="pdf" href="http://arxiv.org/pdf/2112.10752v2" rel="related" type="application/pdf"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+  </entry>
+</feed>
