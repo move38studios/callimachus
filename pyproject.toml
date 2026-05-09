@@ -42,10 +42,9 @@ dependencies = [
   "einops>=0.8",
 ]
 
-# Real CLI scripts will be wired up later in M1 once src/callimachus/cli.py exists.
-# [project.scripts]
-# calli = "callimachus.cli:main"
-# callimachus = "callimachus.cli:main"
+[project.scripts]
+calli = "callimachus.cli:main"
+callimachus = "callimachus.cli:main"
 
 # Bundled source plugins — register via Python entry points the same way
 # third-party plugins do. There is no privileged "core" path.

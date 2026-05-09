@@ -10,6 +10,37 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-06 — M1.4b CLI green; first real end-to-end ingest works
+
+`src/callimachus/cli.py` — Typer app with four commands:
+- `calli init [path]` — create library directory + DB
+- `calli ingest <seed.yaml> [--library PATH] [--no-ocr] [--fail-fast]` — run the pipeline over a YAML list of identifiers (`arxiv:`, `doi:`, `url:`, or full custom)
+- `calli query "..." [--library PATH] [-k N]` — vector search the library
+- `calli list [--library PATH]` — show works in the library
+
+Wired into `pyproject.toml` as `[project.scripts]` so `uv run calli ...` works after `uv sync`. 19 unit tests + the real-network smoke test below.
+
+**Real end-to-end smoke test passed**:
+- Local tmp dir at `/var/folders/.../callimachus-smoke-XXXXXX` (no `~/Callimachus` pollution)
+- `calli init` created the library
+- `calli ingest seed.yaml` (with one arxiv id) ran arxiv → LaTeX → Sonnet enrichment via OpenRouter → nomic embeddings on mps (Apple Silicon GPU) → 30 chunks indexed
+- `calli query "what is the variational bound for diffusion training"` returned the "Extended Derivations" section of the DDPM paper as the top hit — semantic search working
+- `calli list` showed enriched title + authors
+- Tmp dir cleaned up after
+
+**Lessons captured**:
+- **CLI must load `.env`** the same way experiments did. Pydantic AI's `OpenRouterProvider` raises `UserError` if `OPENROUTER_API_KEY` isn't in `os.environ`. Added `_load_env_file()` + `_bootstrap_env()` helpers; called from each command before any LLM/network step. First-wins (shell env beats `.env`).
+- **Typer's `CliRunner(mix_stderr=False)`** was removed in newer Typer/Click. The new default *is* to separate stderr from stdout. Just `CliRunner()` works.
+- **`Annotated[Path | None, typer.Option(...)]`** is the modern Typer signature for optional kwargs. Cleaner than `Optional[Path] = typer.Option(...)`.
+- **`raw_obj: object = yaml.safe_load(...)`** + `cast` is the right way to thread an untyped parser result through pyright strict.
+- **First real run takes ~30s** — most of which is the first nomic-v1.5 model download and load. Subsequent runs are ~5s for the model + actual embedding. Worth surfacing this in user-facing docs.
+- **Smoke test discipline**: write the smoke dir path to `/tmp/_callimachus_smoke_dir` so cleanup at the end is one `rm -rf "$(cat ...)"` away. No accidental pollution of the real `~/Callimachus`.
+- **`calli ingest` with stubs is fast** (test runs in <1s); the real network/model run takes ~30s for one paper. Production path: ~$0.005 per paper for Sonnet enrichment + free for arxiv/embedding.
+
+**M1.4 is complete.** The CLI is real. M1.5 (cost tracking + run log) is next, then v0.1 ships.
+
+- **Affects**: `pyproject.toml` (calli + callimachus scripts uncommented), `src/callimachus/cli.py` (new), `tests/test_cli.py` (new).
+
 ### 2026-05-06 — M1.4a ingest orchestrator (full pipeline callable)
 
 `src/callimachus/pipeline/ingest.py` — single `ingest_one(candidate, …)` function that runs the seven pipeline stages end to end: resolve → download → extract → enrich → chunk → embed → index. Returns an `IngestResult(work_id, work, enrichment, chunks_indexed)` summary.
