@@ -231,6 +231,16 @@ Now that the agent harness is validated (experiments 00–06), build the real th
 
 The deferred experiments (07–30) get folded into the milestone that needs them. When we hit something genuinely uncertain, we may spin a focused mini-experiment in the moment, but the default is "build it and see."
 
+> **Direction change, 2026-05-09.** After M1 (deterministic pipeline) shipped working end-to-end, we re-prioritised. The original plan front-loaded M1.5 (cost tracking) and put snowball before chat. New shape:
+>
+> 1. **Cost tracking is dropped.** Translating tokens to USD is not our business — pricing changes, varies by deployment, and isn't load-bearing for the product. We *do* keep token + model logging (it's just truthful runtime info), but no `cost.json` and no `calli cost`. Removed from M2 / M6.
+> 2. **The big leap is "topic → library"** — that's the headline pitch. M2 closes it.
+> 3. **Chat with your library** comes next (was M4). It reuses everything; lighter than snowball.
+> 4. **Snowball + multi-collection + build TUI** moves to M4. Depth, not novelty.
+> 5. M5 (MCP) and M6 (polish + ship) unchanged.
+>
+> Old M3 (snowball) and old M4 (multi-collection + chat) are merged + re-ordered as new M3 (chat) and new M4 (snowball + multi-collection + dashboard).
+
 ### M1 — Foundations (deterministic pipeline only, no agents)
 
 Goal: a user can hand a YAML list of paper identifiers (DOIs / arXiv IDs / URLs) to a CLI and get a queryable library at the end. **No discovery agent yet.** This proves the storage + pipeline + plugin system stack.
@@ -254,60 +264,122 @@ Out of scope: agentic discovery, snowball, judge, chat TUI, MCP server, multi-co
 
 ### M1 sub-phases (working order)
 
-Cuts M1 into demonstrable slices, each green before moving on:
+All M1 sub-phases shipped, ✅:
 
-- **M1.0 — Storage scaffold.** `src/callimachus/storage/` with SQLModel `Work`, `Chunk`, `Citation`, `Collection`, `Run` models. `db.py` opens SQLite + loads `sqlite-vec` extension. Alembic baseline migration. Tiny test: insert a Work + Chunk, run vector search, get the Work back.
-- **M1.1 — Plugin loader skeleton.** `src/callimachus/sources/{protocols,registry}.py`. Entry-point + local-file discovery. `local_pdfs` as the first bundled plugin (simplest — no network). Test: drop a PDF in a fixture dir, registry finds it as both DiscoverySource and Resolver.
-- **M1.2 — One source end-to-end (arxiv).** Bundled arxiv plugin: search by query, fetch metadata, download LaTeX source, extract markdown. Tests against a known arXiv ID.
-- **M1.3 — Pipeline, manual.** `src/callimachus/pipeline/` modules for `resolve / download / extract / enrich / embed / index`. Each idempotent + checkpointed. Wire them into a single `ingest_one(work_id)` function.
-- **M1.4 — CLI.** `src/callimachus/cli.py` with `calli ingest <yaml>` and `calli query "..."`. Use `click` or `typer` (decide in M1.0).
-- **M1.5 — Cost tracking + run log.** Per-run cost.json + the `runs` table. `calli cost` shows totals.
+- **M1.0 ✅** Storage scaffold (SQLModel + sqlite-vec + Alembic). 6 tests.
+- **M1.1 ✅** Plugin loader (DiscoverySource + Resolver Protocols, registry, local_pdfs). 29 tests.
+- **M1.2 ✅** arxiv plugin (both interfaces, real network gated). 28 tests + 1 live.
+- **M1.3a ✅** paths + download + LaTeX extract. 33 tests.
+- **M1.3b ✅** OCR provider + Mistral. 18 tests.
+- **M1.3c ✅** Enrich (LLM → metadata + frontmatter). 16 tests.
+- **M1.3d ✅** Chunk + embed + index. 60 tests.
+- **M1.4a ✅** Ingest orchestrator. 11 tests.
+- **M1.4b ✅** CLI (init, ingest, query, list). 19 tests + real-network smoke test passed.
+- **~~M1.5 — Cost tracking~~** dropped. Token + model logging stays as part of normal runtime info, no USD math.
 
-Each sub-phase: write code → tests pass → commit → next.
+End of M1: 189 unit tests + 2 live tests, all green. Real demo: `calli ingest` arxiv ID → enriched, indexed, queryable.
 
-### M2 — Discovery agent (single collection, no snowball)
+### M2 — Discovery (topic → library)
 
-Goal: a user can give a topic and Callimachus discovers, judges, and ingests works without a manual list. Single-collection, no snowball yet — just plan → 1 hunter → judge → ingest.
+Goal: closes the "give Callimachus a topic, get a library" gap. A user runs `calli build --topic "..."` and Callimachus does **shallow exploration → clarifying conversation → plan → deep build → indexed library**.
 
-Scope:
-- Orchestrator agent (Pydantic AI) with `plan_research` and `spawn_hunter` tools
-- One hunter sub-agent type, parameterised by angle
-- Judge: structured-output LLM call with a v0 rubric
-- Plan/seed checkpoints (interactive); `--auto` skip
-- Build TUI v0: orchestrator pane + hunter pane + live works list (no per-hunter parallelism yet — one at a time)
-- CLI: `calli init --collection <name> --keywords <...> --notes <...>`
+**The HITL ceremony is not optional.** A bare topic like "creativity" can mean cognitive science, computational creativity, generative art, business innovation, or a dozen other things. Without clarification we'd produce noise. The product-defining UX is: agent does some real work first (shallow probe across plausible angles + related fields), comes back with what it found, asks targeted questions, only then commits to the deep build. `--auto` flag for users who really want hands-off, but it's not the default.
 
-**Demo**: `calli init --collection "diffusion models" --keywords "DDPM, score-based" --auto` → 30 papers indexed in ~10 minutes, queryable.
-
-### M3 — Snowball + parallel hunters
-
-Goal: real discovery with citation-driven snowball and parallel hunter execution. This is where the "agentic feel" lands.
+Two-step UX (terraform plan/apply style):
+1. `calli build --topic "..."` → scout + ceremony → writes `plan.yaml` to the library (`./.callimachus/plans/{slug}.yaml`)
+2. User reviews / edits the plan
+3. `calli build --from-plan {slug}` → orchestrator dispatches hunters → judges → ingests
 
 Scope:
-- Snowball loop with citation contexts, selective seed promotion, drift detection
-- Multiple hunters spawned in parallel, each on a different angle
-- Bridge-paper detection within a single collection (placeholder, since we still have only one collection)
-- Build TUI v1: multi-pane layout with live hunter panes, status bar with cost/papers/elapsed
-- Convergence and budget-cap stop conditions
-- Plan-review checkpoint with cost estimate before kicking off
+- New OpenAlex source plugin (broader coverage than arxiv alone)
+- **Scout agent**: given a topic, runs ~5–10 shallow searches across plausible angles, returns an "angle tree" with sample papers per angle + related-fields suggestions
+- **Plan ceremony**: orchestrator runs scout → presents findings → asks clarifying questions (which angles matter? specific authors/keywords to anchor? foundations or recent SOTA? years? scope cap?) → produces `plan.yaml` (angles, keywords, judge weights, max works)
+- Judge module: single LLM call returning structured `Verdict` (relevance, seminality, accept, reasoning) calibrated to the plan
+- Hunter sub-agent: parameterised by angle, calls source plugins, returns ranked candidates
+- Orchestrator: takes a plan, fans out hunters in parallel (per the experiment-06 pattern), judges aggregated candidates, calls `ingest_one` for accepted
+- Run log: every build writes a `Run` row (`kind="build"`, `started_at`, `ended_at`, `works_added`, `notes`) with per-stage token + model totals in `notes` JSON. Each ingested `Work` carries `admitted_by_run_id`. **No USD math anywhere.**
+- Filter accepted candidates to those with `arxiv_id` so the existing resolver chain works without adding Unpaywall yet (deferred to M4)
 
-**Demo**: full `calli init` on diffusion models hits ~150 papers in a few hours; user watches the TUI; final library queryable.
+Out of scope for M2 (deferred): snowball, citation contexts, Exa/Perplexity, multi-collection, full Textual dashboard.
 
-### M4 — Multi-collection + librarian (chat)
+**Demo**:
+```
+$ calli build --topic "creativity"
+[scout] probing 7 angles for "creativity"…
+  • cognitive psychology of divergent thinking (12 hits, sample: Guilford 1967)
+  • computational creativity in AI (8 hits, sample: Boden 2004)
+  • generative-art systems (6 hits)
+  • organisational creativity & innovation (15 hits)
+  • cross-domain analogy / Hofstadter
+  • creative problem-solving in design
+  • neuroscience of creativity
 
-Goal: lifecycle complete. Add collections to an existing library; cross-pollination via bridge works; chat with the librarian about your library.
+  Related fields I noticed: improvisation, play, expertise development.
+
+  > Which angles matter most for your library? (1,2,3 or 'all')
+  > 1, 2, 5
+
+  > Any specific authors, papers, or keywords to anchor on?
+  > Hofstadter, Boden, divergent thinking
+
+  > Foundations, recent SOTA, or both?
+  > foundations
+
+  > Hard cap on works to ingest? (default 50)
+  > 30
+
+[plan] saved to .callimachus/plans/creativity.yaml
+       run `calli build --from-plan creativity` to start the deep build
+
+$ calli build --from-plan creativity --auto
+[orchestrator] 3 hunters dispatched in parallel…
+  ✓ 28 candidates judged, 22 accepted
+[ingest] 22 works indexed in ~6 minutes
+```
+
+#### M2 sub-phases
+
+- **M2.0 — OpenAlex source plugin.** Search + metadata. No resolver (we'll route to arxiv resolver via matched arxiv_id). Real-network gated test. ~1 hour.
+- **M2.1 — Judge module.** `src/callimachus/discovery/judge.py` — single-shot LLM call returning a `Verdict` schema. Re-uses the M1.3c enrichment pattern. Tests with stub LLM. ~1 hour.
+- **M2.2 — Hunter agent.** `discovery/hunter.py` — Pydantic AI sub-agent, one tool per source plugin. Returns ranked candidates. ~2 hours.
+- **M2.3 — Scout agent + clarification ceremony.** `discovery/scout.py` — shallow-probe agent that explores ~5–10 plausible angles for a topic and returns an "angle tree". `discovery/ceremony.py` — interactive question loop that takes scout output + user answers and produces a `Plan` Pydantic model. Plan persists as YAML. ~3 hours.
+- **M2.4 — Orchestrator + run log.** `discovery/orchestrator.py` — takes a Plan, spawns hunters in parallel, judges, calls `ingest_one`. Every build writes a `Run` row + per-paper `admitted_by_run_id`. ~2 hours.
+- **M2.5 — `calli build` CLI.** Two-step (`--topic` → ceremony → plan; `--from-plan` → run). `--auto` flag for hands-off mode that skips the ceremony with default angles. End-to-end smoke test. ~2 hours.
+
+### M3 — Chat (talk to your library)
+
+Goal: closes the "talk to my library" gap. Once you have a library (manual or topic-built), `calli chat` opens an aider-style REPL with the librarian — Callimachus the persona.
 
 Scope:
-- `collections` table + `work_collections` many-to-many; soft-delete via `archived_at`
-- `calli collection add` (extend) — uses the same discovery agent, with library context fed to judges so duplicates aren't re-added
-- Bridge-pass: re-tag existing works that score on the new collection
-- Librarian agent (the "Callimachus" persona) with read tools (search, get, find_related, summarise, cite, library_summary, bridges) and mutation tools (extend, prune, restore, refresh, rejudge)
-- Chat TUI: `calli` with no args opens the librarian; supports multi-turn, streaming
-- CLI subcommands as shortcuts: `prune`, `restore`, `refresh`, `rejudge`
+- Librarian agent (the Callimachus persona) — Pydantic AI agent, multi-turn, streaming output
+- **Read tools**: `search_library(query, k)`, `get_work(id)`, `find_related(id, k)`, `summarise_topic(query)`, `cite(query)`, `library_summary()`, `inspect_work(id)`
+- **Mutation tools** (gated, off by default): `prune(filter)`, `restore(filter)`. Full extend/refresh/rejudge wait for M4 (they need the discovery agent + collection schema).
+- `calli chat` — prompt_toolkit + Rich (the experiment-05 pattern, validated). Streaming markdown rendering, slash commands (`/help`, `/clear`, `/save`, `/exit`), persistent history, native scrollback preserved
+- Welcome screen shows library summary (work count, last-build date)
+
+Out of scope for M3 (deferred): MCP server (M5), Textual dashboard (M4), mutation tools beyond prune/restore.
+
+**Demo**: `calli build` a library on creativity (M2) → `calli chat` → "summarise the foundational works on divergent thinking" → librarian answers with citations.
+
+#### M3 sub-phases
+
+- **M3.0 — Librarian agent.** `src/callimachus/librarian/` with the agent + read tools wired to the existing storage/query layer. Tests with stub LLM. ~2 hours.
+- **M3.1 — `calli chat` REPL.** Lift the prompt_toolkit + Rich pattern from `experiments/05/chat.py`, replace the toy agent with the librarian, add library-summary welcome screen. ~2 hours.
+- **M3.2 — Mutation tools (prune, restore).** Soft-delete via `archived_at` (already in schema), gated behind `--allow-mutations` for MCP/remote use. ~1 hour.
+
+### M4 — Snowball + multi-collection + dashboard
+
+Goal: depth. Snowball makes libraries deep; multi-collection makes one Callimachus support many subjects; the build dashboard makes the agentic feel land.
+
+Scope:
+- Snowball loop with citation contexts (Semantic Scholar plugin), selective seed promotion, topic-drift detection, convergence/budget caps
+- Add Unpaywall + Crossref source plugins (resolves DOI-only candidates beyond arxiv)
+- Multi-collection: `calli collection add "name" --keywords ...` extends an existing library; bridge-paper detection (high relevance in 2+ collections); per-collection overview docs
+- Build dashboard: Textual TUI with orchestrator pane + parallel hunter panes + live works list + status bar (the experiment-09/10 design). Replaces the M2 Rich progress for `calli build`
+- Refresh + rejudge: librarian mutation tools added in M3 are now extended with `refresh` (find work since last build) and `rejudge` (re-score with new criteria)
 - `notes.md` mid-flight steering
-- Soft-delete plumbing throughout
 
-**Demo**: build a library on creativity → `calli collection add "artificial intelligence"` → chat: "show me bridges between creativity and AI in this library" → returns annotated list.
+**Demo**: build creativity collection → `calli collection add "artificial intelligence"` → bridges discovered → user watches TUI in real time during a snowball run.
 
 ### M5 — MCP server + cross-library bridge
 
@@ -332,7 +404,7 @@ Scope:
 - `docs/DATA_SCHEMA.md` — full schema reference
 - `docs/BACKUP.md` — LFS setup
 - End-to-end golden tests: a frozen mini-library that gets rebuilt and asserted in CI (mocked LLM responses)
-- Cost smoke tests: small-but-real run that asserts budget cap behaves
+- Live smoke tests gated by `pytest -m live`: a small-but-real run end-to-end (already in place, just keep healthy)
 - README walkthrough video / GIF
 - v0.1 release tag, PyPI publish
 
@@ -366,7 +438,7 @@ These get pinned down during the experiments that touch them. Recording them her
 | Mistral OCR cost or quality disappoints | Claude vision fallback is already in the design; Marker is the offline escape hatch |
 | Source rate limits make the hunter loop slow | Rate-limited per-source clients with adaptive backoff; results cached in `.callimachus/cache/` |
 | Long agentic runs hit context limits | Pydantic AI doesn't compact automatically; we add a manual compaction tool the orchestrator can call between snowball iterations |
-| LLM nondeterminism makes integration tests flaky | All `tests/` use mocked LLM responses; the only "real LLM" tests are cost smoke tests in CI gated by an env var |
+| LLM nondeterminism makes integration tests flaky | All `tests/` use mocked LLM responses; the only real-LLM tests are gated behind `pytest -m live` and excluded from default CI |
 | User on Windows can't install some dep | Document supported platforms (Linux + macOS first); Windows via WSL2; verify cleanly in CI |
 
 ## Out of scope for v0.1 (deferred to v0.2+)

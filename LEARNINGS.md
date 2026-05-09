@@ -10,6 +10,24 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-09 — Roadmap re-prioritised after M1 ships
+
+After the deterministic pipeline shipped end-to-end, paused to reassess. Three changes to DEV_PLAN.md:
+
+1. **Cost tracking dropped.** Translating tokens to USD isn't Callimachus's business — pricing changes too often, varies by deployment (OpenRouter / direct / Bedrock / Vertex), and isn't load-bearing for the product. We *do* keep token + model logging (truthful runtime info) but no `cost.json`, no `calli cost`, no `--budget-usd`. Bounds are `--max-works N` and `--max-hours N`. Users who want a USD number can multiply tokens × current per-token price themselves.
+
+2. **M2 = "topic → library" with mandatory HITL ceremony.** Original M2 was orchestrator+hunter+judge+ingest. New M2 adds a **scout** stage and a **clarification ceremony** in front. A bare topic like "creativity" is ambiguous; agent must do shallow probing across plausible angles + related fields, present what it found, and ask targeted questions before committing to a deep build. Two-step UX (terraform plan/apply style): `calli build --topic "..."` produces a plan; `calli build --from-plan ...` runs it. `--auto` available but not the default.
+
+3. **M3 = chat (talk to your library).** Was M4 in the original. Promoted because: it reuses everything we have (the query stage, the chat REPL pattern from experiment 05), it's a smaller lift than snowball, and it closes the second-biggest product-vision gap. Snowball + multi-collection + dashboard moved to M4.
+
+Doc updates landed:
+- `DEV_PLAN.md`: Direction-change note added; M1.5 marked dropped; M2 rewritten with scout/ceremony sub-phases (M2.0–M2.5); M3 rewritten as the chat milestone with sub-phases (M3.0–M3.2); M4 absorbs old M3 (snowball) + dashboard work.
+- `README.md`: "Estimated cost per run" table replaced with "Cost (you do the math)" — explains the no-USD policy, lists `--max-works` / `--max-hours` as the caps.
+- `USER_STORIES.md`: story 9 ("Cost and time control") rewritten as "Scope control + run transparency".
+- `ARCHITECTURE.md`: "Cost transparency" section renamed "Run transparency (no cost translation)"; `calli cost` removed from the CLI table; `cost_usd` column kept in schema (already in DB) but commented as vestigial / not populated in v0.1; folder layouts updated to drop `cost.json`.
+
+- **Affects**: `docs/DEV_PLAN.md`, `docs/ARCHITECTURE.md`, `docs/USER_STORIES.md`, `README.md`. No code changes.
+
 ### 2026-05-06 — M1.4b CLI green; first real end-to-end ingest works
 
 `src/callimachus/cli.py` — Typer app with four commands:

@@ -310,7 +310,7 @@ CREATE TABLE runs (
   started_at      TIMESTAMP,
   ended_at        TIMESTAMP,
   config          JSON,
-  cost_usd        REAL,
+  cost_usd        REAL,                    -- vestigial column from M1.0; not populated in v0.1 (Callimachus doesn't translate tokens to USD; pricing isn't its concern)
   works_added     INTEGER,
   works_archived  INTEGER,
   works_retagged  INTEGER,
@@ -410,8 +410,7 @@ A long-lived Pydantic AI agent that owns the library. The chat interface (`calli
 | `calli export ...` | Tarball export |
 | `calli import ...` | Tarball import |
 | `calli rehydrate` | Re-download missing PDFs from source URLs |
-| `calli log` | Read `runs` and event log |
-| `calli cost` | Aggregate `runs.cost_usd` |
+| `calli log` | Read `runs` and event log (token + model totals per run; no USD math) |
 | `calli doctor` | Check API keys, dependencies, library integrity |
 
 The CLI exists for users who prefer commands or want to script. The chat is the dominant interface.
@@ -420,7 +419,7 @@ The CLI exists for users who prefer commands or want to script. The chat is the 
 
 Four checkpoints during a discovery run, each skippable independently or globally with `--auto`:
 
-1. **Plan review** — after `plan_research`, before any hunters spawn. Shows angles, queries, criteria, estimated scope, estimated cost. User edits or accepts.
+1. **Plan review** — after `plan_research`, before any hunters spawn. Shows angles, queries, criteria, expected work count. User edits or accepts.
 2. **Seed approval** — after first discovery + judging pass. Top ~30 candidates with one-line summaries. User: include / exclude / mark-as-seed (deeper snowball).
 3. **Per-iteration review** *(optional, off by default)* — after each snowball pass.
 4. **Final prune** — before the pipeline phase. Full work list with one-line summaries. User drops duds.
@@ -433,13 +432,16 @@ Callimachus re-reads `.callimachus/notes.md` at the start of each snowball itera
 
 Optional desktop notification (or webhook) when a checkpoint is reached, so users don't have to babysit the TUI for hours. Configured in `.env`.
 
-## Cost transparency
+## Run transparency (no cost translation)
 
-- Plan review estimates cost based on planned angle count and expected work count
-- Live running cost shown in the TUI status bar at all times
-- Hard `--budget-usd` cap; orchestrator stops cleanly when reached and reports what it has
-- Per-phase cost breakdown written to `.callimachus/cost.json`
-- `calli cost` aggregates spend across runs
+Callimachus reports honest runtime info — input/output tokens per model, per-stage timings, per-source candidate counts, errors — and **does not translate tokens to USD**. Pricing changes too often, varies by deployment (OpenRouter vs direct vs Bedrock vs Vertex), and isn't load-bearing for the product. Users who want a budget number multiply tokens by their provider's current per-token price.
+
+What the run log contains:
+- Plan review shows expected work count + planned angles
+- TUI status bar shows live token + model usage during a run
+- `--max-works N` and `--max-hours N` are the hard caps
+- Per-phase token + model totals written to `.callimachus/runs/{iso-timestamp}.jsonl`
+- `calli log` shows historic runs with totals — you can pipe to your own cost calculator if you want one
 
 ## Resumability
 
@@ -530,9 +532,8 @@ Mutation tools default to off over MCP. `calli serve --mcp --allow-mutations` op
   plugins/                           # local user plugins (drop-in .py files)
   .callimachus/
     state.json                       # checkpointing
-    cost.json                        # spend log
     notes.md                         # editable mid-run, agents re-read each iteration
-    runs/{iso-timestamp}.jsonl       # full event log per run
+    runs/{iso-timestamp}.jsonl       # full event log per run (tokens, models, timings)
     cache/                           # API response cache
 ```
 

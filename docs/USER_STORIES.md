@@ -262,15 +262,15 @@ Read-only over both libraries; produces a notes document, not a new library. The
 
 ---
 
-### 9. Cost and time control
+### 9. Scope control + run transparency
 
-> *As a budget-conscious user, I want to understand what a run will cost and how long it will take, before it starts and as it runs.*
+> *As a user, I want to bound how big a run can get, and see honest token/model usage so I can reason about cost myself.*
 
-- Plan review shows estimated cost and time
-- TUI status bar shows live running cost during the run
-- `--budget-usd N` hard cap; Callimachus stops cleanly and reports what it has when the cap hits
-- `--max-works N`, `--max-hours N`, and convergence settings act as additional caps
-- `calli cost` shows historic spend by run and by collection
+- Plan review shows expected work count and angles before kicking off
+- TUI status bar shows live token + model usage during the run (no USD translation — pricing isn't Callimachus's concern; users should consult their LLM provider's billing)
+- `--max-works N` hard cap; Callimachus stops cleanly and reports what it has when reached
+- `--max-hours N` and convergence settings act as additional caps
+- `calli log` shows historic runs with per-run token + model totals; you can do the cost math against current OpenRouter prices yourself if you want it
 
 ---
 

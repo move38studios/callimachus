@@ -97,9 +97,8 @@ calli export --collection diffusion-models       # share one collection
   archive/                           # soft-deleted works (recoverable)
   .callimachus/
     state.json                       # checkpointing
-    cost.json                        # spend log
     notes.md                         # editable mid-run, agents re-read each iteration
-    runs/{iso-timestamp}.jsonl       # full event log per run
+    runs/{iso-timestamp}.jsonl       # full event log per run (tokens, models, timings)
 ```
 
 ## Installation
@@ -145,17 +144,17 @@ calli plugin configure zotero            # interactive config
 
 See [`docs/PLUGINS.md`](docs/PLUGINS.md) for the plugin model, bundled and known community plugins, and how to write your own.
 
-## Estimated cost per run
+## Cost (you do the math)
 
-| Operation | Typical cost |
-| --- | --- |
-| Initial build (200 works) | $6–20 |
-| Add a collection (~120 works) | $4–15 |
-| Refresh (find new work) | $1–5 |
-| Re-judge with new criteria | $2–8 |
-| Conversational queries | < $0.05 each |
+Callimachus reports honest token + model usage during runs and in the run log (`calli log`). It does **not** translate tokens to dollars — pricing changes too often, varies by deployment (OpenRouter vs direct vs Bedrock vs Vertex), and isn't load-bearing for the product. If you want a budget number, multiply your run's tokens by your provider's current per-token price.
 
-Callimachus shows a live running cost in the TUI status bar and respects a `--budget-usd` hard cap.
+To bound run size:
+
+- `--max-works N` — hard cap on works ingested
+- `--max-hours N` — hard cap on wall time
+- Convergence settings stop snowball when it stops finding good candidates
+
+Embeddings run locally (free), arXiv + OpenAlex are free, Mistral OCR is fixed per-page (~$1/1000 pages), Claude calls via OpenRouter are the variable cost. A typical 200-work build is in the single-to-low-double-digit dollars.
 
 ## Configuration
 
@@ -168,8 +167,8 @@ calli init \
   --keywords "..." \
   --notes "..." \
   --auto                            # skip all interactive checkpoints
-  --max-works 200                   # hard cap
-  --budget-usd 25                   # cost ceiling
+  --max-works 200                   # hard cap on works ingested
+  --max-hours 6                     # hard cap on wall time
   --snowball-depth 2                # citation hops from seed works
   --since 2015                      # year filter
   --languages en                    # included languages
@@ -179,7 +178,7 @@ calli init \
 
 By default, Callimachus pauses for your input at four checkpoints:
 
-1. **Plan review** — confirm the search strategy, scope, estimated cost
+1. **Plan review** — confirm the search strategy, scope, and expected work count
 2. **Seed approval** — pick the seed works that drive snowballing
 3. **Per-iteration review** *(optional, off by default)* — approve newly accepted works each pass
 4. **Final prune** — drop duds before the index is built
