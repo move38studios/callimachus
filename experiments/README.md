@@ -61,7 +61,7 @@ Add `"rich>=13"` to your script's PEP 723 dependencies if you call `setup_loggin
 | 14 | embeddings-nomic-local | not started | |
 | 15 | embeddings-voyage | not started | |
 | 16 | embeddings-quality-bakeoff | not started | |
-| 17 | source-openalex | not started | |
+| 17 | source-openalex | done (2026-05-10) | `/works` returns the metadata we need; arxiv DOIs are `10.48550/arxiv.{id}`; plugin shipped |
 | 18 | source-semantic-scholar | not started | |
 | 19 | source-arxiv-latex | not started | |
 | 20 | source-crossref-unpaywall | not started | |

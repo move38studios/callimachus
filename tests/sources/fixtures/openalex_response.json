@@ -1,0 +1,7401 @@
+{
+  "meta": {
+    "count": 27601,
+    "db_response_time_ms": 332,
+    "page": 1,
+    "per_page": 5,
+    "groups_count": null,
+    "cost_usd": 0.001
+  },
+  "results": [
+    {
+      "id": "https://openalex.org/W3036167779",
+      "doi": "https://doi.org/10.48550/arxiv.2006.11239",
+      "title": "Denoising Diffusion Probabilistic Models",
+      "display_name": "Denoising Diffusion Probabilistic Models",
+      "relevance_score": 12417.08,
+      "publication_year": 2020,
+      "publication_date": "2020-06-19",
+      "ids": {
+        "openalex": "https://openalex.org/W3036167779",
+        "doi": "https://doi.org/10.48550/arxiv.2006.11239",
+        "mag": "3036167779"
+      },
+      "language": "en",
+      "primary_location": {
+        "id": "pmh:oai:arXiv.org:2006.11239",
+        "is_oa": true,
+        "landing_page_url": "http://arxiv.org/abs/2006.11239",
+        "pdf_url": "https://arxiv.org/pdf/2006.11239",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": "",
+        "raw_type": "text"
+      },
+      "type": "preprint",
+      "indexed_in": [
+        "arxiv",
+        "datacite"
+      ],
+      "open_access": {
+        "is_oa": true,
+        "oa_status": "green",
+        "oa_url": "https://arxiv.org/pdf/2006.11239",
+        "any_repository_has_fulltext": true
+      },
+      "authorships": [
+        {
+          "author_position": "first",
+          "author": {
+            "id": null,
+            "display_name": "Yan, Steven",
+            "orcid": "https://orcid.org/0009-0004-8743-7703"
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I145608581",
+              "display_name": "University of Miami",
+              "ror": "https://ror.org/02dgjyy92",
+              "country_code": "US",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I145608581"
+              ]
+            },
+            {
+              "id": "https://openalex.org/I4210101935",
+              "display_name": "University of Miami Health System",
+              "ror": "https://ror.org/00zw9nc64",
+              "country_code": "US",
+              "type": "healthcare",
+              "lineage": [
+                "https://openalex.org/I145608581",
+                "https://openalex.org/I4210101935"
+              ]
+            },
+            {
+              "id": "https://openalex.org/I95457486",
+              "display_name": "University of California, Berkeley",
+              "ror": "https://ror.org/01an7q238",
+              "country_code": "US",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I95457486"
+              ]
+            }
+          ],
+          "countries": [
+            "US"
+          ],
+          "is_corresponding": true,
+          "raw_author_name": "Yan, Steven",
+          "raw_affiliation_strings": [
+            "University of Miami",
+            "University of Miami Health System",
+            "University of California\u2013Berkeley"
+          ],
+          "raw_orcid": "https://orcid.org/0009-0004-8743-7703",
+          "affiliations": [
+            {
+              "raw_affiliation_string": "University of Miami",
+              "institution_ids": [
+                "https://openalex.org/I145608581"
+              ]
+            },
+            {
+              "raw_affiliation_string": "University of Miami Health System",
+              "institution_ids": [
+                "https://openalex.org/I4210101935"
+              ]
+            },
+            {
+              "raw_affiliation_string": "University of California\u2013Berkeley",
+              "institution_ids": [
+                "https://openalex.org/I95457486"
+              ]
+            }
+          ]
+        }
+      ],
+      "institutions": [],
+      "countries_distinct_count": 1,
+      "institutions_distinct_count": 1,
+      "corresponding_author_ids": [],
+      "corresponding_institution_ids": [
+        "https://openalex.org/I145608581",
+        "https://openalex.org/I4210101935",
+        "https://openalex.org/I95457486"
+      ],
+      "apc_list": null,
+      "apc_paid": null,
+      "fwci": null,
+      "has_fulltext": false,
+      "cited_by_count": 5608,
+      "citation_normalized_percentile": null,
+      "cited_by_percentile_year": null,
+      "biblio": {
+        "volume": null,
+        "issue": null,
+        "first_page": null,
+        "last_page": null
+      },
+      "is_retracted": false,
+      "is_paratext": false,
+      "is_xpac": false,
+      "primary_topic": {
+        "id": "https://openalex.org/T10775",
+        "display_name": "Generative Adversarial Networks and Image Synthesis",
+        "score": 0.9998000264167786,
+        "subfield": {
+          "id": "https://openalex.org/subfields/1707",
+          "display_name": "Computer Vision and Pattern Recognition"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/17",
+          "display_name": "Computer Science"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      },
+      "topics": [
+        {
+          "id": "https://openalex.org/T10775",
+          "display_name": "Generative Adversarial Networks and Image Synthesis",
+          "score": 0.9998000264167786,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11206",
+          "display_name": "Model Reduction and Neural Networks",
+          "score": 0.9962999820709229,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3109",
+            "display_name": "Statistical and Nonlinear Physics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/31",
+            "display_name": "Physics and Astronomy"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12814",
+          "display_name": "Gaussian Processes and Bayesian Inference",
+          "score": 0.9894000291824341,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1702",
+            "display_name": "Artificial Intelligence"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "keywords": [
+        {
+          "id": "https://openalex.org/keywords/probabilistic-logic",
+          "display_name": "Probabilistic logic",
+          "score": 0.7237537503242493
+        },
+        {
+          "id": "https://openalex.org/keywords/generalization",
+          "display_name": "Generalization",
+          "score": 0.6140464544296265
+        },
+        {
+          "id": "https://openalex.org/keywords/computer-science",
+          "display_name": "Computer science",
+          "score": 0.5421889424324036
+        },
+        {
+          "id": "https://openalex.org/keywords/diffusion",
+          "display_name": "Diffusion",
+          "score": 0.49398189783096313
+        },
+        {
+          "id": "https://openalex.org/keywords/autoregressive-model",
+          "display_name": "Autoregressive model",
+          "score": 0.4890912175178528
+        },
+        {
+          "id": "https://openalex.org/keywords/decoding-methods",
+          "display_name": "Decoding methods",
+          "score": 0.43804487586021423
+        },
+        {
+          "id": "https://openalex.org/keywords/applied-mathematics",
+          "display_name": "Applied mathematics",
+          "score": 0.4315696954727173
+        },
+        {
+          "id": "https://openalex.org/keywords/algorithm",
+          "display_name": "Algorithm",
+          "score": 0.42910483479499817
+        },
+        {
+          "id": "https://openalex.org/keywords/langevin-equation",
+          "display_name": "Langevin equation",
+          "score": 0.42437100410461426
+        },
+        {
+          "id": "https://openalex.org/keywords/artificial-intelligence",
+          "display_name": "Artificial intelligence",
+          "score": 0.38638895750045776
+        },
+        {
+          "id": "https://openalex.org/keywords/mathematics",
+          "display_name": "Mathematics",
+          "score": 0.3618565797805786
+        },
+        {
+          "id": "https://openalex.org/keywords/statistical-physics",
+          "display_name": "Statistical physics",
+          "score": 0.2895737290382385
+        },
+        {
+          "id": "https://openalex.org/keywords/statistics",
+          "display_name": "Statistics",
+          "score": 0.22319379448890686
+        },
+        {
+          "id": "https://openalex.org/keywords/mathematical-analysis",
+          "display_name": "Mathematical analysis",
+          "score": 0.12537038326263428
+        },
+        {
+          "id": "https://openalex.org/keywords/physics",
+          "display_name": "Physics",
+          "score": 0.10859173536300659
+        }
+      ],
+      "concepts": [
+        {
+          "id": "https://openalex.org/C49937458",
+          "wikidata": "https://www.wikidata.org/wiki/Q2599292",
+          "display_name": "Probabilistic logic",
+          "level": 2,
+          "score": 0.7237537503242493
+        },
+        {
+          "id": "https://openalex.org/C177148314",
+          "wikidata": "https://www.wikidata.org/wiki/Q170084",
+          "display_name": "Generalization",
+          "level": 2,
+          "score": 0.6140464544296265
+        },
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 0.5421889424324036
+        },
+        {
+          "id": "https://openalex.org/C69357855",
+          "wikidata": "https://www.wikidata.org/wiki/Q163214",
+          "display_name": "Diffusion",
+          "level": 2,
+          "score": 0.49398189783096313
+        },
+        {
+          "id": "https://openalex.org/C159877910",
+          "wikidata": "https://www.wikidata.org/wiki/Q2202883",
+          "display_name": "Autoregressive model",
+          "level": 2,
+          "score": 0.4890912175178528
+        },
+        {
+          "id": "https://openalex.org/C57273362",
+          "wikidata": "https://www.wikidata.org/wiki/Q576722",
+          "display_name": "Decoding methods",
+          "level": 2,
+          "score": 0.43804487586021423
+        },
+        {
+          "id": "https://openalex.org/C28826006",
+          "wikidata": "https://www.wikidata.org/wiki/Q33521",
+          "display_name": "Applied mathematics",
+          "level": 1,
+          "score": 0.4315696954727173
+        },
+        {
+          "id": "https://openalex.org/C11413529",
+          "wikidata": "https://www.wikidata.org/wiki/Q8366",
+          "display_name": "Algorithm",
+          "level": 1,
+          "score": 0.42910483479499817
+        },
+        {
+          "id": "https://openalex.org/C2777577648",
+          "wikidata": "https://www.wikidata.org/wiki/Q584537",
+          "display_name": "Langevin equation",
+          "level": 2,
+          "score": 0.42437100410461426
+        },
+        {
+          "id": "https://openalex.org/C154945302",
+          "wikidata": "https://www.wikidata.org/wiki/Q11660",
+          "display_name": "Artificial intelligence",
+          "level": 1,
+          "score": 0.38638895750045776
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 0.3618565797805786
+        },
+        {
+          "id": "https://openalex.org/C121864883",
+          "wikidata": "https://www.wikidata.org/wiki/Q677916",
+          "display_name": "Statistical physics",
+          "level": 1,
+          "score": 0.2895737290382385
+        },
+        {
+          "id": "https://openalex.org/C105795698",
+          "wikidata": "https://www.wikidata.org/wiki/Q12483",
+          "display_name": "Statistics",
+          "level": 1,
+          "score": 0.22319379448890686
+        },
+        {
+          "id": "https://openalex.org/C134306372",
+          "wikidata": "https://www.wikidata.org/wiki/Q7754",
+          "display_name": "Mathematical analysis",
+          "level": 1,
+          "score": 0.12537038326263428
+        },
+        {
+          "id": "https://openalex.org/C121332964",
+          "wikidata": "https://www.wikidata.org/wiki/Q413",
+          "display_name": "Physics",
+          "level": 0,
+          "score": 0.10859173536300659
+        },
+        {
+          "id": "https://openalex.org/C97355855",
+          "wikidata": "https://www.wikidata.org/wiki/Q11473",
+          "display_name": "Thermodynamics",
+          "level": 1,
+          "score": 0.0
+        }
+      ],
+      "mesh": [],
+      "locations_count": 4,
+      "locations": [
+        {
+          "id": "pmh:oai:arXiv.org:2006.11239",
+          "is_oa": true,
+          "landing_page_url": "http://arxiv.org/abs/2006.11239",
+          "pdf_url": "https://arxiv.org/pdf/2006.11239",
+          "source": {
+            "id": "https://openalex.org/S4306400194",
+            "display_name": "arXiv (Cornell University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I205783295",
+            "host_organization_name": "Cornell University",
+            "host_organization_lineage": [
+              "https://openalex.org/I205783295"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "submittedVersion",
+          "is_accepted": false,
+          "is_published": false,
+          "raw_source_name": "",
+          "raw_type": "text"
+        },
+        {
+          "id": "doi:10.48550/arxiv.2006.11239",
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.48550/arxiv.2006.11239",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400194",
+            "display_name": "arXiv (Cornell University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I205783295",
+            "host_organization_name": "Cornell University",
+            "host_organization_lineage": [
+              "https://openalex.org/I205783295"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": null,
+          "raw_source_name": null,
+          "raw_type": "article"
+        },
+        {
+          "id": "doi:10.5281/zenodo.14622374",
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.5281/zenodo.14622374",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400562",
+            "display_name": "Zenodo (CERN European Organization for Nuclear Research)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I67311998",
+            "host_organization_name": "European Organization for Nuclear Research",
+            "host_organization_lineage": [
+              "https://openalex.org/I67311998"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": "cc-by",
+          "license_id": "https://openalex.org/licenses/cc-by",
+          "version": null,
+          "is_accepted": false,
+          "is_published": null,
+          "raw_source_name": null,
+          "raw_type": "article"
+        },
+        {
+          "id": "doi:10.5281/zenodo.14622375",
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.5281/zenodo.14622375",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400562",
+            "display_name": "Zenodo (CERN European Organization for Nuclear Research)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I67311998",
+            "host_organization_name": "European Organization for Nuclear Research",
+            "host_organization_lineage": [
+              "https://openalex.org/I67311998"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": "cc-by",
+          "license_id": "https://openalex.org/licenses/cc-by",
+          "version": null,
+          "is_accepted": false,
+          "is_published": null,
+          "raw_source_name": null,
+          "raw_type": "article"
+        }
+      ],
+      "best_oa_location": {
+        "id": "pmh:oai:arXiv.org:2006.11239",
+        "is_oa": true,
+        "landing_page_url": "http://arxiv.org/abs/2006.11239",
+        "pdf_url": "https://arxiv.org/pdf/2006.11239",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": "",
+        "raw_type": "text"
+      },
+      "sustainable_development_goals": [],
+      "awards": [],
+      "funders": [],
+      "has_content": {
+        "grobid_xml": false,
+        "pdf": false
+      },
+      "content_urls": null,
+      "referenced_works_count": 70,
+      "referenced_works": [
+        "https://openalex.org/W967544008",
+        "https://openalex.org/W1583912456",
+        "https://openalex.org/W1901129140",
+        "https://openalex.org/W1906598733",
+        "https://openalex.org/W2013035813",
+        "https://openalex.org/W2099471712",
+        "https://openalex.org/W2152912600",
+        "https://openalex.org/W2267126114",
+        "https://openalex.org/W2272361785",
+        "https://openalex.org/W2401231614",
+        "https://openalex.org/W2409550820",
+        "https://openalex.org/W2587284713",
+        "https://openalex.org/W2604926578",
+        "https://openalex.org/W2621006664",
+        "https://openalex.org/W2753738274",
+        "https://openalex.org/W2796731119",
+        "https://openalex.org/W2893749619",
+        "https://openalex.org/W2902630600",
+        "https://openalex.org/W2912298597",
+        "https://openalex.org/W2938608316",
+        "https://openalex.org/W2940744433",
+        "https://openalex.org/W2949382160",
+        "https://openalex.org/W2951004968",
+        "https://openalex.org/W2962736171",
+        "https://openalex.org/W2962760235",
+        "https://openalex.org/W2962770929",
+        "https://openalex.org/W2962887178",
+        "https://openalex.org/W2962897886",
+        "https://openalex.org/W2963090522",
+        "https://openalex.org/W2963091558",
+        "https://openalex.org/W2963139417",
+        "https://openalex.org/W2963140844",
+        "https://openalex.org/W2963147844",
+        "https://openalex.org/W2963300588",
+        "https://openalex.org/W2963373786",
+        "https://openalex.org/W2963403868",
+        "https://openalex.org/W2963428348",
+        "https://openalex.org/W2963527611",
+        "https://openalex.org/W2963565380",
+        "https://openalex.org/W2963629403",
+        "https://openalex.org/W2963629521",
+        "https://openalex.org/W2963636093",
+        "https://openalex.org/W2963641970",
+        "https://openalex.org/W2963685250",
+        "https://openalex.org/W2963755523",
+        "https://openalex.org/W2963836885",
+        "https://openalex.org/W2963919683",
+        "https://openalex.org/W2963981733",
+        "https://openalex.org/W2964121744",
+        "https://openalex.org/W2964122153",
+        "https://openalex.org/W2964307104",
+        "https://openalex.org/W2967593122",
+        "https://openalex.org/W2970014727",
+        "https://openalex.org/W2970607325",
+        "https://openalex.org/W2970747737",
+        "https://openalex.org/W2971034910",
+        "https://openalex.org/W2971074500",
+        "https://openalex.org/W2989574682",
+        "https://openalex.org/W2995085126",
+        "https://openalex.org/W2997095142",
+        "https://openalex.org/W3006502260",
+        "https://openalex.org/W3008314642",
+        "https://openalex.org/W3010012025",
+        "https://openalex.org/W3018305985",
+        "https://openalex.org/W3034577585",
+        "https://openalex.org/W3034720584",
+        "https://openalex.org/W3035166812",
+        "https://openalex.org/W3035384201",
+        "https://openalex.org/W3035574324",
+        "https://openalex.org/W3106068426"
+      ],
+      "related_works": [
+        "https://openalex.org/W2171218219",
+        "https://openalex.org/W1972271943",
+        "https://openalex.org/W2150410159",
+        "https://openalex.org/W3162204513",
+        "https://openalex.org/W4327525404",
+        "https://openalex.org/W4287185323",
+        "https://openalex.org/W3150905897",
+        "https://openalex.org/W1520183331",
+        "https://openalex.org/W2734842993",
+        "https://openalex.org/W2168175994"
+      ],
+      "abstract_inverted_index": {
+        "DiffuCpG": [
+          0
+        ],
+        "1.": [
+          1
+        ],
+        "Introduction": [
+          2
+        ],
+        "In": [
+          3,
+          115
+        ],
+        "this": [
+          4,
+          116
+        ],
+        "study,": [
+          5
+        ],
+        "we": [
+          6,
+          118
+        ],
+        "used": [
+          7,
+          122,
+          583
+        ],
+        "a": [
+          8,
+          77,
+          137,
+          251,
+          256,
+          271,
+          390,
+          434,
+          469,
+          570,
+          672,
+          701,
+          725,
+          731,
+          743,
+          834,
+          919,
+          994
+        ],
+        "generative": [
+          9
+        ],
+        "AI": [
+          10
+        ],
+        "diffusion": [
+          11,
+          126,
+          138,
+          429,
+          462
+        ],
+        "model": [
+          12,
+          21,
+          139,
+          425,
+          665,
+          996,
+          1014
+        ],
+        "to": [
+          13,
+          123,
+          133,
+          191,
+          269,
+          316,
+          442,
+          451,
+          466,
+          512,
+          617,
+          619,
+          637,
+          658,
+          776,
+          816,
+          868,
+          890,
+          895,
+          905,
+          917,
+          933,
+          949,
+          973,
+          990,
+          1054,
+          1074,
+          1097,
+          1149
+        ],
+        "address": [
+          14
+        ],
+        "missing": [
+          15,
+          748,
+          846,
+          879
+        ],
+        "methylation": [
+          16,
+          58,
+          113,
+          141,
+          422,
+          559,
+          571,
+          608,
+          673,
+          678,
+          722,
+          735,
+          745,
+          839,
+          847
+        ],
+        "data.": [
+          17,
+          423,
+          723
+        ],
+        "We": [
+          18
+        ],
+        "trained": [
+          19
+        ],
+        "the": [
+          20,
+          55,
+          120,
+          125,
+          151,
+          167,
+          228,
+          231,
+          266,
+          427,
+          431,
+          461,
+          491,
+          505,
+          509,
+          514,
+          525,
+          564,
+          590,
+          602,
+          621,
+          626,
+          630,
+          650,
+          710,
+          714,
+          718,
+          721,
+          734,
+          773,
+          791,
+          794,
+          805,
+          838,
+          866,
+          964,
+          970,
+          998,
+          1004,
+          1007,
+          1013,
+          1106,
+          1163,
+          1167
+        ],
+        "with": [
+          22,
+          36,
+          129,
+          159,
+          183,
+          195,
+          333,
+          873
+        ],
+        "Whole-Genome": [
+          23
+        ],
+        "Bisulfite": [
+          24,
+          39,
+          64
+        ],
+        "Sequencing": [
+          25,
+          40,
+          65
+        ],
+        "data": [
+          26,
+          41,
+          53,
+          263,
+          274,
+          282,
+          545,
+          613,
+          736,
+          746,
+          760,
+          826
+        ],
+        "from": [
+          27,
+          42,
+          54,
+          700,
+          871,
+          915,
+          952
+        ],
+        "26": [
+          28
+        ],
+        "acute": [
+          29
+        ],
+        "myeloid": [
+          30
+        ],
+        "leukemia": [
+          31
+        ],
+        "samples": [
+          32,
+          194,
+          660,
+          856,
+          932,
+          940,
+          951,
+          1109
+        ],
+        "and": [
+          33,
+          46,
+          60,
+          86,
+          98,
+          104,
+          111,
+          135,
+          173,
+          198,
+          218,
+          406,
+          444,
+          488,
+          537,
+          546,
+          552,
+          579,
+          610,
+          663,
+          670,
+          693,
+          783,
+          801,
+          812,
+          857,
+          983,
+          992
+        ],
+        "validated": [
+          34
+        ],
+        "it": [
+          35,
+          642,
+          739,
+          1020
+        ],
+        "Reduced": [
+          37,
+          62
+        ],
+        "Representation": [
+          38,
+          63
+        ],
+        "93": [
+          43
+        ],
+        "myelodysplastic": [
+          44
+        ],
+        "syndrome": [
+          45
+        ],
+        "13": [
+          47
+        ],
+        "normal": [
+          48
+        ],
+        "samples.": [
+          49
+        ],
+        "Additional": [
+          50
+        ],
+        "testing": [
+          51,
+          696,
+          784,
+          861
+        ],
+        "included": [
+          52
+        ],
+        "Illumina": [
+          56
+        ],
+        "450k": [
+          57
+        ],
+        "array": [
+          59,
+          674,
+          679
+        ],
+        "Single-Cell": [
+          61
+        ],
+        "on": [
+          66,
+          490,
+          1100
+        ],
+        "HepG2": [
+          67
+        ],
+        "cells.": [
+          68
+        ],
+        "Our": [
+          69
+        ],
+        "model,": [
+          70,
+          430
+        ],
+        "DiffuCpG,": [
+          71
+        ],
+        "outperformed": [
+          72
+        ],
+        "previous": [
+          73
+        ],
+        "methods": [
+          74
+        ],
+        "by": [
+          75
+        ],
+        "integrating": [
+          76
+        ],
+        "broader": [
+          78
+        ],
+        "range": [
+          79,
+          967
+        ],
+        "of": [
+          80,
+          348,
+          385,
+          458,
+          479,
+          601,
+          804,
+          922,
+          931,
+          1029,
+          1039,
+          1124,
+          1134
+        ],
+        "genomic": [
+          81
+        ],
+        "features,": [
+          82
+        ],
+        "utilizing": [
+          83
+        ],
+        "both": [
+          84,
+          109
+        ],
+        "short-": [
+          85
+        ],
+        "long-range": [
+          87,
+          953,
+          977
+        ],
+        "interactions": [
+          88,
+          959
+        ],
+        "without": [
+          89
+        ],
+        "increasing": [
+          90
+        ],
+        "input": [
+          91,
+          193,
+          262,
+          273
+        ],
+        "complexity.": [
+          92
+        ],
+        "It": [
+          93,
+          594
+        ],
+        "demonstrated": [
+          94
+        ],
+        "superior": [
+          95
+        ],
+        "accuracy,": [
+          96
+        ],
+        "scalability,": [
+          97
+        ],
+        "versatility": [
+          99
+        ],
+        "across": [
+          100
+        ],
+        "various": [
+          101
+        ],
+        "tissues,": [
+          102
+        ],
+        "diseases,": [
+          103
+        ],
+        "technologies,": [
+          105
+        ],
+        "providing": [
+          106
+        ],
+        "predictions": [
+          107
+        ],
+        "in": [
+          108,
+          223,
+          227,
+          389,
+          460,
+          529,
+          563,
+          586,
+          604,
+          625,
+          691,
+          772,
+          790,
+          833,
+          969
+        ],
+        "binary": [
+          110
+        ],
+        "continuous": [
+          112
+        ],
+        "states.": [
+          114
+        ],
+        "repository,": [
+          117
+        ],
+        "deposit": [
+          119
+        ],
+        "code": [
+          121,
+          484
+        ],
+        "build": [
+          124
+        ],
+        "models": [
+          127,
+          211
+        ],
+        "along": [
+          128
+        ],
+        "necessary": [
+          130,
+          544
+        ],
+        "example": [
+          131,
+          190,
+          272,
+          417,
+          769,
+          965
+        ],
+        "datasets": [
+          132,
+          409,
+          418,
+          780
+        ],
+        "train": [
+          134,
+          991
+        ],
+        "test": [
+          136,
+          993
+        ],
+        "for": [
+          140,
+          214,
+          360,
+          401,
+          412,
+          437,
+          446,
+          584,
+          633,
+          661,
+          738,
+          751,
+          781,
+          853,
+          859,
+          980,
+          1065,
+          1087,
+          1110
+        ],
+        "imputation": [
+          142,
+          1099
+        ],
+        "purposes.": [
+          143
+        ],
+        "Docker": [
+          144,
+          147,
+          149,
+          181,
+          240
+        ],
+        "Usage": [
+          145
+        ],
+        "Install": [
+          146,
+          148
+        ],
+        "using": [
+          150,
+          414,
+          997
+        ],
+        "following": [
+          152,
+          267,
+          398,
+          492,
+          510,
+          526,
+          1168
+        ],
+        "link:https://docs.docker.com/engine/install/Recommended": [
+          153
+        ],
+        "system": [
+          154
+        ],
+        "specs:": [
+          155
+        ],
+        "Debian": [
+          156,
+          497
+        ],
+        "12": [
+          157,
+          499
+        ],
+        "bookworm": [
+          158,
+          502
+        ],
+        "16GB": [
+          160,
+          478
+        ],
+        "RAM": [
+          161,
+          480
+        ],
+        "or": [
+          162,
+          296,
+          309,
+          322,
+          343,
+          749,
+          822,
+          828,
+          841,
+          884,
+          899,
+          911,
+          928,
+          938,
+          960,
+          1001,
+          1010,
+          1024,
+          1035,
+          1042,
+          1059,
+          1070,
+          1083,
+          1103,
+          1112,
+          1119,
+          1130,
+          1137,
+          1160
+        ],
+        "more.Make": [
+          163
+        ],
+        "sure": [
+          164,
+          522
+        ],
+        "you": [
+          165,
+          247,
+          523,
+          615,
+          635,
+          1046,
+          1141,
+          1156
+        ],
+        "have": [
+          166,
+          250,
+          524,
+          918,
+          1047,
+          1142,
+          1157
+        ],
+        "latest": [
+          168
+        ],
+        "Nvidia": [
+          169,
+          178
+        ],
+        "GPU": [
+          170,
+          252
+        ],
+        "driver": [
+          171
+        ],
+        "installed": [
+          172,
+          528
+        ],
+        "docker": [
+          174,
+          186,
+          244,
+          306
+        ],
+        "can": [
+          175,
+          666,
+          761
+        ],
+        "access": [
+          176
+        ],
+        "your": [
+          177,
+          261,
+          281,
+          326,
+          530,
+          639,
+          778,
+          975
+        ],
+        "GPU.": [
+          179
+        ],
+        "Run": [
+          180,
+          230,
+          239,
+          508,
+          535
+        ],
+        "images": [
+          182,
+          241
+        ],
+        "Tissue-specific": [
+          184
+        ],
+        "Models": [
+          185,
+          243,
+          407
+        ],
+        "pull": [
+          187,
+          245,
+          255,
+          259
+        ],
+        "yay135/diffucpg_tssUse": [
+          188
+        ],
+        "our": [
+          189,
+          587
+        ],
+        "generate": [
+          192,
+          659,
+          914,
+          934,
+          950
+        ],
+        "Hi-C": [
+          196,
+          958
+        ],
+        "matrix": [
+          197
+        ],
+        "CIS": [
+          199
+        ],
+        "(Confidence": [
+          200
+        ],
+        "Interval": [
+          201
+        ],
+        "Cross": [
+          202
+        ],
+        "Sample)": [
+          203
+        ],
+        "data.docker": [
+          204
+        ],
+        "run": [
+          205,
+          235,
+          276,
+          288,
+          298,
+          317,
+          367
+        ],
+        "-it": [
+          206,
+          236
+        ],
+        "yay135/diffucpg_tssthenpython": [
+          207,
+          237
+        ],
+        "generate_train_test_samples.py": [
+          208
+        ],
+        "The": [
+          209,
+          397,
+          416,
+          424,
+          456,
+          483,
+          558,
+          573,
+          581,
+          599
+        ],
+        "tissue-specific": [
+          210
+        ],
+        "(pytorch)": [
+          212
+        ],
+        "are": [
+          213,
+          221,
+          400,
+          410,
+          562,
+          577,
+          607,
+          629,
+          798,
+          807
+        ],
+        "CD34+": [
+          215
+        ],
+        "cells,": [
+          216
+        ],
+        "GBM": [
+          217
+        ],
+        "BRCA,": [
+          219
+        ],
+        "they": [
+          220
+        ],
+        "stored": [
+          222
+        ],
+        "folders": [
+          224
+        ],
+        "named": [
+          225
+        ],
+        "\"model*\"": [
+          226
+        ],
+        "image.": [
+          229
+        ],
+        "Tissue": [
+          232
+        ],
+        "specific": [
+          233
+        ],
+        "modelsdocker": [
+          234
+        ],
+        "batch_run.py": [
+          238
+        ],
+        "Example": [
+          242,
+          408
+        ],
+        "yay135/diffucpgIf": [
+          246
+        ],
+        "do": [
+          248
+        ],
+        "not": [
+          249,
+          667,
+          730,
+          1022
+        ],
+        "enabled": [
+          253
+        ],
+        "system,": [
+          254
+        ],
+        "CPU-only": [
+          257
+        ],
+        "imagedocker": [
+          258
+        ],
+        "yay135/diffucpg_cpuprepare": [
+          260
+        ],
+        "directory,": [
+          264
+        ],
+        "use": [
+          265,
+          452,
+          638,
+          896,
+          1075
+        ],
+        "command": [
+          268,
+          511
+        ],
+        "print": [
+          270
+        ],
+        "directorydocker": [
+          275
+        ],
+        "--rm": [
+          277,
+          293,
+          303,
+          372
+        ],
+        "yay135/diffucpg": [
+          278,
+          304,
+          373
+        ],
+        "-e": [
+          279
+        ],
+        "trueassume": [
+          280
+        ],
+        "directory": [
+          283
+        ],
+        "name": [
+          284
+        ],
+        "is": [
+          285,
+          320,
+          341,
+          365,
+          392,
+          426,
+          464,
+          476,
+          481,
+          485,
+          569,
+          589,
+          595,
+          680,
+          686,
+          698,
+          713,
+          720,
+          729,
+          740,
+          747,
+          755,
+          837,
+          849,
+          893,
+          908,
+          925,
+          944,
+          1033,
+          1057,
+          1068,
+          1081,
+          1091,
+          1128,
+          1152
+        ],
+        "\"input_data\"in": [
+          286
+        ],
+        "windowsdocker": [
+          287
+        ],
+        "--gpus": [
+          289,
+          299,
+          368
+        ],
+        "all": [
+          290,
+          300,
+          369,
+          897
+        ],
+        "-v": [
+          291,
+          301,
+          370
+        ],
+        ".\\input_data\\:/data": [
+          292
+        ],
+        "yay135/diffucpgin": [
+          294
+        ],
+        "unix": [
+          295
+        ],
+        "linuxdocker": [
+          297
+        ],
+        "./input_data:/data": [
+          302,
+          371
+        ],
+        "Other": [
+          305,
+          758
+        ],
+        "options": [
+          307
+        ],
+        "-d": [
+          308,
+          374
+        ],
+        "--device": [
+          310
+        ],
+        ":": [
+          311,
+          324,
+          345,
+          830,
+          843,
+          886,
+          901,
+          1003,
+          1012,
+          1026,
+          1044,
+          1061,
+          1072,
+          1085,
+          1105,
+          1121,
+          1139
+        ],
+        "select": [
+          312,
+          870,
+          1051,
+          1146
+        ],
+        "which": [
+          313,
+          831,
+          888,
+          1052,
+          1147
+        ],
+        "cuda": [
+          314,
+          380,
+          1049,
+          1144
+        ],
+        "device": [
+          315,
+          381
+        ],
+        "with,": [
+          318
+        ],
+        "default": [
+          319,
+          340,
+          364,
+          892,
+          907,
+          924,
+          943,
+          1032,
+          1056,
+          1067,
+          1080,
+          1090,
+          1127,
+          1151
+        ],
+        "0-m": [
+          321
+        ],
+        "--mingcpg": [
+          323
+        ],
+        "scan": [
+          325
+        ],
+        "methyl": [
+          327,
+          338,
+          387
+        ],
+        "array,": [
+          328
+        ],
+        "limit": [
+          329,
+          887
+        ],
+        "only": [
+          330,
+          419,
+          869
+        ],
+        "imputing": [
+          331
+        ],
+        "windows": [
+          332,
+          872,
+          955,
+          979
+        ],
+        "at": [
+          334,
+          706
+        ],
+        "least": [
+          335,
+          707
+        ],
+        "m": [
+          336
+        ],
+        "non-missing": [
+          337,
+          386
+        ],
+        "values,": [
+          339
+        ],
+        "m=10-o": [
+          342
+        ],
+        "--overlap": [
+          344
+        ],
+        "set": [
+          346,
+          465
+        ],
+        "number": [
+          347,
+          384,
+          457,
+          921,
+          930
+        ],
+        "impute": [
+          349,
+          671
+        ],
+        "epochs,": [
+          350,
+          355
+        ],
+        "shift": [
+          351
+        ],
+        "window": [
+          352,
+          391,
+          685,
+          903,
+          916,
+          1027,
+          1122
+        ],
+        "locations": [
+          353
+        ],
+        "between": [
+          354
+        ],
+        "get": [
+          356
+        ],
+        "mean": [
+          357
+        ],
+        "imputed": [
+          358,
+          1114
+        ],
+        "values": [
+          359,
+          388
+        ],
+        "each": [
+          361,
+          567,
+          605,
+          677,
+          684,
+          694,
+          787,
+          817,
+          1030,
+          1040,
+          1125,
+          1135
+        ],
+        "CpG": [
+          362,
+          732
+        ],
+        "location,": [
+          363,
+          733
+        ],
+        "2example:docker": [
+          366
+        ],
+        "1": [
+          375
+        ],
+        "-m": [
+          376
+        ],
+        "5": [
+          377,
+          708
+        ],
+        "-o": [
+          378
+        ],
+        "3use": [
+          379
+        ],
+        "1,": [
+          382
+        ],
+        "min": [
+          383
+        ],
+        "5,": [
+          393
+        ],
+        "overlap": [
+          394
+        ],
+        "epochs": [
+          395,
+          1064
+        ],
+        "3": [
+          396,
+          796
+        ],
+        "tutorials": [
+          399
+        ],
+        "non-docker": [
+          402
+        ],
+        "usages.": [
+          403
+        ],
+        "2.": [
+          404
+        ],
+        "Data": [
+          405,
+          551,
+          557
+        ],
+        "available": [
+          411
+        ],
+        "download": [
+          413,
+          543
+        ],
+        "\"gdown.sh\".": [
+          415
+        ],
+        "contain": [
+          420
+        ],
+        "WGBS": [
+          421
+        ],
+        "DDPM": [
+          428,
+          995
+        ],
+        "repository": [
+          432
+        ],
+        "contains": [
+          433,
+          705
+        ],
+        "complete": [
+          435
+        ],
+        "implementation": [
+          436
+        ],
+        "1-dimensional": [
+          438
+        ],
+        "input.": [
+          439
+        ],
+        "Please": [
+          440
+        ],
+        "refer": [
+          441
+        ],
+        "https://arxiv.org/abs/2006.11239": [
+          443
+        ],
+        "https://huggingface.co/blog/annotated-diffusion": [
+          445
+        ],
+        "more": [
+          447
+        ],
+        "details.": [
+          448
+        ],
+        "3.": [
+          449
+        ],
+        "How": [
+          450
+        ],
+        "3.1": [
+          453
+        ],
+        "System": [
+          454
+        ],
+        "Requirements": [
+          455
+        ],
+        "steps": [
+          459
+        ],
+        "process": [
+          463
+        ],
+        "2000.": [
+          467
+        ],
+        "Imputing": [
+          468
+        ],
+        "sample": [
+          470,
+          697,
+          704,
+          785,
+          818,
+          981
+        ],
+        "requires": [
+          471
+        ],
+        "2000": [
+          472
+        ],
+        "steps.": [
+          473
+        ],
+        "Gpu": [
+          474
+        ],
+        "acceleration": [
+          475
+        ],
+        "preferred.": [
+          477
+        ],
+        "required.": [
+          482
+        ],
+        "fully": [
+          486
+        ],
+        "tested": [
+          487
+        ],
+        "operational": [
+          489
+        ],
+        "platform:": [
+          493
+        ],
+        "Distributor": [
+          494
+        ],
+        "ID:": [
+          495
+        ],
+        "DebianDescription:": [
+          496
+        ],
+        "GNU/Linux": [
+          498
+        ],
+        "(bookworm)Release:": [
+          500
+        ],
+        "12Codename:": [
+          501
+        ],
+        "3.2": [
+          503
+        ],
+        "Clone": [
+          504
+        ],
+        "Current": [
+          506
+        ],
+        "Project": [
+          507
+        ],
+        "clone": [
+          513,
+          516
+        ],
+        "project.git": [
+          515
+        ],
+        "https://github.com/yay135/DiffuCpG.git": [
+          517
+        ],
+        "3.4": [
+          518,
+          534
+        ],
+        "Configure": [
+          519
+        ],
+        "Environment": [
+          520
+        ],
+        "Make": [
+          521
+        ],
+        "software": [
+          527
+        ],
+        "system:Python": [
+          531
+        ],
+        "3.9+Pytorch": [
+          532
+        ],
+        "2.0.1+": [
+          533
+        ],
+        "Training": [
+          536,
+          986
+        ],
+        "Testing": [
+          538
+        ],
+        "python": [
+          539
+        ],
+        "run.pyThe": [
+          540
+        ],
+        "script": [
+          541,
+          656,
+          867,
+          947
+        ],
+        "will": [
+          542,
+          813,
+          864,
+          877,
+          1016
+        ],
+        "install": [
+          547
+        ],
+        "dependencies": [
+          548
+        ],
+        "automatically.": [
+          549,
+          598
+        ],
+        "4": [
+          550,
+          712
+        ],
+        "Script": [
+          553,
+          987
+        ],
+        "Details": [
+          554
+        ],
+        "4.1": [
+          555
+        ],
+        "RAW": [
+          556
+        ],
+        "arrays": [
+          560
+        ],
+        "downloaded": [
+          561,
+          597
+        ],
+        "folder": [
+          565,
+          628,
+          774,
+          971,
+          1005,
+          1107,
+          1116
+        ],
+        "\"raw\",": [
+          566
+        ],
+        "file": [
+          568,
+          606,
+          789,
+          836,
+          968
+        ],
+        "array.": [
+          572
+        ],
+        "first": [
+          574,
+          711,
+          795
+        ],
+        "2": [
+          575
+        ],
+        "columns": [
+          576,
+          603,
+          797,
+          806
+        ],
+        "\"chromosome\"": [
+          578
+        ],
+        "\"location\".": [
+          580
+        ],
+        "assembly": [
+          582
+        ],
+        "mapping": [
+          585
+        ],
+        "project": [
+          588
+        ],
+        "\"GRCH37": [
+          591
+        ],
+        "primary": [
+          592
+        ],
+        "assembly\".": [
+          593
+        ],
+        "also": [
+          596,
+          756
+        ],
+        "rest": [
+          600,
+          803
+        ],
+        "levels(required)": [
+          609
+        ],
+        "other": [
+          611
+        ],
+        "biological": [
+          612,
+          759
+        ],
+        "(optional)": [
+          614
+        ],
+        "wish": [
+          616,
+          636
+        ],
+        "incorporate": [
+          618
+        ],
+        "enhance": [
+          620
+        ],
+        "model.": [
+          622
+        ],
+        "These": [
+          623
+        ],
+        "files": [
+          624,
+          771
+        ],
+        "raw": [
+          627,
+          770,
+          788,
+          825,
+          835
+        ],
+        "initial": [
+          631
+        ],
+        "inputs": [
+          632
+        ],
+        "pipeline,if": [
+          634
+        ],
+        "own": [
+          640,
+          779,
+          976
+        ],
+        "data,": [
+          641
+        ],
+        "must": [
+          643
+        ],
+        "be": [
+          644,
+          762,
+          814,
+          1017
+        ],
+        "configured": [
+          645
+        ],
+        "as": [
+          646,
+          764,
+          809,
+          880,
+          882,
+          957
+        ],
+        "such": [
+          647,
+          956
+        ],
+        "before": [
+          648
+        ],
+        "running": [
+          649
+        ],
+        "pipeline.": [
+          651
+        ],
+        "4.2": [
+          652
+        ],
+        "Generate": [
+          653
+        ],
+        "Sample": [
+          654
+        ],
+        "Use": [
+          655,
+          946,
+          988,
+          1095
+        ],
+        "\"generate_samples.py\"": [
+          657
+        ],
+        "training": [
+          662,
+          695,
+          782,
+          855,
+          1008
+        ],
+        "testing.The": [
+          664
+        ],
+        "directly": [
+          668
+        ],
+        "read": [
+          669
+        ],
+        "file.": [
+          675
+        ],
+        "Instead,": [
+          676
+        ],
+        "divided": [
+          681
+        ],
+        "into": [
+          682
+        ],
+        "windows,": [
+          683
+        ],
+        "1kb": [
+          687
+        ],
+        "(1000": [
+          688
+        ],
+        "base": [
+          689,
+          726
+        ],
+        "pairs)": [
+          690
+        ],
+        "length,": [
+          692
+        ],
+        "generated": [
+          699,
+          999,
+          1101
+        ],
+        "window.": [
+          702
+        ],
+        "Each": [
+          703
+        ],
+        "channels.": [
+          709,
+          766
+        ],
+        "sequence": [
+          715
+        ],
+        "one-hot": [
+          716
+        ],
+        "encoding,": [
+          717
+        ],
+        "5th": [
+          719
+        ],
+        "If": [
+          724,
+          742,
+          1155
+        ],
+        "pair": [
+          727
+        ],
+        "location": [
+          728
+        ],
+        "value": [
+          737,
+          754,
+          848
+        ],
+        "\"-1\".": [
+          741,
+          757
+        ],
+        "CpG's": [
+          744
+        ],
+        "waiting": [
+          750
+        ],
+        "imputaion,": [
+          752
+        ],
+        "its": [
+          753
+        ],
+        "added": [
+          763,
+          815
+        ],
+        "extra": [
+          765
+        ],
+        "Check": [
+          767
+        ],
+        "out": [
+          768,
+          963
+        ],
+        "\"raw\"": [
+          775,
+          792
+        ],
+        "form": [
+          777,
+          974
+        ],
+        "generation.For": [
+          786
+        ],
+        "folder,": [
+          793,
+          942,
+          1015
+        ],
+        "chr,": [
+          799
+        ],
+        "loc,": [
+          800
+        ],
+        "methylation.The": [
+          802
+        ],
+        "treated": [
+          808
+        ],
+        "additional": [
+          810
+        ],
+        "channels": [
+          811
+        ],
+        "during": [
+          819,
+          1078
+        ],
+        "generation.": [
+          820
+        ],
+        "'-d'": [
+          821
+        ],
+        "'--folder':": [
+          823
+        ],
+        "specify": [
+          824
+        ],
+        "folder'-i'": [
+          827
+        ],
+        "'--index'": [
+          829
+        ],
+        "column": [
+          832
+        ],
+        "array'-t'": [
+          840
+        ],
+        "'--tol'": [
+          842
+        ],
+        "how": [
+          844,
+          1062
+        ],
+        "many": [
+          845,
+          1063
+        ],
+        "tolerated(we": [
+          850
+        ],
+        "recommend": [
+          851
+        ],
+        "0": [
+          852,
+          863,
+          1153
+        ],
+        "generating": [
+          854,
+          860
+        ],
+        "-1": [
+          858,
+          876
+        ],
+        "samples,": [
+          862
+        ],
+        "force": [
+          865,
+          913
+        ],
+        "no": [
+          874
+        ],
+        "missings,": [
+          875
+        ],
+        "tolerate": [
+          878
+        ],
+        "much": [
+          881
+        ],
+        "possible.)'-c'": [
+          883
+        ],
+        "'--chr'": [
+          885
+        ],
+        "chromosome": [
+          889,
+          936
+        ],
+        "use,": [
+          891,
+          906,
+          1055,
+          1150
+        ],
+        "\"chr#\"": [
+          894
+        ],
+        "chromosomes'-w'": [
+          898
+        ],
+        "'--winsize'": [
+          900
+        ],
+        "what": [
+          902
+        ],
+        "size": [
+          904,
+          1028,
+          1038,
+          1123,
+          1133
+        ],
+        "1000": [
+          909
+        ],
+        "'-m'": [
+          910
+        ],
+        "'--mincpg':": [
+          912
+        ],
+        "minimum": [
+          920
+        ],
+        "CpGs,": [
+          923
+        ],
+        "10": [
+          926,
+          1092
+        ],
+        "'-n'": [
+          927
+        ],
+        "'--nsample':": [
+          929
+        ],
+        "per": [
+          935
+        ],
+        "'-p'": [
+          937
+        ],
+        "'--output':": [
+          939
+        ],
+        "output": [
+          941,
+          1115
+        ],
+        "\"out\"": [
+          945
+        ],
+        "\"generate_samples_concat.py\"": [
+          948
+        ],
+        "interacting": [
+          954,
+          978
+        ],
+        "computed": [
+          961
+        ],
+        "correlation.Check": [
+          962
+        ],
+        "long": [
+          966
+        ],
+        "\"data\"": [
+          972
+        ],
+        "generation": [
+          982
+        ],
+        "concatenation.": [
+          984
+        ],
+        "4.3": [
+          985
+        ],
+        "diffusion.py": [
+          989
+        ],
+        "samples'-t'": [
+          1000
+        ],
+        "'--train_folder'": [
+          1002
+        ],
+        "containing": [
+          1006,
+          1108
+        ],
+        "samples'-f'": [
+          1009
+        ],
+        "'--model_folder'": [
+          1011
+        ],
+        "created": [
+          1018
+        ],
+        "if": [
+          1019,
+          1045,
+          1140
+        ],
+        "does": [
+          1021
+        ],
+        "exist'-w'": [
+          1023
+        ],
+        "'--win_size'": [
+          1025,
+          1120
+        ],
+        "sample,": [
+          1031,
+          1126
+        ],
+        "1000'-c'": [
+          1034,
+          1129
+        ],
+        "'--channel':": [
+          1036,
+          1131
+        ],
+        "channel": [
+          1037,
+          1132
+        ],
+        "sample'-d'": [
+          1041,
+          1136
+        ],
+        "'--cuda_device'": [
+          1043,
+          1138
+        ],
+        "multiple": [
+          1048,
+          1143
+        ],
+        "gpus,": [
+          1050,
+          1145
+        ],
+        "gpu": [
+          1053,
+          1148
+        ],
+        "0\"-e\"": [
+          1058
+        ],
+        "\"--epoch\"": [
+          1060
+        ],
+        "training,": [
+          1066,
+          1079
+        ],
+        "2000\"-s\"": [
+          1069
+        ],
+        "\"--earlystop\"": [
+          1071
+        ],
+        "whether": [
+          1073
+        ],
+        "\"early": [
+          1076
+        ],
+        "stopping\"": [
+          1077
+        ],
+        "False\"-p\"": [
+          1082
+        ],
+        "\"--patience\"": [
+          1084
+        ],
+        "patience": [
+          1086
+        ],
+        "early": [
+          1088
+        ],
+        "stopping,": [
+          1089
+        ],
+        "4.4": [
+          1093
+        ],
+        "Imputation": [
+          1094
+        ],
+        "diffusion_inpainting.py": [
+          1096
+        ],
+        "perform": [
+          1098
+        ],
+        "samples.'-t'": [
+          1102
+        ],
+        "'--test_folder'": [
+          1104
+        ],
+        "imputation'-o'": [
+          1111
+        ],
+        "'--out_folder':": [
+          1113
+        ],
+        "name,": [
+          1117
+        ],
+        "default=\"inpainting_out\"'-w'": [
+          1118
+        ],
+        "Team": [
+          1154
+        ],
+        "any": [
+          1158
+        ],
+        "questions": [
+          1159
+        ],
+        "concerns": [
+          1161
+        ],
+        "about": [
+          1162
+        ],
+        "project,": [
+          1164
+        ],
+        "please": [
+          1165
+        ],
+        "contact": [
+          1166
+        ],
+        "team": [
+          1169
+        ],
+        "member:": [
+          1170
+        ],
+        "Fengyao": [
+          1171
+        ],
+        "Yan": [
+          1172
+        ],
+        "fxy134@miami.edu": [
+          1173
+        ]
+      },
+      "counts_by_year": [
+        {
+          "year": 2026,
+          "cited_by_count": 66
+        },
+        {
+          "year": 2025,
+          "cited_by_count": 1546
+        },
+        {
+          "year": 2024,
+          "cited_by_count": 2323
+        },
+        {
+          "year": 2023,
+          "cited_by_count": 1450
+        },
+        {
+          "year": 2022,
+          "cited_by_count": 125
+        },
+        {
+          "year": 2021,
+          "cited_by_count": 82
+        },
+        {
+          "year": 2020,
+          "cited_by_count": 16
+        }
+      ],
+      "updated_date": "2026-05-10T08:33:47.465468",
+      "created_date": "2020-06-25T00:00:00"
+    },
+    {
+      "id": "https://openalex.org/W4312497550",
+      "doi": "https://doi.org/10.1109/cvpr52688.2022.01117",
+      "title": "RePaint: Inpainting using Denoising Diffusion Probabilistic Models",
+      "display_name": "RePaint: Inpainting using Denoising Diffusion Probabilistic Models",
+      "relevance_score": 6033.03,
+      "publication_year": 2022,
+      "publication_date": "2022-06-01",
+      "ids": {
+        "openalex": "https://openalex.org/W4312497550",
+        "doi": "https://doi.org/10.1109/cvpr52688.2022.01117"
+      },
+      "language": "en",
+      "primary_location": {
+        "id": "doi:10.1109/cvpr52688.2022.01117",
+        "is_oa": false,
+        "landing_page_url": "https://doi.org/10.1109/cvpr52688.2022.01117",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S4363607701",
+          "display_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": null,
+          "host_organization_name": null,
+          "host_organization_lineage": [],
+          "host_organization_lineage_names": [],
+          "type": "conference"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+        "raw_type": "proceedings-article"
+      },
+      "type": "article",
+      "indexed_in": [
+        "crossref"
+      ],
+      "open_access": {
+        "is_oa": true,
+        "oa_status": "green",
+        "oa_url": "https://lirias.kuleuven.be/handle/20.500.12942/728757",
+        "any_repository_has_fulltext": true
+      },
+      "authorships": [
+        {
+          "author_position": "first",
+          "author": {
+            "id": "https://openalex.org/A5090715785",
+            "display_name": "Andreas Lugmayr",
+            "orcid": null
+          },
+          "institutions": [],
+          "countries": [],
+          "is_corresponding": true,
+          "raw_author_name": "Andreas Lugmayr",
+          "raw_affiliation_strings": [
+            "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland",
+              "institution_ids": []
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5068158266",
+            "display_name": "Martin Danelljan",
+            "orcid": "https://orcid.org/0000-0001-6144-9520"
+          },
+          "institutions": [],
+          "countries": [],
+          "is_corresponding": false,
+          "raw_author_name": "Martin Danelljan",
+          "raw_affiliation_strings": [
+            "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland",
+              "institution_ids": []
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5024379785",
+            "display_name": "Andr\u00e9s Romero",
+            "orcid": "https://orcid.org/0000-0002-7118-5175"
+          },
+          "institutions": [],
+          "countries": [],
+          "is_corresponding": false,
+          "raw_author_name": "Andres Romero",
+          "raw_affiliation_strings": [
+            "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland",
+              "institution_ids": []
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5067487326",
+            "display_name": "Fisher Yu",
+            "orcid": "https://orcid.org/0000-0001-8829-7344"
+          },
+          "institutions": [],
+          "countries": [],
+          "is_corresponding": false,
+          "raw_author_name": "Fisher Yu",
+          "raw_affiliation_strings": [
+            "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland",
+              "institution_ids": []
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5052236177",
+            "display_name": "Radu Timofte",
+            "orcid": "https://orcid.org/0000-0002-1478-0402"
+          },
+          "institutions": [],
+          "countries": [],
+          "is_corresponding": false,
+          "raw_author_name": "Radu Timofte",
+          "raw_affiliation_strings": [
+            "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland",
+              "institution_ids": []
+            }
+          ]
+        },
+        {
+          "author_position": "last",
+          "author": {
+            "id": "https://openalex.org/A5001254143",
+            "display_name": "Luc Van Gool",
+            "orcid": "https://orcid.org/0000-0002-3445-5711"
+          },
+          "institutions": [],
+          "countries": [],
+          "is_corresponding": false,
+          "raw_author_name": "Luc Van Gool",
+          "raw_affiliation_strings": [
+            "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "ETH Z&#x00FC;rich,Computer Vision Lab,Switzerland",
+              "institution_ids": []
+            }
+          ]
+        }
+      ],
+      "institutions": [],
+      "countries_distinct_count": 0,
+      "institutions_distinct_count": 6,
+      "corresponding_author_ids": [
+        "https://openalex.org/A5090715785"
+      ],
+      "corresponding_institution_ids": [],
+      "apc_list": null,
+      "apc_paid": null,
+      "fwci": 78.5842,
+      "has_fulltext": false,
+      "cited_by_count": 1436,
+      "citation_normalized_percentile": {
+        "value": 0.99950312,
+        "is_in_top_1_percent": true,
+        "is_in_top_10_percent": true
+      },
+      "cited_by_percentile_year": {
+        "min": 89,
+        "max": 100
+      },
+      "biblio": {
+        "volume": null,
+        "issue": null,
+        "first_page": "11451",
+        "last_page": "11461"
+      },
+      "is_retracted": false,
+      "is_paratext": false,
+      "is_xpac": false,
+      "primary_topic": {
+        "id": "https://openalex.org/T10775",
+        "display_name": "Generative Adversarial Networks and Image Synthesis",
+        "score": 0.9998000264167786,
+        "subfield": {
+          "id": "https://openalex.org/subfields/1707",
+          "display_name": "Computer Vision and Pattern Recognition"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/17",
+          "display_name": "Computer Science"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      },
+      "topics": [
+        {
+          "id": "https://openalex.org/T10775",
+          "display_name": "Generative Adversarial Networks and Image Synthesis",
+          "score": 0.9998000264167786,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11105",
+          "display_name": "Advanced Image Processing Techniques",
+          "score": 0.9958999752998352,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10481",
+          "display_name": "Computer Graphics and Visualization Techniques",
+          "score": 0.9890999794006348,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1704",
+            "display_name": "Computer Graphics and Computer-Aided Design"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "keywords": [
+        {
+          "id": "https://openalex.org/keywords/inpainting",
+          "display_name": "Inpainting",
+          "score": 0.9453142881393433
+        },
+        {
+          "id": "https://openalex.org/keywords/computer-science",
+          "display_name": "Computer science",
+          "score": 0.7262923121452332
+        },
+        {
+          "id": "https://openalex.org/keywords/artificial-intelligence",
+          "display_name": "Artificial intelligence",
+          "score": 0.6460119485855103
+        },
+        {
+          "id": "https://openalex.org/keywords/generalization",
+          "display_name": "Generalization",
+          "score": 0.6360469460487366
+        },
+        {
+          "id": "https://openalex.org/keywords/image",
+          "display_name": "Image (mathematics)",
+          "score": 0.5499979853630066
+        },
+        {
+          "id": "https://openalex.org/keywords/filling-in",
+          "display_name": "Filling-in",
+          "score": 0.506456732749939
+        },
+        {
+          "id": "https://openalex.org/keywords/image-denoising",
+          "display_name": "Image denoising",
+          "score": 0.49156054854393005
+        },
+        {
+          "id": "https://openalex.org/keywords/probabilistic-logic",
+          "display_name": "Probabilistic logic",
+          "score": 0.4816414415836334
+        },
+        {
+          "id": "https://openalex.org/keywords/pattern-recognition",
+          "display_name": "Pattern recognition (psychology)",
+          "score": 0.45825424790382385
+        },
+        {
+          "id": "https://openalex.org/keywords/noise-reduction",
+          "display_name": "Noise reduction",
+          "score": 0.44033998250961304
+        },
+        {
+          "id": "https://openalex.org/keywords/pixel",
+          "display_name": "Pixel",
+          "score": 0.4264352023601532
+        },
+        {
+          "id": "https://openalex.org/keywords/image-restoration",
+          "display_name": "Image restoration",
+          "score": 0.42636919021606445
+        },
+        {
+          "id": "https://openalex.org/keywords/computer-vision",
+          "display_name": "Computer vision",
+          "score": 0.41327527165412903
+        },
+        {
+          "id": "https://openalex.org/keywords/process",
+          "display_name": "Process (computing)",
+          "score": 0.41101184487342834
+        },
+        {
+          "id": "https://openalex.org/keywords/image-processing",
+          "display_name": "Image processing",
+          "score": 0.2550748288631439
+        },
+        {
+          "id": "https://openalex.org/keywords/mathematics",
+          "display_name": "Mathematics",
+          "score": 0.18147870898246765
+        }
+      ],
+      "concepts": [
+        {
+          "id": "https://openalex.org/C11727466",
+          "wikidata": "https://www.wikidata.org/wiki/Q1628157",
+          "display_name": "Inpainting",
+          "level": 3,
+          "score": 0.9453142881393433
+        },
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 0.7262923121452332
+        },
+        {
+          "id": "https://openalex.org/C154945302",
+          "wikidata": "https://www.wikidata.org/wiki/Q11660",
+          "display_name": "Artificial intelligence",
+          "level": 1,
+          "score": 0.6460119485855103
+        },
+        {
+          "id": "https://openalex.org/C177148314",
+          "wikidata": "https://www.wikidata.org/wiki/Q170084",
+          "display_name": "Generalization",
+          "level": 2,
+          "score": 0.6360469460487366
+        },
+        {
+          "id": "https://openalex.org/C115961682",
+          "wikidata": "https://www.wikidata.org/wiki/Q860623",
+          "display_name": "Image (mathematics)",
+          "level": 2,
+          "score": 0.5499979853630066
+        },
+        {
+          "id": "https://openalex.org/C200873422",
+          "wikidata": "https://www.wikidata.org/wiki/Q5448821",
+          "display_name": "Filling-in",
+          "level": 2,
+          "score": 0.506456732749939
+        },
+        {
+          "id": "https://openalex.org/C2983327147",
+          "wikidata": "https://www.wikidata.org/wiki/Q581861",
+          "display_name": "Image denoising",
+          "level": 3,
+          "score": 0.49156054854393005
+        },
+        {
+          "id": "https://openalex.org/C49937458",
+          "wikidata": "https://www.wikidata.org/wiki/Q2599292",
+          "display_name": "Probabilistic logic",
+          "level": 2,
+          "score": 0.4816414415836334
+        },
+        {
+          "id": "https://openalex.org/C153180895",
+          "wikidata": "https://www.wikidata.org/wiki/Q7148389",
+          "display_name": "Pattern recognition (psychology)",
+          "level": 2,
+          "score": 0.45825424790382385
+        },
+        {
+          "id": "https://openalex.org/C163294075",
+          "wikidata": "https://www.wikidata.org/wiki/Q581861",
+          "display_name": "Noise reduction",
+          "level": 2,
+          "score": 0.44033998250961304
+        },
+        {
+          "id": "https://openalex.org/C160633673",
+          "wikidata": "https://www.wikidata.org/wiki/Q355198",
+          "display_name": "Pixel",
+          "level": 2,
+          "score": 0.4264352023601532
+        },
+        {
+          "id": "https://openalex.org/C106430172",
+          "wikidata": "https://www.wikidata.org/wiki/Q6002272",
+          "display_name": "Image restoration",
+          "level": 4,
+          "score": 0.42636919021606445
+        },
+        {
+          "id": "https://openalex.org/C31972630",
+          "wikidata": "https://www.wikidata.org/wiki/Q844240",
+          "display_name": "Computer vision",
+          "level": 1,
+          "score": 0.41327527165412903
+        },
+        {
+          "id": "https://openalex.org/C98045186",
+          "wikidata": "https://www.wikidata.org/wiki/Q205663",
+          "display_name": "Process (computing)",
+          "level": 2,
+          "score": 0.41101184487342834
+        },
+        {
+          "id": "https://openalex.org/C9417928",
+          "wikidata": "https://www.wikidata.org/wiki/Q1070689",
+          "display_name": "Image processing",
+          "level": 3,
+          "score": 0.2550748288631439
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 0.18147870898246765
+        },
+        {
+          "id": "https://openalex.org/C111919701",
+          "wikidata": "https://www.wikidata.org/wiki/Q9135",
+          "display_name": "Operating system",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C134306372",
+          "wikidata": "https://www.wikidata.org/wiki/Q7754",
+          "display_name": "Mathematical analysis",
+          "level": 1,
+          "score": 0.0
+        }
+      ],
+      "mesh": [],
+      "locations_count": 2,
+      "locations": [
+        {
+          "id": "doi:10.1109/cvpr52688.2022.01117",
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1109/cvpr52688.2022.01117",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4363607701",
+            "display_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": null,
+            "host_organization_name": null,
+            "host_organization_lineage": [],
+            "host_organization_lineage_names": [],
+            "type": "conference"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true,
+          "raw_source_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)",
+          "raw_type": "proceedings-article"
+        },
+        {
+          "id": "pmh:oai:lirias2repo.kuleuven.be:20.500.12942/728757",
+          "is_oa": true,
+          "landing_page_url": "https://lirias.kuleuven.be/handle/20.500.12942/728757",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306401954",
+            "display_name": "Lirias (KU Leuven)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I99464096",
+            "host_organization_name": "KU Leuven",
+            "host_organization_lineage": [
+              "https://openalex.org/I99464096"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": "other-oa",
+          "license_id": "https://openalex.org/licenses/other-oa",
+          "version": "acceptedVersion",
+          "is_accepted": true,
+          "is_published": false,
+          "raw_source_name": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), LA, New Orleans, 18-24 June 2022",
+          "raw_type": "info:eu-repo/semantics/publishedVersion"
+        }
+      ],
+      "best_oa_location": {
+        "id": "pmh:oai:lirias2repo.kuleuven.be:20.500.12942/728757",
+        "is_oa": true,
+        "landing_page_url": "https://lirias.kuleuven.be/handle/20.500.12942/728757",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S4306401954",
+          "display_name": "Lirias (KU Leuven)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": "https://openalex.org/I99464096",
+          "host_organization_name": "KU Leuven",
+          "host_organization_lineage": [
+            "https://openalex.org/I99464096"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": "other-oa",
+        "license_id": "https://openalex.org/licenses/other-oa",
+        "version": "acceptedVersion",
+        "is_accepted": true,
+        "is_published": false,
+        "raw_source_name": "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), LA, New Orleans, 18-24 June 2022",
+        "raw_type": "info:eu-repo/semantics/publishedVersion"
+      },
+      "sustainable_development_goals": [],
+      "awards": [],
+      "funders": [],
+      "has_content": {
+        "grobid_xml": false,
+        "pdf": false
+      },
+      "content_urls": null,
+      "referenced_works_count": 75,
+      "referenced_works": [
+        "https://openalex.org/W1834627138",
+        "https://openalex.org/W2093212899",
+        "https://openalex.org/W2100415658",
+        "https://openalex.org/W2117539524",
+        "https://openalex.org/W2129069237",
+        "https://openalex.org/W2732026016",
+        "https://openalex.org/W2738588019",
+        "https://openalex.org/W2771305881",
+        "https://openalex.org/W2798365772",
+        "https://openalex.org/W2888039002",
+        "https://openalex.org/W2952716587",
+        "https://openalex.org/W2962770929",
+        "https://openalex.org/W2962785568",
+        "https://openalex.org/W2963231084",
+        "https://openalex.org/W2963255313",
+        "https://openalex.org/W2963420272",
+        "https://openalex.org/W2963840672",
+        "https://openalex.org/W2964148878",
+        "https://openalex.org/W2981682056",
+        "https://openalex.org/W2982763192",
+        "https://openalex.org/W2991377405",
+        "https://openalex.org/W3005034837",
+        "https://openalex.org/W3015643106",
+        "https://openalex.org/W3034352949",
+        "https://openalex.org/W3034482833",
+        "https://openalex.org/W3035251567",
+        "https://openalex.org/W3035574324",
+        "https://openalex.org/W3036167779",
+        "https://openalex.org/W3043547428",
+        "https://openalex.org/W3104724358",
+        "https://openalex.org/W3108554146",
+        "https://openalex.org/W3110257065",
+        "https://openalex.org/W3119800657",
+        "https://openalex.org/W3130440474",
+        "https://openalex.org/W3133999317",
+        "https://openalex.org/W3136958399",
+        "https://openalex.org/W3162926177",
+        "https://openalex.org/W3163213081",
+        "https://openalex.org/W3166762869",
+        "https://openalex.org/W3168053944",
+        "https://openalex.org/W3176913662",
+        "https://openalex.org/W3191805365",
+        "https://openalex.org/W3193508667",
+        "https://openalex.org/W3199003182",
+        "https://openalex.org/W3203538104",
+        "https://openalex.org/W3206082266",
+        "https://openalex.org/W3212516020",
+        "https://openalex.org/W4221004921",
+        "https://openalex.org/W4226125322",
+        "https://openalex.org/W4240726888",
+        "https://openalex.org/W4249724384",
+        "https://openalex.org/W4287029626",
+        "https://openalex.org/W4288099666",
+        "https://openalex.org/W4301206121",
+        "https://openalex.org/W4320013936",
+        "https://openalex.org/W6696085341",
+        "https://openalex.org/W6740934225",
+        "https://openalex.org/W6750997056",
+        "https://openalex.org/W6754120247",
+        "https://openalex.org/W6755312952",
+        "https://openalex.org/W6765779288",
+        "https://openalex.org/W6773910594",
+        "https://openalex.org/W6776158878",
+        "https://openalex.org/W6788664344",
+        "https://openalex.org/W6788990321",
+        "https://openalex.org/W6791190667",
+        "https://openalex.org/W6791864141",
+        "https://openalex.org/W6792027530",
+        "https://openalex.org/W6795288823",
+        "https://openalex.org/W6801666068",
+        "https://openalex.org/W6804122398",
+        "https://openalex.org/W6810232963",
+        "https://openalex.org/W6810940779",
+        "https://openalex.org/W6840155194",
+        "https://openalex.org/W6840815571"
+      ],
+      "related_works": [
+        "https://openalex.org/W2897194722",
+        "https://openalex.org/W4221141925",
+        "https://openalex.org/W2350879130",
+        "https://openalex.org/W2731478784",
+        "https://openalex.org/W4293869205",
+        "https://openalex.org/W2166862237",
+        "https://openalex.org/W2087258800",
+        "https://openalex.org/W2075270110",
+        "https://openalex.org/W2810018092",
+        "https://openalex.org/W1523707610"
+      ],
+      "abstract_inverted_index": {
+        "Free-form": [
+          0
+        ],
+        "inpainting": [
+          1,
+          75,
+          139,
+          151
+        ],
+        "is": [
+          2,
+          78
+        ],
+        "the": [
+          3,
+          13,
+          54,
+          91,
+          96,
+          102,
+          108,
+          112,
+          124,
+          129
+        ],
+        "task": [
+          4
+        ],
+        "of": [
+          5,
+          29,
+          58,
+          169
+        ],
+        "adding": [
+          6
+        ],
+        "new": [
+          7
+        ],
+        "content": [
+          8
+        ],
+        "to": [
+          9,
+          36,
+          49,
+          80
+        ],
+        "an": [
+          10,
+          17
+        ],
+        "image": [
+          11,
+          114,
+          150
+        ],
+        "in": [
+          12
+        ],
+        "regions": [
+          14,
+          110
+        ],
+        "specified": [
+          15
+        ],
+        "by": [
+          16,
+          106
+        ],
+        "arbitrary": [
+          18
+        ],
+        "binary": [
+          19
+        ],
+        "mask.": [
+          20
+        ],
+        "Most": [
+          21
+        ],
+        "existing": [
+          22
+        ],
+        "approaches": [
+          23,
+          163
+        ],
+        "train": [
+          24
+        ],
+        "for": [
+          25,
+          137,
+          145,
+          164
+        ],
+        "a": [
+          26,
+          86
+        ],
+        "certain": [
+          27
+        ],
+        "distribution": [
+          28
+        ],
+        "masks,": [
+          30
+        ],
+        "which": [
+          31
+        ],
+        "limits": [
+          32
+        ],
+        "their": [
+          33
+        ],
+        "generalization": [
+          34
+        ],
+        "capabilities": [
+          35
+        ],
+        "unseen": [
+          37
+        ],
+        "mask": [
+          38,
+          171
+        ],
+        "types.": [
+          39
+        ],
+        "Furthermore,": [
+          40
+        ],
+        "training": [
+          41
+        ],
+        "with": [
+          42
+        ],
+        "pixel-wise": [
+          43
+        ],
+        "and": [
+          44,
+          133,
+          148,
+          154,
+          161
+        ],
+        "perceptual": [
+          45
+        ],
+        "losses": [
+          46
+        ],
+        "often": [
+          47
+        ],
+        "leads": [
+          48
+        ],
+        "simple": [
+          50
+        ],
+        "textural": [
+          51
+        ],
+        "extensions": [
+          52
+        ],
+        "towards": [
+          53
+        ],
+        "missing": [
+          55
+        ],
+        "areas": [
+          56
+        ],
+        "instead": [
+          57
+        ],
+        "semantically": [
+          59
+        ],
+        "meaningful": [
+          60
+        ],
+        "generation.": [
+          61
+        ],
+        "In": [
+          62
+        ],
+        "this": [
+          63,
+          117
+        ],
+        "work,": [
+          64
+        ],
+        "we": [
+          65,
+          99
+        ],
+        "propose": [
+          66
+        ],
+        "RePaint:": [
+          67
+        ],
+        "A": [
+          68
+        ],
+        "Denoising": [
+          69
+        ],
+        "Diffusion": [
+          70
+        ],
+        "Probabilistic": [
+          71
+        ],
+        "Model": [
+          72
+        ],
+        "(DDPM)": [
+          73
+        ],
+        "based": [
+          74
+        ],
+        "approach": [
+          76
+        ],
+        "that": [
+          77
+        ],
+        "applicable": [
+          79
+        ],
+        "even": [
+          81
+        ],
+        "extreme": [
+          82,
+          155
+        ],
+        "masks.": [
+          83,
+          156
+        ],
+        "We": [
+          84,
+          141
+        ],
+        "employ": [
+          85
+        ],
+        "pretrained": [
+          87
+        ],
+        "unconditional": [
+          88
+        ],
+        "DDPM": [
+          89,
+          126
+        ],
+        "as": [
+          90
+        ],
+        "generative": [
+          92
+        ],
+        "prior.": [
+          93
+        ],
+        "To": [
+          94
+        ],
+        "condition": [
+          95,
+          123
+        ],
+        "generation": [
+          97
+        ],
+        "process,": [
+          98
+        ],
+        "only": [
+          100
+        ],
+        "alter": [
+          101
+        ],
+        "reverse": [
+          103
+        ],
+        "diffusion": [
+          104
+        ],
+        "iterations": [
+          105
+        ],
+        "sampling": [
+          107
+        ],
+        "unmasked": [
+          109
+        ],
+        "using": [
+          111,
+          152
+        ],
+        "given": [
+          113
+        ],
+        "infor-mation.": [
+          115
+        ],
+        "Since": [
+          116
+        ],
+        "technique": [
+          118
+        ],
+        "does": [
+          119
+        ],
+        "not": [
+          120
+        ],
+        "modify": [
+          121
+        ],
+        "or": [
+          122
+        ],
+        "original": [
+          125
+        ],
+        "network": [
+          127
+        ],
+        "itself,": [
+          128
+        ],
+        "model": [
+          130
+        ],
+        "produces": [
+          131
+        ],
+        "high-quality": [
+          132
+        ],
+        "diverse": [
+          134
+        ],
+        "output": [
+          135
+        ],
+        "images": [
+          136
+        ],
+        "any": [
+          138
+        ],
+        "form.": [
+          140
+        ],
+        "validate": [
+          142
+        ],
+        "our": [
+          143
+        ],
+        "method": [
+          144
+        ],
+        "both": [
+          146
+        ],
+        "faces": [
+          147
+        ],
+        "general-purpose": [
+          149
+        ],
+        "standard": [
+          153
+        ],
+        "Re-Paint": [
+          157
+        ],
+        "outperforms": [
+          158
+        ],
+        "state-of-the-art": [
+          159
+        ],
+        "Autoregressive,": [
+          160
+        ],
+        "GAN": [
+          162
+        ],
+        "at": [
+          165
+        ],
+        "least": [
+          166
+        ],
+        "five": [
+          167
+        ],
+        "out": [
+          168
+        ],
+        "six": [
+          170
+        ],
+        "distributions.": [
+          172
+        ],
+        "Github": [
+          173
+        ],
+        "Repository:": [
+          174
+        ],
+        "git.io/RePaint": [
+          175
+        ]
+      },
+      "counts_by_year": [
+        {
+          "year": 2026,
+          "cited_by_count": 103
+        },
+        {
+          "year": 2025,
+          "cited_by_count": 521
+        },
+        {
+          "year": 2024,
+          "cited_by_count": 566
+        },
+        {
+          "year": 2023,
+          "cited_by_count": 235
+        },
+        {
+          "year": 2022,
+          "cited_by_count": 9
+        },
+        {
+          "year": 2021,
+          "cited_by_count": 1
+        },
+        {
+          "year": 2015,
+          "cited_by_count": 1
+        }
+      ],
+      "updated_date": "2026-05-09T13:55:54.758798",
+      "created_date": "2025-10-10T00:00:00"
+    },
+    {
+      "id": "https://openalex.org/W3191805365",
+      "doi": "https://doi.org/10.1109/iccv48922.2021.01410",
+      "title": "ILVR: Conditioning Method for Denoising Diffusion Probabilistic Models",
+      "display_name": "ILVR: Conditioning Method for Denoising Diffusion Probabilistic Models",
+      "relevance_score": 3928.2083,
+      "publication_year": 2021,
+      "publication_date": "2021-10-01",
+      "ids": {
+        "openalex": "https://openalex.org/W3191805365",
+        "doi": "https://doi.org/10.1109/iccv48922.2021.01410",
+        "mag": "3191805365"
+      },
+      "language": "en",
+      "primary_location": {
+        "id": "doi:10.1109/iccv48922.2021.01410",
+        "is_oa": false,
+        "landing_page_url": "https://doi.org/10.1109/iccv48922.2021.01410",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S4363607764",
+          "display_name": "2021 IEEE/CVF International Conference on Computer Vision (ICCV)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": null,
+          "host_organization_name": null,
+          "host_organization_lineage": [],
+          "host_organization_lineage_names": [],
+          "type": "conference"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "2021 IEEE/CVF International Conference on Computer Vision (ICCV)",
+        "raw_type": "proceedings-article"
+      },
+      "type": "article",
+      "indexed_in": [
+        "crossref"
+      ],
+      "open_access": {
+        "is_oa": false,
+        "oa_status": "closed",
+        "oa_url": null,
+        "any_repository_has_fulltext": false
+      },
+      "authorships": [
+        {
+          "author_position": "first",
+          "author": {
+            "id": "https://openalex.org/A5102345025",
+            "display_name": "Jooyoung Choi",
+            "orcid": null
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I139264467",
+              "display_name": "Seoul National University",
+              "ror": "https://ror.org/04h9pn542",
+              "country_code": "KR",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I139264467"
+              ]
+            }
+          ],
+          "countries": [
+            "KR"
+          ],
+          "is_corresponding": true,
+          "raw_author_name": "Jooyoung Choi",
+          "raw_affiliation_strings": [
+            "Seoul National University,Data Science and AI Laboratory,Korea",
+            "Data Science and AI Laboratory, Seoul National University, Korea"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Seoul National University,Data Science and AI Laboratory,Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Data Science and AI Laboratory, Seoul National University, Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5100327700",
+            "display_name": "Sungwon Kim",
+            "orcid": "https://orcid.org/0000-0002-6527-8914"
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I139264467",
+              "display_name": "Seoul National University",
+              "ror": "https://ror.org/04h9pn542",
+              "country_code": "KR",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I139264467"
+              ]
+            }
+          ],
+          "countries": [
+            "KR"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Sungwon Kim",
+          "raw_affiliation_strings": [
+            "Seoul National University,Data Science and AI Laboratory,Korea",
+            "Data Science and AI Laboratory, Seoul National University, Korea"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Seoul National University,Data Science and AI Laboratory,Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Data Science and AI Laboratory, Seoul National University, Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5003196471",
+            "display_name": "Yonghyun Jeong",
+            "orcid": null
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I4387155180",
+              "display_name": "Samsung SDS (South Korea)",
+              "ror": "https://ror.org/0476bn305",
+              "country_code": null,
+              "type": "company",
+              "lineage": [
+                "https://openalex.org/I2250650973",
+                "https://openalex.org/I4387155180"
+              ]
+            },
+            {
+              "id": "https://openalex.org/I2250650973",
+              "display_name": "Samsung (South Korea)",
+              "ror": "https://ror.org/04w3jy968",
+              "country_code": "KR",
+              "type": "company",
+              "lineage": [
+                "https://openalex.org/I2250650973"
+              ]
+            }
+          ],
+          "countries": [
+            "KR"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Yonghyun Jeong",
+          "raw_affiliation_strings": [
+            "Samsung SDS,AI Research Team",
+            "AI Research Team, Samsung SDS"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Samsung SDS,AI Research Team",
+              "institution_ids": [
+                "https://openalex.org/I2250650973"
+              ]
+            },
+            {
+              "raw_affiliation_string": "AI Research Team, Samsung SDS",
+              "institution_ids": [
+                "https://openalex.org/I2250650973",
+                "https://openalex.org/I4387155180"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5012323997",
+            "display_name": "Youngjune Gwon",
+            "orcid": null
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I2250650973",
+              "display_name": "Samsung (South Korea)",
+              "ror": "https://ror.org/04w3jy968",
+              "country_code": "KR",
+              "type": "company",
+              "lineage": [
+                "https://openalex.org/I2250650973"
+              ]
+            },
+            {
+              "id": "https://openalex.org/I4387155180",
+              "display_name": "Samsung SDS (South Korea)",
+              "ror": "https://ror.org/0476bn305",
+              "country_code": null,
+              "type": "company",
+              "lineage": [
+                "https://openalex.org/I2250650973",
+                "https://openalex.org/I4387155180"
+              ]
+            }
+          ],
+          "countries": [
+            "KR"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Youngjune Gwon",
+          "raw_affiliation_strings": [
+            "Samsung SDS,AI Research Team",
+            "AI Research Team, Samsung SDS"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Samsung SDS,AI Research Team",
+              "institution_ids": [
+                "https://openalex.org/I2250650973"
+              ]
+            },
+            {
+              "raw_affiliation_string": "AI Research Team, Samsung SDS",
+              "institution_ids": [
+                "https://openalex.org/I2250650973",
+                "https://openalex.org/I4387155180"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "last",
+          "author": {
+            "id": "https://openalex.org/A5086877012",
+            "display_name": "Sungroh Yoon",
+            "orcid": "https://orcid.org/0000-0002-2367-197X"
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I139264467",
+              "display_name": "Seoul National University",
+              "ror": "https://ror.org/04h9pn542",
+              "country_code": "KR",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I139264467"
+              ]
+            }
+          ],
+          "countries": [
+            "KR"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Sungroh Yoon",
+          "raw_affiliation_strings": [
+            "Seoul National University,Data Science and AI Laboratory,Korea",
+            "ASRI, ENMC, and Interdisciplinary Program in AI, Seoul National University, Korea",
+            "Data Science and AI Laboratory, Seoul National University, Korea"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Seoul National University,Data Science and AI Laboratory,Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            },
+            {
+              "raw_affiliation_string": "ASRI, ENMC, and Interdisciplinary Program in AI, Seoul National University, Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Data Science and AI Laboratory, Seoul National University, Korea",
+              "institution_ids": [
+                "https://openalex.org/I139264467"
+              ]
+            }
+          ]
+        }
+      ],
+      "institutions": [],
+      "countries_distinct_count": 1,
+      "institutions_distinct_count": 5,
+      "corresponding_author_ids": [
+        "https://openalex.org/A5102345025"
+      ],
+      "corresponding_institution_ids": [
+        "https://openalex.org/I139264467"
+      ],
+      "apc_list": null,
+      "apc_paid": null,
+      "fwci": 24.29,
+      "has_fulltext": false,
+      "cited_by_count": 580,
+      "citation_normalized_percentile": {
+        "value": 0.9969914,
+        "is_in_top_1_percent": true,
+        "is_in_top_10_percent": true
+      },
+      "cited_by_percentile_year": {
+        "min": 97,
+        "max": 100
+      },
+      "biblio": {
+        "volume": null,
+        "issue": null,
+        "first_page": "14347",
+        "last_page": "14356"
+      },
+      "is_retracted": false,
+      "is_paratext": false,
+      "is_xpac": false,
+      "primary_topic": {
+        "id": "https://openalex.org/T10775",
+        "display_name": "Generative Adversarial Networks and Image Synthesis",
+        "score": 0.9998000264167786,
+        "subfield": {
+          "id": "https://openalex.org/subfields/1707",
+          "display_name": "Computer Vision and Pattern Recognition"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/17",
+          "display_name": "Computer Science"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      },
+      "topics": [
+        {
+          "id": "https://openalex.org/T10775",
+          "display_name": "Generative Adversarial Networks and Image Synthesis",
+          "score": 0.9998000264167786,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11309",
+          "display_name": "Music and Audio Processing",
+          "score": 0.9847999811172485,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1711",
+            "display_name": "Signal Processing"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10481",
+          "display_name": "Computer Graphics and Visualization Techniques",
+          "score": 0.9829999804496765,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1704",
+            "display_name": "Computer Graphics and Computer-Aided Design"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "keywords": [
+        {
+          "id": "https://openalex.org/keywords/computer-science",
+          "display_name": "Computer science",
+          "score": 0.667528510093689
+        },
+        {
+          "id": "https://openalex.org/keywords/upsampling",
+          "display_name": "Upsampling",
+          "score": 0.603765070438385
+        },
+        {
+          "id": "https://openalex.org/keywords/artificial-intelligence",
+          "display_name": "Artificial intelligence",
+          "score": 0.5299811363220215
+        },
+        {
+          "id": "https://openalex.org/keywords/process",
+          "display_name": "Process (computing)",
+          "score": 0.4698100686073303
+        },
+        {
+          "id": "https://openalex.org/keywords/image",
+          "display_name": "Image (mathematics)",
+          "score": 0.468688040971756
+        },
+        {
+          "id": "https://openalex.org/keywords/controllability",
+          "display_name": "Controllability",
+          "score": 0.4629799723625183
+        },
+        {
+          "id": "https://openalex.org/keywords/probabilistic-logic",
+          "display_name": "Probabilistic logic",
+          "score": 0.4477885365486145
+        },
+        {
+          "id": "https://openalex.org/keywords/algorithm",
+          "display_name": "Algorithm",
+          "score": 0.41080430150032043
+        },
+        {
+          "id": "https://openalex.org/keywords/pattern-recognition",
+          "display_name": "Pattern recognition (psychology)",
+          "score": 0.34196996688842773
+        },
+        {
+          "id": "https://openalex.org/keywords/mathematics",
+          "display_name": "Mathematics",
+          "score": 0.15990391373634338
+        }
+      ],
+      "concepts": [
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 0.667528510093689
+        },
+        {
+          "id": "https://openalex.org/C110384440",
+          "wikidata": "https://www.wikidata.org/wiki/Q1143270",
+          "display_name": "Upsampling",
+          "level": 3,
+          "score": 0.603765070438385
+        },
+        {
+          "id": "https://openalex.org/C154945302",
+          "wikidata": "https://www.wikidata.org/wiki/Q11660",
+          "display_name": "Artificial intelligence",
+          "level": 1,
+          "score": 0.5299811363220215
+        },
+        {
+          "id": "https://openalex.org/C98045186",
+          "wikidata": "https://www.wikidata.org/wiki/Q205663",
+          "display_name": "Process (computing)",
+          "level": 2,
+          "score": 0.4698100686073303
+        },
+        {
+          "id": "https://openalex.org/C115961682",
+          "wikidata": "https://www.wikidata.org/wiki/Q860623",
+          "display_name": "Image (mathematics)",
+          "level": 2,
+          "score": 0.468688040971756
+        },
+        {
+          "id": "https://openalex.org/C48209547",
+          "wikidata": "https://www.wikidata.org/wiki/Q1331104",
+          "display_name": "Controllability",
+          "level": 2,
+          "score": 0.4629799723625183
+        },
+        {
+          "id": "https://openalex.org/C49937458",
+          "wikidata": "https://www.wikidata.org/wiki/Q2599292",
+          "display_name": "Probabilistic logic",
+          "level": 2,
+          "score": 0.4477885365486145
+        },
+        {
+          "id": "https://openalex.org/C11413529",
+          "wikidata": "https://www.wikidata.org/wiki/Q8366",
+          "display_name": "Algorithm",
+          "level": 1,
+          "score": 0.41080430150032043
+        },
+        {
+          "id": "https://openalex.org/C153180895",
+          "wikidata": "https://www.wikidata.org/wiki/Q7148389",
+          "display_name": "Pattern recognition (psychology)",
+          "level": 2,
+          "score": 0.34196996688842773
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 0.15990391373634338
+        },
+        {
+          "id": "https://openalex.org/C28826006",
+          "wikidata": "https://www.wikidata.org/wiki/Q33521",
+          "display_name": "Applied mathematics",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C111919701",
+          "wikidata": "https://www.wikidata.org/wiki/Q9135",
+          "display_name": "Operating system",
+          "level": 1,
+          "score": 0.0
+        }
+      ],
+      "mesh": [],
+      "locations_count": 1,
+      "locations": [
+        {
+          "id": "doi:10.1109/iccv48922.2021.01410",
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1109/iccv48922.2021.01410",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4363607764",
+            "display_name": "2021 IEEE/CVF International Conference on Computer Vision (ICCV)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": null,
+            "host_organization_name": null,
+            "host_organization_lineage": [],
+            "host_organization_lineage_names": [],
+            "type": "conference"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true,
+          "raw_source_name": "2021 IEEE/CVF International Conference on Computer Vision (ICCV)",
+          "raw_type": "proceedings-article"
+        }
+      ],
+      "best_oa_location": null,
+      "sustainable_development_goals": [],
+      "awards": [],
+      "funders": [
+        {
+          "id": "https://openalex.org/F4320332195",
+          "display_name": "Samsung",
+          "ror": "https://ror.org/04w3jy968"
+        }
+      ],
+      "has_content": {
+        "grobid_xml": false,
+        "pdf": false
+      },
+      "content_urls": null,
+      "referenced_works_count": 88,
+      "referenced_works": [
+        "https://openalex.org/W967544008",
+        "https://openalex.org/W1901129140",
+        "https://openalex.org/W2013035813",
+        "https://openalex.org/W2099471712",
+        "https://openalex.org/W2102166818",
+        "https://openalex.org/W2129069237",
+        "https://openalex.org/W2401231614",
+        "https://openalex.org/W2423557781",
+        "https://openalex.org/W2475287302",
+        "https://openalex.org/W2524985544",
+        "https://openalex.org/W2557449848",
+        "https://openalex.org/W2626778328",
+        "https://openalex.org/W2732026016",
+        "https://openalex.org/W2795783309",
+        "https://openalex.org/W2798365772",
+        "https://openalex.org/W2804078698",
+        "https://openalex.org/W2893749619",
+        "https://openalex.org/W2952716587",
+        "https://openalex.org/W2959300817",
+        "https://openalex.org/W2962770929",
+        "https://openalex.org/W2962785568",
+        "https://openalex.org/W2962793481",
+        "https://openalex.org/W2962974533",
+        "https://openalex.org/W2963073614",
+        "https://openalex.org/W2963139417",
+        "https://openalex.org/W2963636093",
+        "https://openalex.org/W2963800363",
+        "https://openalex.org/W2963890275",
+        "https://openalex.org/W2963917315",
+        "https://openalex.org/W2963981733",
+        "https://openalex.org/W2971034910",
+        "https://openalex.org/W2982041717",
+        "https://openalex.org/W2982763192",
+        "https://openalex.org/W2985068832",
+        "https://openalex.org/W2989045104",
+        "https://openalex.org/W2989855043",
+        "https://openalex.org/W2990269423",
+        "https://openalex.org/W3014852036",
+        "https://openalex.org/W3022391944",
+        "https://openalex.org/W3034175346",
+        "https://openalex.org/W3034352949",
+        "https://openalex.org/W3034431451",
+        "https://openalex.org/W3034600949",
+        "https://openalex.org/W3034667262",
+        "https://openalex.org/W3034720584",
+        "https://openalex.org/W3035355202",
+        "https://openalex.org/W3035384201",
+        "https://openalex.org/W3035570181",
+        "https://openalex.org/W3035574324",
+        "https://openalex.org/W3036167779",
+        "https://openalex.org/W3040462728",
+        "https://openalex.org/W3041956526",
+        "https://openalex.org/W3087665158",
+        "https://openalex.org/W3098510582",
+        "https://openalex.org/W3102061158",
+        "https://openalex.org/W3105013723",
+        "https://openalex.org/W3106333289",
+        "https://openalex.org/W3108316907",
+        "https://openalex.org/W3109910669",
+        "https://openalex.org/W3122887982",
+        "https://openalex.org/W3123097577",
+        "https://openalex.org/W3129651364",
+        "https://openalex.org/W3133951356",
+        "https://openalex.org/W3155072588",
+        "https://openalex.org/W3162926177",
+        "https://openalex.org/W3180196270",
+        "https://openalex.org/W3192073721",
+        "https://openalex.org/W4214526027",
+        "https://openalex.org/W4287817254",
+        "https://openalex.org/W4301206121",
+        "https://openalex.org/W4320013936",
+        "https://openalex.org/W6625168331",
+        "https://openalex.org/W6727420689",
+        "https://openalex.org/W6740934225",
+        "https://openalex.org/W6750298367",
+        "https://openalex.org/W6752378368",
+        "https://openalex.org/W6755312952",
+        "https://openalex.org/W6765775151",
+        "https://openalex.org/W6765779288",
+        "https://openalex.org/W6778946027",
+        "https://openalex.org/W6779093361",
+        "https://openalex.org/W6779823529",
+        "https://openalex.org/W6780043386",
+        "https://openalex.org/W6780593937",
+        "https://openalex.org/W6782760101",
+        "https://openalex.org/W6783182287",
+        "https://openalex.org/W6794269193",
+        "https://openalex.org/W6795288823"
+      ],
+      "related_works": [
+        "https://openalex.org/W2036697162",
+        "https://openalex.org/W2332386680",
+        "https://openalex.org/W2062399876",
+        "https://openalex.org/W2248621902",
+        "https://openalex.org/W2003779889",
+        "https://openalex.org/W2561315646",
+        "https://openalex.org/W4205698120",
+        "https://openalex.org/W4239246781",
+        "https://openalex.org/W2542825942",
+        "https://openalex.org/W2246050530"
+      ],
+      "abstract_inverted_index": {
+        "Denoising": [
+          0
+        ],
+        "diffusion": [
+          1
+        ],
+        "probabilistic": [
+          2
+        ],
+        "models": [
+          3
+        ],
+        "(DDPM)": [
+          4
+        ],
+        "have": [
+          5
+        ],
+        "shown": [
+          6
+        ],
+        "remarkable": [
+          7
+        ],
+        "performance": [
+          8
+        ],
+        "in": [
+          9,
+          22,
+          51,
+          70,
+          113
+        ],
+        "unconditional": [
+          10
+        ],
+        "image": [
+          11,
+          115,
+          126
+        ],
+        "generation.": [
+          12,
+          97
+        ],
+        "However,": [
+          13
+        ],
+        "due": [
+          14
+        ],
+        "to": [
+          15,
+          27,
+          46,
+          53,
+          76
+        ],
+        "the": [
+          16,
+          19,
+          31,
+          48,
+          64,
+          67,
+          84,
+          96
+        ],
+        "stochasticity": [
+          17
+        ],
+        "of": [
+          18,
+          66,
+          100,
+          105
+        ],
+        "generative": [
+          20,
+          49,
+          68
+        ],
+        "process": [
+          21,
+          50,
+          69
+        ],
+        "DDPM,": [
+          23
+        ],
+        "it": [
+          24
+        ],
+        "is": [
+          25
+        ],
+        "challenging": [
+          26
+        ],
+        "generate": [
+          28,
+          54
+        ],
+        "images": [
+          29,
+          56,
+          78,
+          93
+        ],
+        "with": [
+          30,
+          131
+        ],
+        "desired": [
+          32
+        ],
+        "semantics.": [
+          33
+        ],
+        "In": [
+          34
+        ],
+        "this": [
+          35
+        ],
+        "work,": [
+          36
+        ],
+        "we": [
+          37
+        ],
+        "propose": [
+          38
+        ],
+        "Iterative": [
+          39
+        ],
+        "Latent": [
+          40
+        ],
+        "Variable": [
+          41
+        ],
+        "Refinement": [
+          42
+        ],
+        "(ILVR),": [
+          43
+        ],
+        "a": [
+          44,
+          59,
+          73,
+          106
+        ],
+        "method": [
+          45,
+          90,
+          102
+        ],
+        "guide": [
+          47
+        ],
+        "DDPM": [
+          52,
+          71,
+          75,
+          108
+        ],
+        "high-quality": [
+          55,
+          92
+        ],
+        "based": [
+          57
+        ],
+        "on": [
+          58
+        ],
+        "given": [
+          60
+        ],
+        "reference": [
+          61,
+          85
+        ],
+        "image.": [
+          62,
+          86
+        ],
+        "Here,": [
+          63
+        ],
+        "refinement": [
+          65
+        ],
+        "enables": [
+          72
+        ],
+        "single": [
+          74,
+          107
+        ],
+        "sample": [
+          77
+        ],
+        "from": [
+          79,
+          121
+        ],
+        "various": [
+          80,
+          114,
+          122
+        ],
+        "sets": [
+          81
+        ],
+        "directed": [
+          82
+        ],
+        "by": [
+          83
+        ],
+        "The": [
+          87,
+          98
+        ],
+        "proposed": [
+          88
+        ],
+        "ILVR": [
+          89
+        ],
+        "generates": [
+          91
+        ],
+        "while": [
+          94
+        ],
+        "controlling": [
+          95
+        ],
+        "controllability": [
+          99
+        ],
+        "our": [
+          101
+        ],
+        "allows": [
+          103
+        ],
+        "adaptation": [
+          104
+        ],
+        "without": [
+          109
+        ],
+        "any": [
+          110
+        ],
+        "additional": [
+          111
+        ],
+        "learning": [
+          112
+        ],
+        "generation": [
+          116,
+          120
+        ],
+        "tasks,": [
+          117
+        ],
+        "such": [
+          118
+        ],
+        "as": [
+          119
+        ],
+        "downsampling": [
+          123
+        ],
+        "factors,": [
+          124
+        ],
+        "multi-domain": [
+          125
+        ],
+        "translation,": [
+          127
+        ],
+        "paint-to-image,": [
+          128
+        ],
+        "and": [
+          129
+        ],
+        "editing": [
+          130
+        ],
+        "scribbles.": [
+          132
+        ]
+      },
+      "counts_by_year": [
+        {
+          "year": 2026,
+          "cited_by_count": 30
+        },
+        {
+          "year": 2025,
+          "cited_by_count": 180
+        },
+        {
+          "year": 2024,
+          "cited_by_count": 224
+        },
+        {
+          "year": 2023,
+          "cited_by_count": 120
+        },
+        {
+          "year": 2022,
+          "cited_by_count": 22
+        },
+        {
+          "year": 2021,
+          "cited_by_count": 4
+        }
+      ],
+      "updated_date": "2026-05-07T13:39:58.223016",
+      "created_date": "2025-10-10T00:00:00"
+    },
+    {
+      "id": "https://openalex.org/W3122887982",
+      "doi": "https://doi.org/10.48550/arxiv.2102.09672",
+      "title": "Improved Denoising Diffusion Probabilistic Models",
+      "display_name": "Improved Denoising Diffusion Probabilistic Models",
+      "relevance_score": 3705.0017,
+      "publication_year": 2021,
+      "publication_date": "2021-02-18",
+      "ids": {
+        "openalex": "https://openalex.org/W3122887982",
+        "doi": "https://doi.org/10.48550/arxiv.2102.09672",
+        "mag": "3122887982"
+      },
+      "language": "en",
+      "primary_location": {
+        "id": "pmh:oai:arXiv.org:2102.09672",
+        "is_oa": true,
+        "landing_page_url": "http://arxiv.org/abs/2102.09672",
+        "pdf_url": "https://arxiv.org/pdf/2102.09672",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": "",
+        "raw_type": "text"
+      },
+      "type": "preprint",
+      "indexed_in": [
+        "arxiv",
+        "datacite"
+      ],
+      "open_access": {
+        "is_oa": true,
+        "oa_status": "green",
+        "oa_url": "https://arxiv.org/pdf/2102.09672",
+        "any_repository_has_fulltext": true
+      },
+      "authorships": [
+        {
+          "author_position": "first",
+          "author": {
+            "id": "https://openalex.org/A5058076181",
+            "display_name": "Alex Nichol",
+            "orcid": null
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I4210161460",
+              "display_name": "OpenAI (United States)",
+              "ror": "https://ror.org/05wx9n238",
+              "country_code": "US",
+              "type": "company",
+              "lineage": [
+                "https://openalex.org/I4210161460"
+              ]
+            }
+          ],
+          "countries": [
+            "US"
+          ],
+          "is_corresponding": true,
+          "raw_author_name": "Nichol, Alex",
+          "raw_affiliation_strings": [
+            "[OpenAI.]"
+          ],
+          "affiliations": [
+            {
+              "raw_affiliation_string": "[OpenAI.]",
+              "institution_ids": [
+                "https://openalex.org/I4210161460"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "last",
+          "author": {
+            "id": "https://openalex.org/A5076418776",
+            "display_name": "Prafulla Dhariwal",
+            "orcid": null
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I4210161460",
+              "display_name": "OpenAI (United States)",
+              "ror": "https://ror.org/05wx9n238",
+              "country_code": "US",
+              "type": "company",
+              "lineage": [
+                "https://openalex.org/I4210161460"
+              ]
+            }
+          ],
+          "countries": [
+            "US"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Dhariwal, Prafulla",
+          "raw_affiliation_strings": [
+            "[OpenAI.]"
+          ],
+          "affiliations": [
+            {
+              "raw_affiliation_string": "[OpenAI.]",
+              "institution_ids": [
+                "https://openalex.org/I4210161460"
+              ]
+            }
+          ]
+        }
+      ],
+      "institutions": [],
+      "countries_distinct_count": 1,
+      "institutions_distinct_count": 2,
+      "corresponding_author_ids": [
+        "https://openalex.org/A5058076181"
+      ],
+      "corresponding_institution_ids": [
+        "https://openalex.org/I4210161460"
+      ],
+      "apc_list": null,
+      "apc_paid": null,
+      "fwci": null,
+      "has_fulltext": false,
+      "cited_by_count": 412,
+      "citation_normalized_percentile": null,
+      "cited_by_percentile_year": null,
+      "biblio": {
+        "volume": null,
+        "issue": null,
+        "first_page": null,
+        "last_page": null
+      },
+      "is_retracted": false,
+      "is_paratext": false,
+      "is_xpac": false,
+      "primary_topic": {
+        "id": "https://openalex.org/T10775",
+        "display_name": "Generative Adversarial Networks and Image Synthesis",
+        "score": 0.9962999820709229,
+        "subfield": {
+          "id": "https://openalex.org/subfields/1707",
+          "display_name": "Computer Vision and Pattern Recognition"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/17",
+          "display_name": "Computer Science"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      },
+      "topics": [
+        {
+          "id": "https://openalex.org/T10775",
+          "display_name": "Generative Adversarial Networks and Image Synthesis",
+          "score": 0.9962999820709229,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11309",
+          "display_name": "Music and Audio Processing",
+          "score": 0.995199978351593,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1711",
+            "display_name": "Signal Processing"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11901",
+          "display_name": "Bayesian Methods and Mixture Models",
+          "score": 0.9843999743461609,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1702",
+            "display_name": "Artificial Intelligence"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "keywords": [
+        {
+          "id": "https://openalex.org/keywords/computer-science",
+          "display_name": "Computer science",
+          "score": 0.7148588299751282
+        },
+        {
+          "id": "https://openalex.org/keywords/probabilistic-logic",
+          "display_name": "Probabilistic logic",
+          "score": 0.700634241104126
+        },
+        {
+          "id": "https://openalex.org/keywords/scalability",
+          "display_name": "Scalability",
+          "score": 0.5634347200393677
+        },
+        {
+          "id": "https://openalex.org/keywords/diffusion",
+          "display_name": "Diffusion",
+          "score": 0.5479611158370972
+        },
+        {
+          "id": "https://openalex.org/keywords/importance-sampling",
+          "display_name": "Importance sampling",
+          "score": 0.5296767950057983
+        },
+        {
+          "id": "https://openalex.org/keywords/code",
+          "display_name": "Code (set theory)",
+          "score": 0.4973447620868683
+        },
+        {
+          "id": "https://openalex.org/keywords/sample",
+          "display_name": "Sample (material)",
+          "score": 0.49416330456733704
+        },
+        {
+          "id": "https://openalex.org/keywords/sampling",
+          "display_name": "Sampling (signal processing)",
+          "score": 0.45065024495124817
+        },
+        {
+          "id": "https://openalex.org/keywords/algorithm",
+          "display_name": "Algorithm",
+          "score": 0.44843947887420654
+        },
+        {
+          "id": "https://openalex.org/keywords/quality",
+          "display_name": "Quality (philosophy)",
+          "score": 0.42323940992355347
+        },
+        {
+          "id": "https://openalex.org/keywords/noise-reduction",
+          "display_name": "Noise reduction",
+          "score": 0.4178842604160309
+        },
+        {
+          "id": "https://openalex.org/keywords/machine-learning",
+          "display_name": "Machine learning",
+          "score": 0.3690114915370941
+        },
+        {
+          "id": "https://openalex.org/keywords/artificial-intelligence",
+          "display_name": "Artificial intelligence",
+          "score": 0.36861008405685425
+        },
+        {
+          "id": "https://openalex.org/keywords/data-mining",
+          "display_name": "Data mining",
+          "score": 0.32961946725845337
+        },
+        {
+          "id": "https://openalex.org/keywords/monte-carlo-method",
+          "display_name": "Monte Carlo method",
+          "score": 0.23556303977966309
+        },
+        {
+          "id": "https://openalex.org/keywords/statistics",
+          "display_name": "Statistics",
+          "score": 0.20844236016273499
+        },
+        {
+          "id": "https://openalex.org/keywords/mathematics",
+          "display_name": "Mathematics",
+          "score": 0.20295599102973938
+        }
+      ],
+      "concepts": [
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 0.7148588299751282
+        },
+        {
+          "id": "https://openalex.org/C49937458",
+          "wikidata": "https://www.wikidata.org/wiki/Q2599292",
+          "display_name": "Probabilistic logic",
+          "level": 2,
+          "score": 0.700634241104126
+        },
+        {
+          "id": "https://openalex.org/C48044578",
+          "wikidata": "https://www.wikidata.org/wiki/Q727490",
+          "display_name": "Scalability",
+          "level": 2,
+          "score": 0.5634347200393677
+        },
+        {
+          "id": "https://openalex.org/C69357855",
+          "wikidata": "https://www.wikidata.org/wiki/Q163214",
+          "display_name": "Diffusion",
+          "level": 2,
+          "score": 0.5479611158370972
+        },
+        {
+          "id": "https://openalex.org/C52740198",
+          "wikidata": "https://www.wikidata.org/wiki/Q1539564",
+          "display_name": "Importance sampling",
+          "level": 3,
+          "score": 0.5296767950057983
+        },
+        {
+          "id": "https://openalex.org/C2776760102",
+          "wikidata": "https://www.wikidata.org/wiki/Q5139990",
+          "display_name": "Code (set theory)",
+          "level": 3,
+          "score": 0.4973447620868683
+        },
+        {
+          "id": "https://openalex.org/C198531522",
+          "wikidata": "https://www.wikidata.org/wiki/Q485146",
+          "display_name": "Sample (material)",
+          "level": 2,
+          "score": 0.49416330456733704
+        },
+        {
+          "id": "https://openalex.org/C140779682",
+          "wikidata": "https://www.wikidata.org/wiki/Q210868",
+          "display_name": "Sampling (signal processing)",
+          "level": 3,
+          "score": 0.45065024495124817
+        },
+        {
+          "id": "https://openalex.org/C11413529",
+          "wikidata": "https://www.wikidata.org/wiki/Q8366",
+          "display_name": "Algorithm",
+          "level": 1,
+          "score": 0.44843947887420654
+        },
+        {
+          "id": "https://openalex.org/C2779530757",
+          "wikidata": "https://www.wikidata.org/wiki/Q1207505",
+          "display_name": "Quality (philosophy)",
+          "level": 2,
+          "score": 0.42323940992355347
+        },
+        {
+          "id": "https://openalex.org/C163294075",
+          "wikidata": "https://www.wikidata.org/wiki/Q581861",
+          "display_name": "Noise reduction",
+          "level": 2,
+          "score": 0.4178842604160309
+        },
+        {
+          "id": "https://openalex.org/C119857082",
+          "wikidata": "https://www.wikidata.org/wiki/Q2539",
+          "display_name": "Machine learning",
+          "level": 1,
+          "score": 0.3690114915370941
+        },
+        {
+          "id": "https://openalex.org/C154945302",
+          "wikidata": "https://www.wikidata.org/wiki/Q11660",
+          "display_name": "Artificial intelligence",
+          "level": 1,
+          "score": 0.36861008405685425
+        },
+        {
+          "id": "https://openalex.org/C124101348",
+          "wikidata": "https://www.wikidata.org/wiki/Q172491",
+          "display_name": "Data mining",
+          "level": 1,
+          "score": 0.32961946725845337
+        },
+        {
+          "id": "https://openalex.org/C19499675",
+          "wikidata": "https://www.wikidata.org/wiki/Q232207",
+          "display_name": "Monte Carlo method",
+          "level": 2,
+          "score": 0.23556303977966309
+        },
+        {
+          "id": "https://openalex.org/C105795698",
+          "wikidata": "https://www.wikidata.org/wiki/Q12483",
+          "display_name": "Statistics",
+          "level": 1,
+          "score": 0.20844236016273499
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 0.20295599102973938
+        },
+        {
+          "id": "https://openalex.org/C185592680",
+          "wikidata": "https://www.wikidata.org/wiki/Q2329",
+          "display_name": "Chemistry",
+          "level": 0,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C177264268",
+          "wikidata": "https://www.wikidata.org/wiki/Q1514741",
+          "display_name": "Set (abstract data type)",
+          "level": 2,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C138885662",
+          "wikidata": "https://www.wikidata.org/wiki/Q5891",
+          "display_name": "Philosophy",
+          "level": 0,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C111472728",
+          "wikidata": "https://www.wikidata.org/wiki/Q9471",
+          "display_name": "Epistemology",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C77088390",
+          "wikidata": "https://www.wikidata.org/wiki/Q8513",
+          "display_name": "Database",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C121332964",
+          "wikidata": "https://www.wikidata.org/wiki/Q413",
+          "display_name": "Physics",
+          "level": 0,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C199360897",
+          "wikidata": "https://www.wikidata.org/wiki/Q9143",
+          "display_name": "Programming language",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C43617362",
+          "wikidata": "https://www.wikidata.org/wiki/Q170050",
+          "display_name": "Chromatography",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C106131492",
+          "wikidata": "https://www.wikidata.org/wiki/Q3072260",
+          "display_name": "Filter (signal processing)",
+          "level": 2,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C97355855",
+          "wikidata": "https://www.wikidata.org/wiki/Q11473",
+          "display_name": "Thermodynamics",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C31972630",
+          "wikidata": "https://www.wikidata.org/wiki/Q844240",
+          "display_name": "Computer vision",
+          "level": 1,
+          "score": 0.0
+        }
+      ],
+      "mesh": [],
+      "locations_count": 3,
+      "locations": [
+        {
+          "id": "pmh:oai:arXiv.org:2102.09672",
+          "is_oa": true,
+          "landing_page_url": "http://arxiv.org/abs/2102.09672",
+          "pdf_url": "https://arxiv.org/pdf/2102.09672",
+          "source": {
+            "id": "https://openalex.org/S4306400194",
+            "display_name": "arXiv (Cornell University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I205783295",
+            "host_organization_name": "Cornell University",
+            "host_organization_lineage": [
+              "https://openalex.org/I205783295"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "submittedVersion",
+          "is_accepted": false,
+          "is_published": false,
+          "raw_source_name": "",
+          "raw_type": "text"
+        },
+        {
+          "id": "mag:3122887982",
+          "is_oa": true,
+          "landing_page_url": "http://arxiv.org/pdf/2102.09672.pdf",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400194",
+            "display_name": "arXiv (Cornell University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I205783295",
+            "host_organization_name": "Cornell University",
+            "host_organization_lineage": [
+              "https://openalex.org/I205783295"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "submittedVersion",
+          "is_accepted": false,
+          "is_published": false,
+          "raw_source_name": "arXiv (Cornell University)",
+          "raw_type": null
+        },
+        {
+          "id": "doi:10.48550/arxiv.2102.09672",
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.48550/arxiv.2102.09672",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400194",
+            "display_name": "arXiv (Cornell University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I205783295",
+            "host_organization_name": "Cornell University",
+            "host_organization_lineage": [
+              "https://openalex.org/I205783295"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": null,
+          "raw_source_name": null,
+          "raw_type": "article"
+        }
+      ],
+      "best_oa_location": {
+        "id": "pmh:oai:arXiv.org:2102.09672",
+        "is_oa": true,
+        "landing_page_url": "http://arxiv.org/abs/2102.09672",
+        "pdf_url": "https://arxiv.org/pdf/2102.09672",
+        "source": {
+          "id": "https://openalex.org/S4306400194",
+          "display_name": "arXiv (Cornell University)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": true,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": "https://openalex.org/I205783295",
+          "host_organization_name": "Cornell University",
+          "host_organization_lineage": [
+            "https://openalex.org/I205783295"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": "",
+        "raw_type": "text"
+      },
+      "sustainable_development_goals": [],
+      "awards": [],
+      "funders": [],
+      "has_content": {
+        "grobid_xml": false,
+        "pdf": false
+      },
+      "content_urls": null,
+      "referenced_works_count": 27,
+      "referenced_works": [
+        "https://openalex.org/W1505878979",
+        "https://openalex.org/W1522301498",
+        "https://openalex.org/W2129069237",
+        "https://openalex.org/W2893749619",
+        "https://openalex.org/W2902630600",
+        "https://openalex.org/W2903697572",
+        "https://openalex.org/W2940744433",
+        "https://openalex.org/W2949650786",
+        "https://openalex.org/W2951004968",
+        "https://openalex.org/W2951682695",
+        "https://openalex.org/W2963139417",
+        "https://openalex.org/W2963373786",
+        "https://openalex.org/W2963428348",
+        "https://openalex.org/W2963981733",
+        "https://openalex.org/W2964122153",
+        "https://openalex.org/W2971034910",
+        "https://openalex.org/W2971074500",
+        "https://openalex.org/W2971128425",
+        "https://openalex.org/W2971337561",
+        "https://openalex.org/W3001279689",
+        "https://openalex.org/W3035384201",
+        "https://openalex.org/W3041956526",
+        "https://openalex.org/W3085640138",
+        "https://openalex.org/W3087665158",
+        "https://openalex.org/W3106570356",
+        "https://openalex.org/W3121345697",
+        "https://openalex.org/W3131922516"
+      ],
+      "related_works": [
+        "https://openalex.org/W3036167779",
+        "https://openalex.org/W3121345697",
+        "https://openalex.org/W2963981733",
+        "https://openalex.org/W3087665158",
+        "https://openalex.org/W2962736171",
+        "https://openalex.org/W2013035813",
+        "https://openalex.org/W3162926177",
+        "https://openalex.org/W3123097577",
+        "https://openalex.org/W2971034910",
+        "https://openalex.org/W3035384201",
+        "https://openalex.org/W2964122153",
+        "https://openalex.org/W2962770929",
+        "https://openalex.org/W1959608418",
+        "https://openalex.org/W1901129140",
+        "https://openalex.org/W1505878979",
+        "https://openalex.org/W3118608800",
+        "https://openalex.org/W3092442149",
+        "https://openalex.org/W2949382160",
+        "https://openalex.org/W2893749619",
+        "https://openalex.org/W1991111872"
+      ],
+      "abstract_inverted_index": {
+        "Denoising": [
+          0
+        ],
+        "diffusion": [
+          1,
+          48
+        ],
+        "probabilistic": [
+          2
+        ],
+        "models": [
+          3,
+          10,
+          105
+        ],
+        "(DDPM)": [
+          4
+        ],
+        "are": [
+          5
+        ],
+        "a": [
+          6,
+          24,
+          61
+        ],
+        "class": [
+          7
+        ],
+        "of": [
+          8,
+          45,
+          55,
+          74,
+          103
+        ],
+        "generative": [
+          9
+        ],
+        "which": [
+          11,
+          67
+        ],
+        "have": [
+          12
+        ],
+        "recently": [
+          13
+        ],
+        "been": [
+          14
+        ],
+        "shown": [
+          15
+        ],
+        "to": [
+          16,
+          83
+        ],
+        "produce": [
+          17
+        ],
+        "excellent": [
+          18
+        ],
+        "samples.": [
+          19
+        ],
+        "We": [
+          20,
+          77,
+          118
+        ],
+        "show": [
+          21,
+          96
+        ],
+        "that": [
+          22,
+          42,
+          97
+        ],
+        "with": [
+          23,
+          52,
+          60,
+          108
+        ],
+        "few": [
+          25
+        ],
+        "simple": [
+          26
+        ],
+        "modifications,": [
+          27
+        ],
+        "DDPMs": [
+          28,
+          87
+        ],
+        "can": [
+          29
+        ],
+        "also": [
+          30
+        ],
+        "achieve": [
+          31
+        ],
+        "competitive": [
+          32
+        ],
+        "log-likelihoods": [
+          33
+        ],
+        "while": [
+          34
+        ],
+        "maintaining": [
+          35
+        ],
+        "high": [
+          36
+        ],
+        "sample": [
+          37,
+          65,
+          99
+        ],
+        "quality.": [
+          38
+        ],
+        "Additionally,": [
+          39
+        ],
+        "we": [
+          40,
+          95
+        ],
+        "find": [
+          41
+        ],
+        "learning": [
+          43
+        ],
+        "variances": [
+          44
+        ],
+        "the": [
+          46,
+          71,
+          91,
+          98
+        ],
+        "reverse": [
+          47
+        ],
+        "process": [
+          49
+        ],
+        "allows": [
+          50
+        ],
+        "sampling": [
+          51
+        ],
+        "an": [
+          53
+        ],
+        "order": [
+          54
+        ],
+        "magnitude": [
+          56
+        ],
+        "fewer": [
+          57
+        ],
+        "forward": [
+          58
+        ],
+        "passes": [
+          59
+        ],
+        "negligible": [
+          62
+        ],
+        "difference": [
+          63
+        ],
+        "in": [
+          64
+        ],
+        "quality,": [
+          66
+        ],
+        "is": [
+          68
+        ],
+        "important": [
+          69
+        ],
+        "for": [
+          70
+        ],
+        "practical": [
+          72
+        ],
+        "deployment": [
+          73
+        ],
+        "these": [
+          75,
+          104
+        ],
+        "models.": [
+          76
+        ],
+        "additionally": [
+          78
+        ],
+        "use": [
+          79
+        ],
+        "precision": [
+          80
+        ],
+        "and": [
+          81,
+          88,
+          101,
+          111
+        ],
+        "recall": [
+          82
+        ],
+        "compare": [
+          84
+        ],
+        "how": [
+          85
+        ],
+        "well": [
+          86
+        ],
+        "GANs": [
+          89
+        ],
+        "cover": [
+          90
+        ],
+        "target": [
+          92
+        ],
+        "distribution.": [
+          93
+        ],
+        "Finally,": [
+          94
+        ],
+        "quality": [
+          100
+        ],
+        "likelihood": [
+          102
+        ],
+        "scale": [
+          106
+        ],
+        "smoothly": [
+          107
+        ],
+        "model": [
+          109
+        ],
+        "capacity": [
+          110
+        ],
+        "training": [
+          112
+        ],
+        "compute,": [
+          113
+        ],
+        "making": [
+          114
+        ],
+        "them": [
+          115
+        ],
+        "easily": [
+          116
+        ],
+        "scalable.": [
+          117
+        ],
+        "release": [
+          119
+        ],
+        "our": [
+          120
+        ],
+        "code": [
+          121
+        ],
+        "at": [
+          122
+        ],
+        "https://github.com/openai/improved-diffusion": [
+          123
+        ]
+      },
+      "counts_by_year": [
+        {
+          "year": 2025,
+          "cited_by_count": 112
+        },
+        {
+          "year": 2024,
+          "cited_by_count": 183
+        },
+        {
+          "year": 2023,
+          "cited_by_count": 81
+        },
+        {
+          "year": 2022,
+          "cited_by_count": 5
+        },
+        {
+          "year": 2021,
+          "cited_by_count": 31
+        }
+      ],
+      "updated_date": "2026-03-10T16:38:18.471706",
+      "created_date": "2025-10-10T00:00:00"
+    },
+    {
+      "id": "https://openalex.org/W4292851291",
+      "doi": "https://doi.org/10.1109/cvprw56347.2022.00080",
+      "title": "AnoDDPM: Anomaly Detection with Denoising Diffusion Probabilistic Models using Simplex Noise",
+      "display_name": "AnoDDPM: Anomaly Detection with Denoising Diffusion Probabilistic Models using Simplex Noise",
+      "relevance_score": 2726.2104,
+      "publication_year": 2022,
+      "publication_date": "2022-06-01",
+      "ids": {
+        "openalex": "https://openalex.org/W4292851291",
+        "doi": "https://doi.org/10.1109/cvprw56347.2022.00080"
+      },
+      "language": "en",
+      "primary_location": {
+        "id": "doi:10.1109/cvprw56347.2022.00080",
+        "is_oa": false,
+        "landing_page_url": "https://doi.org/10.1109/cvprw56347.2022.00080",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S4363607748",
+          "display_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": null,
+          "host_organization_name": null,
+          "host_organization_lineage": [],
+          "host_organization_lineage_names": [],
+          "type": "conference"
+        },
+        "license": null,
+        "license_id": null,
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true,
+        "raw_source_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+        "raw_type": "proceedings-article"
+      },
+      "type": "article",
+      "indexed_in": [
+        "crossref"
+      ],
+      "open_access": {
+        "is_oa": true,
+        "oa_status": "green",
+        "oa_url": "https://durham-repository.worktribe.com/output/1136696",
+        "any_repository_has_fulltext": true
+      },
+      "authorships": [
+        {
+          "author_position": "first",
+          "author": {
+            "id": "https://openalex.org/A5110931952",
+            "display_name": "Julian Wyatt",
+            "orcid": null
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I190082696",
+              "display_name": "Durham University",
+              "ror": "https://ror.org/01v29qb04",
+              "country_code": "GB",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ],
+          "countries": [
+            "GB"
+          ],
+          "is_corresponding": true,
+          "raw_author_name": "Julian Wyatt",
+          "raw_affiliation_strings": [
+            "Durham University,Department of Computer Science,Durham,UK",
+            "Department of Computer Science, Durham University, Durham, UK"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Durham University,Department of Computer Science,Durham,UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Department of Computer Science, Durham University, Durham, UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5021510358",
+            "display_name": "Adam Leach",
+            "orcid": "https://orcid.org/0000-0001-8805-3921"
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I190082696",
+              "display_name": "Durham University",
+              "ror": "https://ror.org/01v29qb04",
+              "country_code": "GB",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ],
+          "countries": [
+            "GB"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Adam Leach",
+          "raw_affiliation_strings": [
+            "Durham University,Department of Computer Science,Durham,UK",
+            "Department of Computer Science, Durham University, Durham, UK"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Durham University,Department of Computer Science,Durham,UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Department of Computer Science, Durham University, Durham, UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "middle",
+          "author": {
+            "id": "https://openalex.org/A5051873130",
+            "display_name": "Sebastian M. Schmon",
+            "orcid": "https://orcid.org/0000-0002-1513-1439"
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I190082696",
+              "display_name": "Durham University",
+              "ror": "https://ror.org/01v29qb04",
+              "country_code": "GB",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ],
+          "countries": [
+            "GB"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Sebastian M. Schmon",
+          "raw_affiliation_strings": [
+            "Durham University,Department of Mathematical Sciences,Durham,UK",
+            "Department of Mathematical Sciences, Durham University, Durham, UK"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Durham University,Department of Mathematical Sciences,Durham,UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Department of Mathematical Sciences, Durham University, Durham, UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ]
+        },
+        {
+          "author_position": "last",
+          "author": {
+            "id": "https://openalex.org/A5023499426",
+            "display_name": "Chris G. Willcocks",
+            "orcid": "https://orcid.org/0000-0001-6821-3924"
+          },
+          "institutions": [
+            {
+              "id": "https://openalex.org/I190082696",
+              "display_name": "Durham University",
+              "ror": "https://ror.org/01v29qb04",
+              "country_code": "GB",
+              "type": "education",
+              "lineage": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ],
+          "countries": [
+            "GB"
+          ],
+          "is_corresponding": false,
+          "raw_author_name": "Chris G. Willcocks",
+          "raw_affiliation_strings": [
+            "Durham University,Department of Computer Science,Durham,UK",
+            "Department of Computer Science, Durham University, Durham, UK"
+          ],
+          "raw_orcid": null,
+          "affiliations": [
+            {
+              "raw_affiliation_string": "Durham University,Department of Computer Science,Durham,UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            },
+            {
+              "raw_affiliation_string": "Department of Computer Science, Durham University, Durham, UK",
+              "institution_ids": [
+                "https://openalex.org/I190082696"
+              ]
+            }
+          ]
+        }
+      ],
+      "institutions": [],
+      "countries_distinct_count": 1,
+      "institutions_distinct_count": 4,
+      "corresponding_author_ids": [
+        "https://openalex.org/A5110931952"
+      ],
+      "corresponding_institution_ids": [
+        "https://openalex.org/I190082696"
+      ],
+      "apc_list": null,
+      "apc_paid": null,
+      "fwci": 71.5466,
+      "has_fulltext": false,
+      "cited_by_count": 351,
+      "citation_normalized_percentile": {
+        "value": 0.99955237,
+        "is_in_top_1_percent": true,
+        "is_in_top_10_percent": true
+      },
+      "cited_by_percentile_year": {
+        "min": 99,
+        "max": 100
+      },
+      "biblio": {
+        "volume": null,
+        "issue": null,
+        "first_page": "649",
+        "last_page": "655"
+      },
+      "is_retracted": false,
+      "is_paratext": false,
+      "is_xpac": false,
+      "primary_topic": {
+        "id": "https://openalex.org/T11304",
+        "display_name": "Advanced Neuroimaging Techniques and Applications",
+        "score": 0.9939000010490417,
+        "subfield": {
+          "id": "https://openalex.org/subfields/2741",
+          "display_name": "Radiology, Nuclear Medicine and Imaging"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/27",
+          "display_name": "Medicine"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/4",
+          "display_name": "Health Sciences"
+        }
+      },
+      "topics": [
+        {
+          "id": "https://openalex.org/T11304",
+          "display_name": "Advanced Neuroimaging Techniques and Applications",
+          "score": 0.9939000010490417,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2741",
+            "display_name": "Radiology, Nuclear Medicine and Imaging"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/27",
+            "display_name": "Medicine"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/4",
+            "display_name": "Health Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10775",
+          "display_name": "Generative Adversarial Networks and Image Synthesis",
+          "score": 0.9868000149726868,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10136",
+          "display_name": "Statistical Methods and Inference",
+          "score": 0.9603999853134155,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2613",
+            "display_name": "Statistics and Probability"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/26",
+            "display_name": "Mathematics"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "keywords": [
+        {
+          "id": "https://openalex.org/keywords/anomaly-detection",
+          "display_name": "Anomaly detection",
+          "score": 0.6973801255226135
+        },
+        {
+          "id": "https://openalex.org/keywords/artificial-intelligence",
+          "display_name": "Artificial intelligence",
+          "score": 0.6378529071807861
+        },
+        {
+          "id": "https://openalex.org/keywords/anomaly",
+          "display_name": "Anomaly (physics)",
+          "score": 0.628638744354248
+        },
+        {
+          "id": "https://openalex.org/keywords/computer-science",
+          "display_name": "Computer science",
+          "score": 0.6211823225021362
+        },
+        {
+          "id": "https://openalex.org/keywords/noise-reduction",
+          "display_name": "Noise reduction",
+          "score": 0.6080373525619507
+        },
+        {
+          "id": "https://openalex.org/keywords/probabilistic-logic",
+          "display_name": "Probabilistic logic",
+          "score": 0.5863269567489624
+        },
+        {
+          "id": "https://openalex.org/keywords/noise",
+          "display_name": "Noise (video)",
+          "score": 0.5844036340713501
+        },
+        {
+          "id": "https://openalex.org/keywords/pattern-recognition",
+          "display_name": "Pattern recognition (psychology)",
+          "score": 0.5670286417007446
+        },
+        {
+          "id": "https://openalex.org/keywords/markov-chain",
+          "display_name": "Markov chain",
+          "score": 0.4974108040332794
+        },
+        {
+          "id": "https://openalex.org/keywords/diffusion-map",
+          "display_name": "Diffusion map",
+          "score": 0.4743153750896454
+        },
+        {
+          "id": "https://openalex.org/keywords/diffusion",
+          "display_name": "Diffusion",
+          "score": 0.4540683627128601
+        },
+        {
+          "id": "https://openalex.org/keywords/gaussian-noise",
+          "display_name": "Gaussian noise",
+          "score": 0.4373128116130829
+        },
+        {
+          "id": "https://openalex.org/keywords/algorithm",
+          "display_name": "Algorithm",
+          "score": 0.3773719370365143
+        },
+        {
+          "id": "https://openalex.org/keywords/machine-learning",
+          "display_name": "Machine learning",
+          "score": 0.226400226354599
+        },
+        {
+          "id": "https://openalex.org/keywords/physics",
+          "display_name": "Physics",
+          "score": 0.12611261010169983
+        },
+        {
+          "id": "https://openalex.org/keywords/image",
+          "display_name": "Image (mathematics)",
+          "score": 0.11837533116340637
+        },
+        {
+          "id": "https://openalex.org/keywords/dimensionality-reduction",
+          "display_name": "Dimensionality reduction",
+          "score": 0.0731332004070282
+        }
+      ],
+      "concepts": [
+        {
+          "id": "https://openalex.org/C739882",
+          "wikidata": "https://www.wikidata.org/wiki/Q3560506",
+          "display_name": "Anomaly detection",
+          "level": 2,
+          "score": 0.6973801255226135
+        },
+        {
+          "id": "https://openalex.org/C154945302",
+          "wikidata": "https://www.wikidata.org/wiki/Q11660",
+          "display_name": "Artificial intelligence",
+          "level": 1,
+          "score": 0.6378529071807861
+        },
+        {
+          "id": "https://openalex.org/C12997251",
+          "wikidata": "https://www.wikidata.org/wiki/Q567560",
+          "display_name": "Anomaly (physics)",
+          "level": 2,
+          "score": 0.628638744354248
+        },
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 0.6211823225021362
+        },
+        {
+          "id": "https://openalex.org/C163294075",
+          "wikidata": "https://www.wikidata.org/wiki/Q581861",
+          "display_name": "Noise reduction",
+          "level": 2,
+          "score": 0.6080373525619507
+        },
+        {
+          "id": "https://openalex.org/C49937458",
+          "wikidata": "https://www.wikidata.org/wiki/Q2599292",
+          "display_name": "Probabilistic logic",
+          "level": 2,
+          "score": 0.5863269567489624
+        },
+        {
+          "id": "https://openalex.org/C99498987",
+          "wikidata": "https://www.wikidata.org/wiki/Q2210247",
+          "display_name": "Noise (video)",
+          "level": 3,
+          "score": 0.5844036340713501
+        },
+        {
+          "id": "https://openalex.org/C153180895",
+          "wikidata": "https://www.wikidata.org/wiki/Q7148389",
+          "display_name": "Pattern recognition (psychology)",
+          "level": 2,
+          "score": 0.5670286417007446
+        },
+        {
+          "id": "https://openalex.org/C98763669",
+          "wikidata": "https://www.wikidata.org/wiki/Q176645",
+          "display_name": "Markov chain",
+          "level": 2,
+          "score": 0.4974108040332794
+        },
+        {
+          "id": "https://openalex.org/C55128770",
+          "wikidata": "https://www.wikidata.org/wiki/Q5275440",
+          "display_name": "Diffusion map",
+          "level": 4,
+          "score": 0.4743153750896454
+        },
+        {
+          "id": "https://openalex.org/C69357855",
+          "wikidata": "https://www.wikidata.org/wiki/Q163214",
+          "display_name": "Diffusion",
+          "level": 2,
+          "score": 0.4540683627128601
+        },
+        {
+          "id": "https://openalex.org/C4199805",
+          "wikidata": "https://www.wikidata.org/wiki/Q2725903",
+          "display_name": "Gaussian noise",
+          "level": 2,
+          "score": 0.4373128116130829
+        },
+        {
+          "id": "https://openalex.org/C11413529",
+          "wikidata": "https://www.wikidata.org/wiki/Q8366",
+          "display_name": "Algorithm",
+          "level": 1,
+          "score": 0.3773719370365143
+        },
+        {
+          "id": "https://openalex.org/C119857082",
+          "wikidata": "https://www.wikidata.org/wiki/Q2539",
+          "display_name": "Machine learning",
+          "level": 1,
+          "score": 0.226400226354599
+        },
+        {
+          "id": "https://openalex.org/C121332964",
+          "wikidata": "https://www.wikidata.org/wiki/Q413",
+          "display_name": "Physics",
+          "level": 0,
+          "score": 0.12611261010169983
+        },
+        {
+          "id": "https://openalex.org/C115961682",
+          "wikidata": "https://www.wikidata.org/wiki/Q860623",
+          "display_name": "Image (mathematics)",
+          "level": 2,
+          "score": 0.11837533116340637
+        },
+        {
+          "id": "https://openalex.org/C70518039",
+          "wikidata": "https://www.wikidata.org/wiki/Q16000077",
+          "display_name": "Dimensionality reduction",
+          "level": 2,
+          "score": 0.0731332004070282
+        },
+        {
+          "id": "https://openalex.org/C97355855",
+          "wikidata": "https://www.wikidata.org/wiki/Q11473",
+          "display_name": "Thermodynamics",
+          "level": 1,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C151876577",
+          "wikidata": "https://www.wikidata.org/wiki/Q7049464",
+          "display_name": "Nonlinear dimensionality reduction",
+          "level": 3,
+          "score": 0.0
+        },
+        {
+          "id": "https://openalex.org/C26873012",
+          "wikidata": "https://www.wikidata.org/wiki/Q214781",
+          "display_name": "Condensed matter physics",
+          "level": 1,
+          "score": 0.0
+        }
+      ],
+      "mesh": [],
+      "locations_count": 3,
+      "locations": [
+        {
+          "id": "doi:10.1109/cvprw56347.2022.00080",
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1109/cvprw56347.2022.00080",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4363607748",
+            "display_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": null,
+            "host_organization_name": null,
+            "host_organization_lineage": [],
+            "host_organization_lineage_names": [],
+            "type": "conference"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true,
+          "raw_source_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+          "raw_type": "proceedings-article"
+        },
+        {
+          "id": "pmh:oai:dro.dur.ac.uk.OAI2:36134",
+          "is_oa": false,
+          "landing_page_url": "http://dro.dur.ac.uk/36134/",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4377196258",
+            "display_name": "Durham Research Online (Durham University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I190082696",
+            "host_organization_name": "Durham University",
+            "host_organization_lineage": [
+              "https://openalex.org/I190082696"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "acceptedVersion",
+          "is_accepted": true,
+          "is_published": false,
+          "raw_source_name": "2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops, New Orleans, LA, 19-20 June 2022 [Conference proceedings]",
+          "raw_type": "Conference item"
+        },
+        {
+          "id": "pmh:oai:durham-repository.worktribe.com:1136696",
+          "is_oa": true,
+          "landing_page_url": "https://durham-repository.worktribe.com/output/1136696",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400188",
+            "display_name": "Durham Research Online (Durham University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I190082696",
+            "host_organization_name": "Durham University",
+            "host_organization_lineage": [
+              "https://openalex.org/I190082696"
+            ],
+            "host_organization_lineage_names": [],
+            "type": "repository"
+          },
+          "license": "cc-by",
+          "license_id": "https://openalex.org/licenses/cc-by",
+          "version": "submittedVersion",
+          "is_accepted": false,
+          "is_published": false,
+          "raw_source_name": null,
+          "raw_type": "acceptedVersion"
+        }
+      ],
+      "best_oa_location": {
+        "id": "pmh:oai:durham-repository.worktribe.com:1136696",
+        "is_oa": true,
+        "landing_page_url": "https://durham-repository.worktribe.com/output/1136696",
+        "pdf_url": null,
+        "source": {
+          "id": "https://openalex.org/S4306400188",
+          "display_name": "Durham Research Online (Durham University)",
+          "issn_l": null,
+          "issn": null,
+          "is_oa": false,
+          "is_in_doaj": false,
+          "is_core": false,
+          "host_organization": "https://openalex.org/I190082696",
+          "host_organization_name": "Durham University",
+          "host_organization_lineage": [
+            "https://openalex.org/I190082696"
+          ],
+          "host_organization_lineage_names": [],
+          "type": "repository"
+        },
+        "license": "cc-by",
+        "license_id": "https://openalex.org/licenses/cc-by",
+        "version": "submittedVersion",
+        "is_accepted": false,
+        "is_published": false,
+        "raw_source_name": null,
+        "raw_type": "acceptedVersion"
+      },
+      "sustainable_development_goals": [
+        {
+          "id": "https://metadata.un.org/sdg/10",
+          "score": 0.4300000071525574,
+          "display_name": "Reduced inequalities"
+        }
+      ],
+      "awards": [],
+      "funders": [],
+      "has_content": {
+        "grobid_xml": false,
+        "pdf": false
+      },
+      "content_urls": null,
+      "referenced_works_count": 41,
+      "referenced_works": [
+        "https://openalex.org/W1901129140",
+        "https://openalex.org/W2021787435",
+        "https://openalex.org/W2077887717",
+        "https://openalex.org/W2129069237",
+        "https://openalex.org/W2153173219",
+        "https://openalex.org/W2336763592",
+        "https://openalex.org/W2599354622",
+        "https://openalex.org/W2739748921",
+        "https://openalex.org/W2752796333",
+        "https://openalex.org/W2904300281",
+        "https://openalex.org/W2908510526",
+        "https://openalex.org/W2914570111",
+        "https://openalex.org/W2948982773",
+        "https://openalex.org/W2949863098",
+        "https://openalex.org/W2963420272",
+        "https://openalex.org/W2963799213",
+        "https://openalex.org/W2964122153",
+        "https://openalex.org/W2964137095",
+        "https://openalex.org/W3036167779",
+        "https://openalex.org/W3133297714",
+        "https://openalex.org/W3162926177",
+        "https://openalex.org/W3165355476",
+        "https://openalex.org/W3168053944",
+        "https://openalex.org/W3192882789",
+        "https://openalex.org/W3204937802",
+        "https://openalex.org/W4226376398",
+        "https://openalex.org/W4294643831",
+        "https://openalex.org/W4320013936",
+        "https://openalex.org/W4385245566",
+        "https://openalex.org/W6639824700",
+        "https://openalex.org/W6704369950",
+        "https://openalex.org/W6732492507",
+        "https://openalex.org/W6739901393",
+        "https://openalex.org/W6741832134",
+        "https://openalex.org/W6745560452",
+        "https://openalex.org/W6756793739",
+        "https://openalex.org/W6757817989",
+        "https://openalex.org/W6779823529",
+        "https://openalex.org/W6788990321",
+        "https://openalex.org/W6795288823",
+        "https://openalex.org/W6811291704"
+      ],
+      "related_works": [
+        "https://openalex.org/W2806741695",
+        "https://openalex.org/W4290647774",
+        "https://openalex.org/W3189286258",
+        "https://openalex.org/W3207797160",
+        "https://openalex.org/W3210364259",
+        "https://openalex.org/W4300558037",
+        "https://openalex.org/W2667207928",
+        "https://openalex.org/W2912112202",
+        "https://openalex.org/W4377864969",
+        "https://openalex.org/W3120251014"
+      ],
+      "abstract_inverted_index": {
+        "Generative": [
+          0
+        ],
+        "models": [
+          1,
+          41
+        ],
+        "have": [
+          2,
+          48
+        ],
+        "been": [
+          3
+        ],
+        "shown": [
+          4,
+          154
+        ],
+        "to": [
+          5,
+          15,
+          79,
+          104,
+          115,
+          128,
+          155
+        ],
+        "provide": [
+          6
+        ],
+        "a": [
+          7,
+          28,
+          93,
+          106,
+          135
+        ],
+        "powerful": [
+          8
+        ],
+        "mechanism": [
+          9
+        ],
+        "for": [
+          10,
+          30,
+          43,
+          163
+        ],
+        "anomaly": [
+          11,
+          45,
+          91,
+          110,
+          147
+        ],
+        "detection": [
+          12,
+          92,
+          111
+        ],
+        "by": [
+          13
+        ],
+        "learning": [
+          14
+        ],
+        "model": [
+          16
+        ],
+        "healthy": [
+          17
+        ],
+        "or": [
+          18
+        ],
+        "normal": [
+          19
+        ],
+        "reference": [
+          20
+        ],
+        "data": [
+          21
+        ],
+        "which": [
+          22
+        ],
+        "can": [
+          23
+        ],
+        "subsequently": [
+          24
+        ],
+        "be": [
+          25
+        ],
+        "used": [
+          26
+        ],
+        "as": [
+          27
+        ],
+        "baseline": [
+          29
+        ],
+        "scoring": [
+          31
+        ],
+        "anomalies.": [
+          32
+        ],
+        "In": [
+          33
+        ],
+        "this": [
+          34,
+          66
+        ],
+        "work": [
+          35
+        ],
+        "we": [
+          36,
+          133
+        ],
+        "consider": [
+          37
+        ],
+        "denoising": [
+          38
+        ],
+        "diffusion": [
+          39,
+          97,
+          109,
+          126,
+          139,
+          162
+        ],
+        "probabilistic": [
+          40
+        ],
+        "(DDPMs)": [
+          42
+        ],
+        "unsupervised": [
+          44
+        ],
+        "detection.": [
+          46
+        ],
+        "DDPMs": [
+          47
+        ],
+        "superior": [
+          49
+        ],
+        "mode": [
+          50
+        ],
+        "coverage": [
+          51
+        ],
+        "over": [
+          52,
+          144
+        ],
+        "generative": [
+          53
+        ],
+        "adversarial": [
+          54
+        ],
+        "networks": [
+          55
+        ],
+        "(GANs)": [
+          56
+        ],
+        "and": [
+          57,
+          74,
+          160,
+          175,
+          184
+        ],
+        "higher": [
+          58
+        ],
+        "sample": [
+          59
+        ],
+        "quality": [
+          60
+        ],
+        "than": [
+          61
+        ],
+        "variational": [
+          62
+        ],
+        "autoencoders": [
+          63
+        ],
+        "(VAEs).": [
+          64
+        ],
+        "However,": [
+          65
+        ],
+        "comes": [
+          67
+        ],
+        "at": [
+          68
+        ],
+        "the": [
+          69,
+          80,
+          145,
+          164
+        ],
+        "expense": [
+          70
+        ],
+        "of": [
+          71,
+          167,
+          178
+        ],
+        "poor": [
+          72
+        ],
+        "scalability": [
+          73
+        ],
+        "increased": [
+          75
+        ],
+        "sampling": [
+          76
+        ],
+        "times": [
+          77
+        ],
+        "due": [
+          78
+        ],
+        "long": [
+          81
+        ],
+        "Markov": [
+          82,
+          95
+        ],
+        "chain": [
+          83,
+          96
+        ],
+        "sequences": [
+          84
+        ],
+        "required.": [
+          85,
+          100
+        ],
+        "We": [
+          86
+        ],
+        "observe": [
+          87
+        ],
+        "that": [
+          88,
+          113,
+          124,
+          141
+        ],
+        "within": [
+          89
+        ],
+        "reconstruction-based": [
+          90
+        ],
+        "full-length": [
+          94
+        ],
+        "is": [
+          98,
+          123,
+          153
+        ],
+        "not": [
+          99
+        ],
+        "This": [
+          101
+        ],
+        "leads": [
+          102
+        ],
+        "us": [
+          103
+        ],
+        "develop": [
+          105,
+          134
+        ],
+        "novel": [
+          107
+        ],
+        "partial": [
+          108
+        ],
+        "strategy": [
+          112
+        ],
+        "scales": [
+          114
+        ],
+        "high-resolution": [
+          116
+        ],
+        "imagery,": [
+          117
+        ],
+        "named": [
+          118
+        ],
+        "AnoDDPM.": [
+          119
+        ],
+        "A": [
+          120
+        ],
+        "secondary": [
+          121
+        ],
+        "problem": [
+          122
+        ],
+        "Gaussian": [
+          125,
+          161
+        ],
+        "fails": [
+          127
+        ],
+        "capture": [
+          129
+        ],
+        "larger": [
+          130
+        ],
+        "anomalies;": [
+          131
+        ],
+        "therefore": [
+          132
+        ],
+        "multi-scale": [
+          136
+        ],
+        "simplex": [
+          137,
+          151
+        ],
+        "noise": [
+          138,
+          152
+        ],
+        "process": [
+          140
+        ],
+        "gives": [
+          142
+        ],
+        "control": [
+          143
+        ],
+        "target": [
+          146
+        ],
+        "size.": [
+          148
+        ],
+        "AnoDDPM": [
+          149
+        ],
+        "with": [
+          150
+        ],
+        "significantly": [
+          156
+        ],
+        "outperform": [
+          157
+        ],
+        "both": [
+          158
+        ],
+        "f-AnoGAN": [
+          159
+        ],
+        "tumorous": [
+          165
+        ],
+        "dataset": [
+          166
+        ],
+        "22": [
+          168
+        ],
+        "T1-weighted": [
+          169
+        ],
+        "MRI": [
+          170
+        ],
+        "scans": [
+          171
+        ],
+        "(CCBS": [
+          172
+        ],
+        "Edinburgh)": [
+          173
+        ],
+        "qualitatively": [
+          174
+        ],
+        "quantitatively": [
+          176
+        ],
+        "(improvement": [
+          177
+        ],
+        "+25.5%": [
+          179
+        ],
+        "S\u00f8rensen\u2013Dice": [
+          180
+        ],
+        "coefficient,": [
+          181
+        ],
+        "+17.6%": [
+          182
+        ],
+        "IoU": [
+          183
+        ],
+        "+7.4%": [
+          185
+        ],
+        "AUC).": [
+          186
+        ]
+      },
+      "counts_by_year": [
+        {
+          "year": 2026,
+          "cited_by_count": 28
+        },
+        {
+          "year": 2025,
+          "cited_by_count": 161
+        },
+        {
+          "year": 2024,
+          "cited_by_count": 120
+        },
+        {
+          "year": 2023,
+          "cited_by_count": 42
+        }
+      ],
+      "updated_date": "2026-05-09T13:55:54.758798",
+      "created_date": "2025-10-10T00:00:00"
+    }
+  ],
+  "group_by": []
+}

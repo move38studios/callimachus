@@ -51,6 +51,7 @@ callimachus = "callimachus.cli:main"
 [project.entry-points."callimachus.discovery_sources"]
 local_pdfs = "callimachus.sources.bundled.local_pdfs:LocalPdfsPlugin"
 arxiv = "callimachus.sources.bundled.arxiv:ArxivPlugin"
+openalex = "callimachus.sources.bundled.openalex:OpenAlexPlugin"
 
 [project.entry-points."callimachus.resolvers"]
 local_pdfs = "callimachus.sources.bundled.local_pdfs:LocalPdfsPlugin"
