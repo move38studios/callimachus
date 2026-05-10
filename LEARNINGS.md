@@ -10,6 +10,19 @@ Entries are ordered newest-first. Each entry is short. If you need depth, follow
 
 ## Entries
 
+### 2026-05-10 — Probed Serper + Perplexity-via-OpenRouter for M2 scout
+
+Two focused experiments before wiring the M2.0a Serper plugin and the M2.3 scout agent.
+
+**Serper** (experiments/31): `/search` returns standard Google org results plus `peopleAlsoAsk` and `relatedSearches` (useful for scout angle expansion). `/scholar` is the gold mine for academic discovery — per-result keys are `title, link, snippet, year, pdfUrl, citedBy, publicationInfo` which maps very cleanly to `WorkCandidate`. Citation count (`citedBy`) is a strong seminality signal we'll surface to the judge. One plugin (M2.0a) with two modes — defaults to `/search`, flag for `/scholar`. 1 credit per call, fast.
+
+**Perplexity via OpenRouter** (experiments/32): citations DO pass through but **not via the flat top-level `citations` field** the May-2026 research suggested. OpenRouter normalises perplexity's output into **OpenAI-compat `choices[0].message.annotations[*].url_citation`** with `{type, url_citation: {url, title, start_index, end_index}}`. We get URL + title only — no snippet/content. `search_results`, `related_questions`, `images` are stripped on the OpenRouter passthrough. For the scout this is enough — non-snippet seed URLs flow through the existing pipeline (arxiv resolver picks up arxiv URLs, OpenAlex picks up DOIs) which gives us full text anyway.
+
+**Confirms the M2 plan**: scout uses a small direct-httpx call to OpenRouter (not Pydantic AI — we need raw access to `message.annotations`) for perplexity-sonar-pro synthesis + URL citations. Plus arxiv + OpenAlex + Serper as DiscoverySource plugins for per-angle structured search. **No `PERPLEXITY_API_KEY` needed** — the existing `OPENROUTER_API_KEY` covers it.
+
+- **Sources**: [`experiments/31-serper-search/LEARNINGS.md`](experiments/31-serper-search/LEARNINGS.md), [`experiments/32-perplexity-openrouter/LEARNINGS.md`](experiments/32-perplexity-openrouter/LEARNINGS.md)
+- **Affects**: M2.0a (Serper plugin shape locked), M2.3 (scout citation-extraction path locked).
+
 ### 2026-05-09 — Roadmap re-prioritised after M1 ships
 
 After the deterministic pipeline shipped end-to-end, paused to reassess. Three changes to DEV_PLAN.md:
@@ -376,7 +389,9 @@ A separate, narrower table of decisions that have been made and where they're re
 | Build backend | `hatchling` | `pyproject.toml` |
 | Agent harness | Pydantic AI (`pydantic-ai-slim[openrouter]`) | `ARCHITECTURE.md`, `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
 | Default LLM access | OpenRouter (one key, many models) | `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
-| Perplexity routing | via OpenRouter (`perplexity/sonar`); `PERPLEXITY_API_KEY` is opt-in | `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
+| Perplexity routing | via OpenRouter (`perplexity/sonar-pro`); `PERPLEXITY_API_KEY` is opt-in | `experiments/01-pydantic-ai-hello/LEARNINGS.md`, `experiments/32-perplexity-openrouter/LEARNINGS.md` |
+| Perplexity citation field on OpenRouter | `choices[0].message.annotations[*].url_citation` (OpenAI-compat), URL + title only — NOT the flat `citations` field perplexity-direct returns | `experiments/32-perplexity-openrouter/LEARNINGS.md` |
+| Serper plugin shape (M2.0a) | one plugin, two modes (`/search` vs `/scholar`); `/scholar` per-result fields map cleanly to WorkCandidate; `citedBy` → seminality signal | `experiments/31-serper-search/LEARNINGS.md` |
 | Canonical Sonnet 4.6 model string | `openrouter:anthropic/claude-sonnet-4.6` | `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
 | Experiment dependency convention | PEP 723 inline-script metadata, run via `uv run` | `experiments/01-pydantic-ai-hello/LEARNINGS.md` |
 | Token field names (Pydantic AI) | `input_tokens` / `output_tokens` (not `request_/response_`) | `experiments/01-pydantic-ai-hello/run.py` |

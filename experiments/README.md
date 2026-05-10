@@ -75,3 +75,5 @@ Add `"rich>=13"` to your script's PEP 723 dependencies if you call `setup_loggin
 | 28 | mcp-fastmcp-hello | not started | |
 | 29 | plugin-entry-point | not started | |
 | 30 | plugin-local-file | not started | |
+| 31 | serper-search | done (2026-05-10) | `/scholar` returns title+link+snippet+year+pdfUrl+citedBy+publicationInfo — clean WorkCandidate map |
+| 32 | perplexity-openrouter | done (2026-05-10) | citations come back as `message.annotations[*].url_citation` (OpenAI-compat), URL+title only, no snippet |
