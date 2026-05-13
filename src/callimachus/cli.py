@@ -29,7 +29,7 @@ from callimachus.discovery.orchestrator import (
     run_build,
 )
 from callimachus.discovery.plan import Plan, load_plan, save_plan
-from callimachus.discovery.scout import render_angle_tree, run_scout
+from callimachus.discovery.scout import run_scout
 from callimachus.pipeline.embed import (
     Embedder,
     NomicEmbedder,
@@ -459,14 +459,13 @@ async def _scout_and_ceremony(
     registry: SourceRegistry,
     auto: bool,
 ) -> Plan:
-    """Run the scout, then the ceremony (or auto-plan), returning the Plan."""
+    """Run the scout, then the ceremony (or auto-plan), returning the Plan.
+
+    The ceremony itself renders the angle tree via the prompter when not in
+    auto mode — we don't pre-print it here to avoid showing it twice.
+    """
     console.print(f"[bold]scout[/] probing angles for [cyan]{topic!r}[/]…")
     tree = await run_scout(topic=topic, registry=registry)
-    if not auto:
-        console.print(render_angle_tree(tree, color=True))
-        related = ", ".join(tree.related_fields) if tree.related_fields else "(none)"
-        console.print(f"[dim]Related fields the scout noticed: {related}[/]")
-        console.print()
     return run_ceremony(tree, prompter=CliPrompter(), auto=auto)
 
 
