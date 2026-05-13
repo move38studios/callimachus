@@ -324,3 +324,161 @@ def test_ingest_end_to_end_with_stubs(
     list_result = runner.invoke(app, ["list"])
     assert list_result.exit_code == 0
     assert "Test Paper" in list_result.output
+
+
+# ---------- build ----------
+
+
+def test_build_errors_when_no_args(runner: CliRunner, library_env: Path) -> None:
+    del library_env
+    result = runner.invoke(app, ["build"])
+    assert result.exit_code == 1
+    assert "specify either --topic or --from-plan" in result.stderr
+
+
+def test_build_errors_when_both_topic_and_plan(runner: CliRunner, library_env: Path) -> None:
+    del library_env
+    result = runner.invoke(app, ["build", "--topic", "x", "--from-plan", "y"])
+    assert result.exit_code == 1
+    assert "mutually exclusive" in result.stderr
+
+
+def test_build_errors_when_library_missing(runner: CliRunner, library_env: Path) -> None:
+    del library_env  # not init'd
+    result = runner.invoke(app, ["build", "--topic", "creativity"])
+    assert result.exit_code == 1
+    assert "library not found" in result.stderr
+
+
+def test_build_errors_when_plan_missing(runner: CliRunner, library_env: Path) -> None:
+    runner.invoke(app, ["init"])
+    result = runner.invoke(app, ["build", "--from-plan", "no-such-slug"])
+    assert result.exit_code == 1
+    assert "no-such-slug" in result.stderr
+
+
+def test_build_topic_with_auto_runs_end_to_end(
+    runner: CliRunner,
+    library_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`build --topic X --auto` writes a plan and runs it with the stubbed orchestrator.
+
+    We stub the four heavy components (scout, judge factory, hunt, ingest) so the
+    test exercises the CLI wiring without touching real LLMs or the network.
+    """
+    runner.invoke(app, ["init"])
+
+    import callimachus.cli as cli_module
+    from callimachus.discovery.hunter import HunterRunResult
+    from callimachus.discovery.judge import Verdict
+    from callimachus.discovery.plan import Angle, AngleTree
+
+    async def stub_run_scout(*, topic: str, registry: Any, **_: Any) -> AngleTree:
+        del registry
+        return AngleTree(
+            topic=topic,
+            angles=[
+                Angle(name="foundations", description="seminal pre-2020 work"),
+                Angle(name="recent", description="state of the art after 2022"),
+            ],
+        )
+
+    async def stub_hunt(angle: Any) -> HunterRunResult:
+        from callimachus.sources.protocols import Provenance, WorkCandidate
+
+        cand = WorkCandidate(
+            title=f"Stubbed paper for {angle.name}",
+            source_url="https://arxiv.org/abs/9999.99999",
+            provenance=Provenance(source_name="stub", query=angle.name),
+            arxiv_id="9999.99999",
+        )
+        return HunterRunResult(
+            angle=angle.name,
+            candidates=[cand],
+            queries_tried=["stub"],
+            notes="stub hunter for cli test",
+            elapsed_seconds=0.0,
+        )
+
+    async def stub_judge(topic: str, cand: Any) -> Verdict:
+        del topic, cand
+        return Verdict(
+            accept=False,  # accept=False keeps the test offline (no ingest path runs)
+            score=0.0,
+            reasoning="rejected by stub judge — no real ingest in test",
+        )
+
+    def stub_make_hunt_fn(*, plan: Any, registry: Any, **_: Any) -> Any:
+        del plan, registry
+        return stub_hunt
+
+    def stub_make_default_judge(*_: Any, **__: Any) -> Any:
+        return stub_judge
+
+    def stub_make_default_enricher(*_: Any, **__: Any) -> Any:
+        async def _enrich(text: str) -> Any:
+            del text
+            return None
+
+        return _enrich
+
+    class _StubEmbedder:
+        async def embed_documents(self, texts: list[str]) -> list[list[float]]:
+            return [[0.0] * 768 for _ in texts]
+
+        async def embed_query(self, text: str) -> list[float]:
+            del text
+            return [0.0] * 768
+
+    monkeypatch.setattr(cli_module, "run_scout", stub_run_scout)
+    monkeypatch.setattr(cli_module, "make_hunt_fn", stub_make_hunt_fn)
+    monkeypatch.setattr(cli_module, "make_default_judge", stub_make_default_judge)
+    monkeypatch.setattr(cli_module, "make_default_enricher", stub_make_default_enricher)
+    monkeypatch.setattr(cli_module, "NomicEmbedder", _StubEmbedder)
+
+    result = runner.invoke(app, ["build", "--topic", "creativity", "--auto", "--no-ocr"])
+    assert result.exit_code == 0, f"out: {result.output}\nerr: {result.stderr}"
+    # Plan was written to disk
+    plan_path = library_env / ".callimachus" / "plans" / "creativity.yaml"
+    assert plan_path.is_file(), f"expected plan at {plan_path}"
+    # Build ran but with stub judge rejecting all → 0 works added
+    assert "0 works added" in result.output
+
+
+def test_build_topic_without_auto_writes_plan_and_exits(
+    runner: CliRunner,
+    library_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`build --topic X` (no --auto) just saves a plan; the user runs it later."""
+    runner.invoke(app, ["init"])
+
+    import callimachus.cli as cli_module
+    from callimachus.discovery.plan import Angle, AngleTree
+
+    async def stub_run_scout(*, topic: str, registry: Any, **_: Any) -> AngleTree:
+        del registry
+        return AngleTree(
+            topic=topic,
+            angles=[Angle(name="a", description="ok ok ok ok")],
+        )
+
+    # Make the ceremony non-interactive: stub CliPrompter so input() is never called
+    class _AutoPrompter:
+        def ask(self, question: str, default: str | None = None) -> str:
+            del question
+            return default or ""
+
+        def display(self, text: str) -> None:
+            del text
+
+    monkeypatch.setattr(cli_module, "run_scout", stub_run_scout)
+    monkeypatch.setattr(cli_module, "CliPrompter", _AutoPrompter)
+
+    result = runner.invoke(app, ["build", "--topic", "creativity"])
+    assert result.exit_code == 0, f"output: {result.output}\nstderr: {result.stderr}"
+    plan_path = library_env / ".callimachus" / "plans" / "creativity.yaml"
+    assert plan_path.is_file()
+    # The CLI should suggest the next command
+    assert "calli build --from-plan creativity" in result.output

@@ -1,4 +1,4 @@
-"""Callimachus CLI — `calli init`, `calli ingest`, `calli query`.
+"""Callimachus CLI — `calli init`, `calli ingest`, `calli query`, `calli build`.
 
 Async commands are wrapped with `asyncio.run`. Library root resolves
 from the explicit `--library` flag → `$CALLIMACHUS_LIBRARY` → `~/Callimachus`.
@@ -20,6 +20,16 @@ from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.table import Table
 
+from callimachus.discovery.ceremony import CliPrompter, run_ceremony
+from callimachus.discovery.judge import make_default_judge
+from callimachus.discovery.orchestrator import (
+    BuildResult,
+    make_hunt_fn,
+    make_ingest_fn,
+    run_build,
+)
+from callimachus.discovery.plan import Plan, load_plan, save_plan
+from callimachus.discovery.scout import render_angle_tree, run_scout
 from callimachus.pipeline.embed import (
     Embedder,
     NomicEmbedder,
@@ -438,6 +448,174 @@ def list_cmd(
             authors_str += f", +{len(authors_list) - 3}"
         table.add_row(w.id, w.title, str(w.year or "—"), authors_str or "—")
     console.print(table)
+
+
+# ---------- build (scout → ceremony → orchestrator) ----------
+
+
+async def _scout_and_ceremony(
+    *,
+    topic: str,
+    registry: SourceRegistry,
+    auto: bool,
+) -> Plan:
+    """Run the scout, then the ceremony (or auto-plan), returning the Plan."""
+    console.print(f"[bold]scout[/] probing angles for [cyan]{topic!r}[/]…")
+    tree = await run_scout(topic=topic, registry=registry)
+    if not auto:
+        console.print(render_angle_tree(tree, color=True))
+        related = ", ".join(tree.related_fields) if tree.related_fields else "(none)"
+        console.print(f"[dim]Related fields the scout noticed: {related}[/]")
+        console.print()
+    return run_ceremony(tree, prompter=CliPrompter(), auto=auto)
+
+
+async def _run_build_from_plan(
+    *,
+    plan: Plan,
+    library_root: Path,
+    registry: SourceRegistry,
+    no_ocr: bool,
+) -> BuildResult:
+    """Wire up real hunters/judge/ingest and execute the plan."""
+    db_path = library_root / "library.db"
+    engine = make_engine(f"sqlite:///{db_path}")
+
+    enricher: EnrichFn = make_default_enricher()
+    embedder: Embedder = NomicEmbedder()
+    ocr: OcrProvider | None = None if no_ocr else MistralOcr()
+    judge_fn = make_default_judge()
+
+    hunt_fn = make_hunt_fn(plan=plan, registry=registry)
+
+    with make_session(engine) as session:
+        ingest_fn = make_ingest_fn(
+            library_root=library_root,
+            session=session,
+            registry=registry,
+            enricher=enricher,
+            embedder=embedder,
+            ocr=ocr,
+        )
+        result = await run_build(
+            plan=plan,
+            session=session,
+            judge_fn=judge_fn,
+            hunt_fn=hunt_fn,
+            ingest_fn=ingest_fn,
+        )
+        session.commit()
+
+    return result
+
+
+def _print_build_result(result: BuildResult, plan: Plan) -> None:
+    """Final summary panel for `calli build`."""
+    color = "green" if not result.errors else "yellow"
+    headline = (
+        f"[bold {color}]{result.works_added} works added[/]  "
+        f"[dim]({result.candidates_accepted} accepted of "
+        f"{result.candidates_judged} judged, "
+        f"{result.candidates_after_filter} reachable, "
+        f"{result.candidates_total} found)[/]"
+    )
+    body_lines: list[str] = [headline, "", f"plan: [cyan]{plan.slug}[/]"]
+    body_lines.append(f"run id: {result.run_id}")
+    body_lines.append(f"elapsed: {result.elapsed_seconds:.1f}s")
+    if result.errors:
+        body_lines.append("")
+        body_lines.append(f"[red]{len(result.errors)} error(s):[/]")
+        for err in result.errors[:5]:
+            body_lines.append(f"  • {err}")
+        if len(result.errors) > 5:
+            body_lines.append(f"  [dim]…and {len(result.errors) - 5} more[/]")
+    console.print(Panel.fit("\n".join(body_lines), title="calli build"))
+
+
+@app.command("build")
+def build_cmd(
+    topic: Annotated[
+        str | None,
+        typer.Option("--topic", "-t", help="Topic to build a library around (scout + ceremony)."),
+    ] = None,
+    from_plan: Annotated[
+        str | None,
+        typer.Option("--from-plan", help="Slug of an existing plan to run (skips scout/ceremony)."),
+    ] = None,
+    library: Annotated[
+        Path | None,
+        typer.Option("--library", "-L", help="Library root (default: ~/Callimachus)."),
+    ] = None,
+    auto: Annotated[
+        bool,
+        typer.Option(
+            "--auto",
+            help="Hands-off mode: skip the ceremony and run with all scout angles.",
+        ),
+    ] = False,
+    no_ocr: Annotated[
+        bool,
+        typer.Option("--no-ocr", help="Disable Mistral OCR (only LaTeX-source PDFs will work)."),
+    ] = False,
+    verbose: Annotated[bool, typer.Option("-v", "--verbose")] = False,
+) -> None:
+    """Build a library from a topic: scout → clarify (HITL) → plan → orchestrate.
+
+    Two-step flow:
+      calli build --topic "..."           → scout + ceremony → plan.yaml (review then run)
+      calli build --from-plan <slug>       → run an existing plan
+      calli build --topic "..." --auto     → scout, skip ceremony, run immediately
+    """
+    if not topic and not from_plan:
+        err_console.print("[red]specify either --topic or --from-plan[/]")
+        raise typer.Exit(code=1)
+    if topic and from_plan:
+        err_console.print("[red]--topic and --from-plan are mutually exclusive[/]")
+        raise typer.Exit(code=1)
+
+    _setup_logging(verbose)
+    library_root = _resolve_library(library)
+    _bootstrap_env(library_root)
+    if not (library_root / "library.db").is_file():
+        err_console.print(
+            f"[red]library not found at {library_root}; "
+            f"run [bold]calli init {library_root}[/bold] first[/]"
+        )
+        raise typer.Exit(code=1)
+
+    registry = default_registry(library_root=library_root)
+
+    # Step 1 — produce a Plan (either from scratch or by loading)
+    if topic:
+        plan = asyncio.run(_scout_and_ceremony(topic=topic, registry=registry, auto=auto))
+        saved_at = save_plan(plan, library_root)
+        console.print(
+            Panel.fit(
+                f"[bold green]✓ plan saved[/]\n[dim]{saved_at}[/]",
+                title=f"calli build --topic {topic!r}",
+            )
+        )
+        if not auto:
+            console.print(
+                f"[dim]Review {saved_at} then run: "
+                f"[bold]calli build --from-plan {plan.slug}[/][/]"
+            )
+            return
+    else:
+        assert from_plan is not None  # narrowed by the early-exit checks above
+        try:
+            plan = load_plan(library_root, from_plan)
+        except FileNotFoundError as exc:
+            err_console.print(f"[red]{exc}[/]")
+            raise typer.Exit(code=1) from exc
+
+    # Step 2 — orchestrate the plan
+    result = asyncio.run(
+        _run_build_from_plan(plan=plan, library_root=library_root, registry=registry, no_ocr=no_ocr)
+    )
+    _print_build_result(result, plan)
+    if result.errors and result.works_added == 0:
+        raise typer.Exit(code=1)
 
 
 def main() -> None:
