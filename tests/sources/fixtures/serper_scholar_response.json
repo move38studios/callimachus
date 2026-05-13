@@ -1,0 +1,112 @@
+{
+  "searchParameters": {
+    "q": "diffusion models for image generation",
+    "type": "scholar",
+    "num": 5,
+    "page": 1,
+    "engine": "google"
+  },
+  "organic": [
+    {
+      "title": "Conditional text image generation with diffusion models",
+      "link": "http://openaccess.thecvf.com/content/CVPR2023/html/Zhu_Conditional_Text_Image_Generation_With_Diffusion_Models_CVPR_2023_paper.html",
+      "publicationInfo": "Y Zhu, Z Li, T Wang, M He\u2026 - Proceedings of the IEEE \u2026, 2023 - openaccess.thecvf.com",
+      "snippet": "\u2026 a diffusion model based conditional text image generator, \u2026 a text image generation method based on diffusion models, \u2026 first attempts to use diffusion models to generate text images. \u2026",
+      "year": 2023,
+      "citedBy": 148,
+      "pdfUrl": "https://openaccess.thecvf.com/content/CVPR2023/papers/Zhu_Conditional_Text_Image_Generation_With_Diffusion_Models_CVPR_2023_paper.pdf",
+      "id": "0dTwK1PKL2sJ"
+    },
+    {
+      "title": "Cascaded diffusion models for high fidelity image generation",
+      "link": "http://www.jmlr.org/papers/v23/21-0635.html",
+      "publicationInfo": "J Ho, C Saharia, W Chan, DJ Fleet, M Norouzi\u2026 - Journal of Machine \u2026, 2022 - jmlr.org",
+      "snippet": "\u2026 diffusion models are capable of generating high fidelity images on the class-conditional ImageNet generation benchmark, without any assistance from auxiliary image classifiers to \u2026",
+      "year": 2022,
+      "citedBy": 1802,
+      "pdfUrl": "http://www.jmlr.org/papers/volume23/21-0635/21-0635.pdf",
+      "id": "WdZyna4pP5IJ"
+    },
+    {
+      "title": "Diffusion models in vision: A survey",
+      "link": "https://ieeexplore.ieee.org/abstract/document/10081412/",
+      "publicationInfo": "FA Croitoru, V Hondru, RT Ionescu\u2026 - IEEE transactions on \u2026, 2023 - ieeexplore.ieee.org",
+      "snippet": "\u2026 Their results are competitive with previous continuous diffusion models for the image generation task. Ho et al. [2] extend the work presented in [1], proposing to learn the reverse \u2026",
+      "year": 2023,
+      "citedBy": 2842,
+      "pdfUrl": "https://arxiv.org/pdf/2209.04747",
+      "id": "aiomJV05gFUJ"
+    },
+    {
+      "title": "Brain imaging generation with latent diffusion models",
+      "link": "https://link.springer.com/chapter/10.1007/978-3-031-18576-2_12",
+      "publicationInfo": "WHL Pinaya, PD Tudosiu, J Dafflon\u2026 - \u2026 deep generative models, 2022 - Springer",
+      "snippet": "\u2026 producing photorealistic synthetic images. In this study, we explore using Latent Diffusion Models to generate synthetic images from high-resolution 3D brain images. We used T1w MRI \u2026",
+      "year": 2022,
+      "citedBy": 615,
+      "pdfUrl": "https://arxiv.org/pdf/2209.07162",
+      "id": "2mBp2cU9fj8J"
+    },
+    {
+      "title": "Comprehensive exploration of diffusion models in image generation: a survey",
+      "link": "https://link.springer.com/article/10.1007/s10462-025-11110-3",
+      "publicationInfo": "H Chen, Q Xiang, J Hu, M Ye, C Yu, H Cheng\u2026 - Artificial Intelligence \u2026, 2025 - Springer",
+      "snippet": "\u2026 and theoretical foundations of diffusion models. Subsequently, this \u2026 of diffusion models across a range of image generation subfields, including style transfer, image completion, image \u2026",
+      "year": 2025,
+      "citedBy": 76,
+      "pdfUrl": "https://link.springer.com/content/pdf/10.1007/s10462-025-11110-3.pdf",
+      "id": "E8O-C2D95McJ"
+    },
+    {
+      "title": "Conditional image generation with score-based diffusion models",
+      "link": "https://arxiv.org/abs/2111.13606",
+      "publicationInfo": "G Batzolis, J Stanczuk, CB Sch\u00f6nlieb\u2026 - arXiv preprint arXiv \u2026, 2021 - arxiv.org",
+      "snippet": "\u2026 -based diffusion models very attractive for deep generative modelling. In this work, we examine how score-based diffusion models can be applied to conditional image generation. We \u2026",
+      "year": 2021,
+      "citedBy": 339,
+      "pdfUrl": "https://arxiv.org/pdf/2111.13606",
+      "id": "iUN7dP5lN9YJ"
+    },
+    {
+      "title": "Designdiffusion: High-quality text-to-design image generation with diffusion models",
+      "link": "http://openaccess.thecvf.com/content/CVPR2025/html/Wang_DesignDiffusion_High-Quality_Text-to-Design_Image_Generation_with_Diffusion_Models_CVPR_2025_paper.html",
+      "publicationInfo": "Z Wang, J Bao, S Gu, D Chen\u2026 - Proceedings of the \u2026, 2025 - openaccess.thecvf.com",
+      "snippet": "\u2026 training to prompt diffusion models to create images based on \u2026 models aiding diffusion models in generating images with \u2026 fall short in generating design-centric images that seamlessly \u2026",
+      "year": 2025,
+      "citedBy": 38,
+      "pdfUrl": "http://openaccess.thecvf.com/content/CVPR2025/papers/Wang_DesignDiffusion_High-Quality_Text-to-Design_Image_Generation_with_Diffusion_Models_CVPR_2025_paper.pdf",
+      "id": "FYE1cblkWu8J"
+    },
+    {
+      "title": "Learned representation-guided diffusion models for large-image generation",
+      "link": "https://openaccess.thecvf.com/content/CVPR2024/html/Graikos_Learned_Representation-Guided_Diffusion_Models_for_Large-Image_Generation_CVPR_2024_paper.html",
+      "publicationInfo": "A Graikos, S Yellapragada, MQ Le\u2026 - Proceedings of the \u2026, 2024 - openaccess.thecvf.com",
+      "snippet": "\u2026 We apply DDIM with 50 steps and a guidance scale of 1.75 for both patch sampling and large-image generation. When generating large images we apply the patch diffusion model with \u2026",
+      "year": 2024,
+      "citedBy": 65,
+      "pdfUrl": "https://openaccess.thecvf.com/content/CVPR2024/papers/Graikos_Learned_Representation-Guided_Diffusion_Models_for_Large-Image_Generation_CVPR_2024_paper.pdf",
+      "id": "9LdIV4eUSlcJ"
+    },
+    {
+      "title": "Layoutdiffusion: Controllable diffusion model for layout-to-image generation",
+      "link": "http://openaccess.thecvf.com/content/CVPR2023/html/Zheng_LayoutDiffusion_Controllable_Diffusion_Model_for_Layout-to-Image_Generation_CVPR_2023_paper.html",
+      "publicationInfo": "G Zheng, X Zhou, X Li, Z Qi\u2026 - Proceedings of the \u2026, 2023 - openaccess.thecvf.com",
+      "snippet": "\u2026 we propose a diffusion model named LayoutDiffusion for layout-to-image generation. We transform \u2026 a diffusion model named LayoutDiffusion for layout-to-image generations, which can \u2026",
+      "year": 2023,
+      "citedBy": 381,
+      "pdfUrl": "http://openaccess.thecvf.com/content/CVPR2023/papers/Zheng_LayoutDiffusion_Controllable_Diffusion_Model_for_Layout-to-Image_Generation_CVPR_2023_paper.pdf",
+      "id": "brwV0eorMO8J"
+    },
+    {
+      "title": "Controllable generation with text-to-image diffusion models: A survey",
+      "link": "https://ieeexplore.ieee.org/abstract/document/11304732/",
+      "publicationInfo": "P Cao, F Zhou, Q Song, L Yang - IEEE Transactions on Pattern \u2026, 2025 - ieeexplore.ieee.org",
+      "snippet": "\u2026 generation based on T2I diffusion models, implying \u2026 generation using the T2I diffusion model, where novel conditions beyond text are introduced to steer the outcomes. Example images \u2026",
+      "year": 2025,
+      "citedBy": 101,
+      "pdfUrl": "https://arxiv.org/pdf/2403.04279",
+      "id": "d0kQ7zttOuoJ"
+    }
+  ],
+  "credits": 1
+}

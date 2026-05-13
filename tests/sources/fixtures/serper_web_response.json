@@ -1,0 +1,92 @@
+{
+  "searchParameters": {
+    "q": "diffusion models for image generation",
+    "type": "search",
+    "num": 5,
+    "engine": "google"
+  },
+  "organic": [
+    {
+      "title": "Understanding Image Generation with Diffusion | by Deven Joshi",
+      "link": "https://medium.com/@d3xvn/understanding-image-generation-with-diffusion-78eea7e7d6f8",
+      "snippet": "Diffusion models work by starting with a noise image and then gradually adding detail to the image until it becomes a realistic image. There ...",
+      "date": "Jun 22, 2023",
+      "position": 1
+    },
+    {
+      "title": "Brief Introduction to Diffusion Models for Image Generation",
+      "link": "https://www.machinelearningmastery.com/brief-introduction-to-diffusion-models-for-image-generation/",
+      "snippet": "Diffusion models are a family of neural network models that consider embedding to be a hint to restore a picture from random pixels.",
+      "date": "Jul 18, 2024",
+      "position": 2
+    },
+    {
+      "title": "Diffusion Models for AI Image Generation - YouTube",
+      "link": "https://www.youtube.com/watch?v=x2GRE-RzmD8",
+      "snippet": "Want to learn more about Generative AI + Machine Learning? Read the ebook \u2192 https://ibm.biz/BdGvdC Learn more about Diffusion Models here ...",
+      "date": "Jan 30, 2025",
+      "position": 3
+    },
+    {
+      "title": "Text-to-image Diffusion Models in Generative AI: A Survey - arXiv",
+      "link": "https://arxiv.org/abs/2303.07909",
+      "snippet": "Abstract:This survey reviews the progress of diffusion models in generating images from text, ~\\textit{i.e.} text-to-image diffusion models.",
+      "date": "Mar 14, 2023",
+      "position": 4
+    },
+    {
+      "title": "How do diffusion models generate images of a particular style?",
+      "link": "https://www.reddit.com/r/StableDiffusion/comments/1dk6bng/how_do_diffusion_models_generate_images_of_a/",
+      "snippet": "The model predicts a specific amount of noise in the whole image, relying on the interpretation to guide it to what the image actually is.",
+      "date": "Jun 20, 2024",
+      "position": 5
+    }
+  ],
+  "peopleAlsoAsk": [
+    {
+      "question": "What are diffusion models for image generation?",
+      "snippet": "Diffusion models are generative models used primarily for image generation and other computer vision tasks. Diffusion-based neural networks are trained through deep learning to progressively \u201cdiffuse\u201d samples with random noise, then reverse that diffusion process to generate high-quality images.",
+      "title": "What are Diffusion Models? | IBM",
+      "link": "https://www.ibm.com/think/topics/diffusion-models"
+    },
+    {
+      "question": "Is GPT-4 a diffusion model?",
+      "snippet": "Interestingly, the classifier consistently classifies GPT-4o's images as diffusion-based, providing empirical evidence that GPT-4o may internally use a diffusion head for image decoding.",
+      "title": "GPT-ImgEval: A Comprehensive Benchmark for Diagnosing GPT4o ...",
+      "link": "https://arxiv.org/html/2504.02782v1"
+    },
+    {
+      "question": "What are the 4 types of spatial diffusion?",
+      "snippet": "It provides details on four main types of spatial diffusion: expansion diffusion, hierarchical/cascade diffusion, contagious diffusion, and relocation diffusion.",
+      "title": "Understanding Spatial Diffusion Models | PDF - Scribd",
+      "link": "https://www.scribd.com/document/246858733/Lecture-7-Spatial-Diffusion-2014"
+    }
+  ],
+  "relatedSearches": [
+    {
+      "query": "Stable Diffusion"
+    },
+    {
+      "query": "Diffusion models for image generation free"
+    },
+    {
+      "query": "Diffusion models for image generation online"
+    },
+    {
+      "query": "Text-to-image diffusion models in generative AI: A survey"
+    },
+    {
+      "query": "Diffusion models examples"
+    },
+    {
+      "query": "Stable Diffusion models"
+    },
+    {
+      "query": "Diffusion model for image generation GitHub"
+    },
+    {
+      "query": "Diffusion models types"
+    }
+  ],
+  "credits": 1
+}
