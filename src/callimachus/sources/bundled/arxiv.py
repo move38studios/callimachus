@@ -39,22 +39,47 @@ ATOM_NS = {
     "arxiv": "http://arxiv.org/schemas/atom",
 }
 
-# Match arXiv IDs in URLs or raw form.
+# Match arXiv IDs in two strict ways:
+# - The entire input is a bare ID (with optional `arxiv:` prefix).
+# - The input contains an `arxiv.org/{abs,pdf,e-print}/<id>` URL.
+#
+# Anything else returns None. The previous loose pattern matched
+# `[a-z]+/\d+` anywhere in the string, which falsely flagged
+# `https://doi.org/10.1145/...` as arxiv id `org/10`.
+#
 # - new-style: 2006.11239 or 2006.11239v1
 # - old-style: math/0001234, hep-th/0001234
-ARXIV_ID_PATTERN = re.compile(
-    r"(?:arxiv:)?(?:abs/|pdf/|e-print/)?([a-z\-]+/\d+|\d{4}\.\d{4,5})(?:v\d+)?",
+
+_ID_BODY = r"(?:[a-z][a-z\-]+/\d{4,7}|\d{4}\.\d{4,5})"
+
+_ARXIV_BARE_RE = re.compile(
+    rf"^(?:arxiv:)?({_ID_BODY})(?:v\d+)?$",
+    re.IGNORECASE,
+)
+
+_ARXIV_URL_RE = re.compile(
+    rf"arxiv\.org/(?:abs|pdf|e-print)/({_ID_BODY})(?:v\d+)?(?:\.pdf)?",
     re.IGNORECASE,
 )
 
 
 def extract_arxiv_id(text: str | None) -> str | None:
-    """Extract a canonical arxiv_id (no version suffix) from a URL or raw id."""
+    """Extract a canonical arxiv_id (no version suffix) from a URL or raw id.
+
+    Returns None unless the input is unambiguously arxiv: either a bare ID
+    (optionally prefixed with `arxiv:`) or a URL with an `arxiv.org/{abs,
+    pdf,e-print}/` segment. Generic URLs like `https://doi.org/10.x/y`
+    deliberately do NOT match.
+    """
     if not text:
         return None
-    match = ARXIV_ID_PATTERN.search(text)
-    if match:
-        return match.group(1)
+    candidate = text.strip()
+    bare = _ARXIV_BARE_RE.match(candidate)
+    if bare:
+        return bare.group(1)
+    url_match = _ARXIV_URL_RE.search(candidate)
+    if url_match:
+        return url_match.group(1)
     return None
 
 

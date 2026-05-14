@@ -80,7 +80,8 @@ class BuildResult:
     candidates_total: int
     candidates_after_filter: int
     candidates_judged: int
-    candidates_accepted: int
+    judge_accepted: int  # how many the judge said yes to, BEFORE the max_works cap
+    candidates_accepted: int  # how many made it past the cap (= ingest attempts)
     works_added: int
     hunter_results: list[HunterRunResult]
     judged: list[JudgedCandidate]
@@ -341,17 +342,20 @@ async def run_build(
         else:
             judged.append(JudgedCandidate(candidate=cand, verdict=outcome))
 
-    accepted = [j for j in judged if j.verdict.accept]
+    accepted_all = [j for j in judged if j.verdict.accept]
     # Sort accepted by score descending so highest-confidence first when capped
-    accepted.sort(key=lambda j: j.verdict.score, reverse=True)
-    if len(accepted) > plan.max_works:
+    accepted_all.sort(key=lambda j: j.verdict.score, reverse=True)
+    judge_accepted_total = len(accepted_all)
+    if judge_accepted_total > plan.max_works:
         log.info(
-            "build run %d: %d accepted, capping at plan.max_works=%d",
+            "build run %d: judge accepted %d, capping at plan.max_works=%d",
             run_id,
-            len(accepted),
+            judge_accepted_total,
             plan.max_works,
         )
-        accepted = accepted[: plan.max_works]
+        accepted = accepted_all[: plan.max_works]
+    else:
+        accepted = accepted_all
 
     # 6. Ingest accepted candidates — serial (each is heavy)
     works_added = 0
@@ -397,6 +401,7 @@ async def run_build(
         "candidates_unique": len(unique),
         "candidates_after_filter": len(filtered),
         "candidates_judged": len(judged),
+        "judge_accepted": judge_accepted_total,
         "candidates_accepted": len(accepted),
         "errors": errors,
     }
@@ -419,6 +424,7 @@ async def run_build(
         candidates_total=len(all_candidates),
         candidates_after_filter=len(filtered),
         candidates_judged=len(judged),
+        judge_accepted=judge_accepted_total,
         candidates_accepted=len(accepted),
         works_added=works_added,
         hunter_results=hunter_results,

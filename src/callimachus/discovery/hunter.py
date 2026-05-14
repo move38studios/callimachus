@@ -52,6 +52,11 @@ DEFAULT_REQUEST_LIMIT = 20
 # numbers but they bound runtime + token usage.
 DEFAULT_SEARCH_LIMIT = 25
 
+# Max times each search tool may raise ModelRetry before the agent gives
+# up on it. Pydantic AI's default of 1 is too tight for arxiv whose 3s
+# rate limit + occasional 503s easily produce two consecutive retries.
+SEARCH_TOOL_MAX_RETRIES = 4
+
 
 class HunterReport(BaseModel):
     """The agent's free-text trace. The actual candidates come back separately."""
@@ -239,7 +244,7 @@ def make_hunter_agent(
 
     for source in enabled_sources:
         tool = _make_search_tool(source)
-        agent.tool(tool)
+        agent.tool(tool, retries=SEARCH_TOOL_MAX_RETRIES)  # pyright: ignore[reportCallIssue]
 
     return agent
 

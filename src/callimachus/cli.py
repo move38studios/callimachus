@@ -511,12 +511,19 @@ async def _run_build_from_plan(
 def _print_build_result(result: BuildResult, plan: Plan) -> None:
     """Final summary panel for `calli build`."""
     color = "green" if not result.errors else "yellow"
+    capped_note = ""
+    if result.judge_accepted > result.candidates_accepted:
+        capped_note = (
+            f" [yellow](judge accepted {result.judge_accepted}, "
+            f"capped to plan.max_works={plan.max_works})[/]"
+        )
     headline = (
         f"[bold {color}]{result.works_added} works added[/]  "
-        f"[dim]({result.candidates_accepted} accepted of "
+        f"[dim]({result.candidates_accepted} ingested of "
         f"{result.candidates_judged} judged, "
         f"{result.candidates_after_filter} reachable, "
         f"{result.candidates_total} found)[/]"
+        f"{capped_note}"
     )
     body_lines: list[str] = [headline, "", f"plan: [cyan]{plan.slug}[/]"]
     body_lines.append(f"run id: {result.run_id}")

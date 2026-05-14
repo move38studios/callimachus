@@ -42,12 +42,23 @@ ATOM_FIXTURE = (FIXTURE_DIR / "arxiv_atom_response.xml").read_text()
         ("https://arxiv.org/abs/2006.11239", "2006.11239"),
         ("https://arxiv.org/pdf/2006.11239v1.pdf", "2006.11239"),
         ("https://arxiv.org/e-print/2006.11239", "2006.11239"),
+        ("https://export.arxiv.org/abs/2006.11239", "2006.11239"),
+        ("https://www.arxiv.org/abs/2006.11239", "2006.11239"),
         ("arXiv:2006.11239", "2006.11239"),
         ("hep-th/0001234", "hep-th/0001234"),
         ("http://arxiv.org/abs/hep-th/0001234v3", "hep-th/0001234"),
         ("not an arxiv id at all", None),
         ("", None),
         (None, None),
+        # Regression: the previous loose pattern matched [a-z]+/\d+ anywhere,
+        # so these all produced false-positive arxiv IDs.
+        ("https://doi.org/10.1145/3531146.3533088", None),
+        ("https://www.springer.com/article/10.1007/s10462-025-11389-2", None),
+        ("https://link.springer.com/chapter/10.1007/978-3-031-18576-2_12", None),
+        ("https://example.com/paper.pdf", None),
+        ("https://openaccess.thecvf.com/content/CVPR2023/papers/Foo.pdf", None),
+        # And the bare-DOI case
+        ("10.1145/3531146.3533088", None),
     ],
 )
 def test_extract_arxiv_id(input_str: str | None, expected: str | None) -> None:
