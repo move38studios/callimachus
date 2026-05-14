@@ -42,7 +42,7 @@ from callimachus.discovery.hunter import (
 )
 from callimachus.discovery.judge import JudgeFn, Verdict, judge_candidate
 from callimachus.discovery.plan import Angle, Plan
-from callimachus.llm import MODEL_FAST
+from callimachus.llm import MODEL_SMART
 from callimachus.pipeline.embed import Embedder
 from callimachus.pipeline.enrich import EnrichFn
 from callimachus.pipeline.ingest import IngestResult, ingest_one
@@ -156,7 +156,7 @@ def make_hunt_fn(
     *,
     plan: Plan,
     registry: SourceRegistry,
-    hunter_model: str = MODEL_FAST,
+    hunter_model: str = MODEL_SMART,
     request_limit: int = HUNTER_REQUEST_LIMIT,
     source_names: list[str] | None = None,
 ) -> HuntFn:
@@ -449,7 +449,6 @@ async def run_build(
     elapsed = time.perf_counter() - started
     notes_blob: dict[str, object] = {
         "hunter_token_totals": _summarise_hunter_tokens(hunter_results),
-        "hunter_model": MODEL_FAST,  # could differ if caller passed custom
         "judge_concurrency": judge_concurrency,
         "candidates_total": len(all_candidates),
         "candidates_unique": len(unique),

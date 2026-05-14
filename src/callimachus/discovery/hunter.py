@@ -33,7 +33,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 from pydantic_ai import ModelRetry, RunContext
 
-from callimachus.llm import MODEL_FAST
+from callimachus.llm import MODEL_SMART
 from callimachus.sources.protocols import (
     DiscoverySource,
     SourceUnavailable,
@@ -226,7 +226,7 @@ def _make_search_tool(
 def make_hunter_agent(
     *,
     enabled_sources: list[DiscoverySource],
-    model: str = MODEL_FAST,
+    model: str = MODEL_SMART,
 ) -> Any:
     """Build a Pydantic AI Agent with one tool per provided source.
 
@@ -259,7 +259,7 @@ async def run_hunter(
     year_to: int | None = None,
     kinds: list[WorkKind] | None = None,
     per_source_limit: int = DEFAULT_SEARCH_LIMIT,
-    model: str = MODEL_FAST,
+    model: str = MODEL_SMART,
     request_limit: int = DEFAULT_REQUEST_LIMIT,
     source_names: list[str] | None = None,
 ) -> HunterRunResult:

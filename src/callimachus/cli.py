@@ -475,6 +475,7 @@ async def _run_build_from_plan(
     library_root: Path,
     registry: SourceRegistry,
     no_ocr: bool,
+    hunter_model: str | None = None,
 ) -> BuildResult:
     """Wire up real hunters/judge/ingest and execute the plan."""
     db_path = library_root / "library.db"
@@ -493,7 +494,14 @@ async def _run_build_from_plan(
         if plan.source_names is not None
         else [s.name for s in registry.discovery_sources() if s.kind == "bibliographic"]
     )
-    hunt_fn = make_hunt_fn(plan=plan, registry=registry, source_names=bibliographic_sources)
+    hunt_fn_kwargs: dict[str, Any] = {
+        "plan": plan,
+        "registry": registry,
+        "source_names": bibliographic_sources,
+    }
+    if hunter_model:
+        hunt_fn_kwargs["hunter_model"] = hunter_model
+    hunt_fn = make_hunt_fn(**hunt_fn_kwargs)
 
     with make_session(engine) as session:
         ingest_fn = make_ingest_fn(
@@ -581,6 +589,17 @@ def build_cmd(
         bool,
         typer.Option("--no-ocr", help="Disable Mistral OCR (only LaTeX-source PDFs will work)."),
     ] = False,
+    hunter_model: Annotated[
+        str | None,
+        typer.Option(
+            "--hunter-model",
+            help=(
+                "Override the hunter agent's model "
+                "(default: openrouter:anthropic/claude-sonnet-4.6). "
+                "Use 'openrouter:anthropic/claude-haiku-4.5' for a cheaper run."
+            ),
+        ),
+    ] = None,
     verbose: Annotated[bool, typer.Option("-v", "--verbose")] = False,
 ) -> None:
     """Build a library from a topic: scout → clarify (HITL) → plan → orchestrate.
@@ -635,7 +654,13 @@ def build_cmd(
 
     # Step 2 — orchestrate the plan
     result = asyncio.run(
-        _run_build_from_plan(plan=plan, library_root=library_root, registry=registry, no_ocr=no_ocr)
+        _run_build_from_plan(
+            plan=plan,
+            library_root=library_root,
+            registry=registry,
+            no_ocr=no_ocr,
+            hunter_model=hunter_model,
+        )
     )
     _print_build_result(result, plan)
     if result.errors and result.works_added == 0:
