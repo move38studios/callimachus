@@ -89,7 +89,8 @@ def test_build_query_seeds_falls_back_to_angle_name_when_empty() -> None:
     assert _build_query_seeds(angle, plan) == ["my-angle"]
 
 
-def test_filter_resolvable_drops_non_arxiv_when_required() -> None:
+def test_filter_resolvable_keeps_arxiv_and_doi_drops_url_only() -> None:
+    """With both arxiv and unpaywall resolvers, arxiv_id OR doi suffices."""
     arx = _candidate(arxiv_id="2001.0001")
     doi = WorkCandidate(
         title="doi-only",
@@ -97,14 +98,19 @@ def test_filter_resolvable_drops_non_arxiv_when_required() -> None:
         provenance=Provenance(source_name="openalex", query="q"),
         doi="10.x/y",
     )
-    result = _filter_resolvable([arx, doi], require_arxiv_id=True)
-    assert result == [arx]
+    url_only = WorkCandidate(
+        title="url-only",
+        source_url="https://example.com/post.html",
+        provenance=Provenance(source_name="serper_web", query="q"),
+    )
+    result = _filter_resolvable([arx, doi, url_only], require_resolvable_id=True)
+    assert result == [arx, doi]  # both keep, url-only drops
 
 
 def test_filter_resolvable_passes_through_when_not_required() -> None:
     a, b = _candidate(arxiv_id=None), _candidate(arxiv_id="2001.0001")
     a.arxiv_id = None
-    result = _filter_resolvable([a, b], require_arxiv_id=False)
+    result = _filter_resolvable([a, b], require_resolvable_id=False)
     assert result == [a, b]
 
 
@@ -240,8 +246,11 @@ async def test_run_build_happy_path_writes_run_and_patches_work_rows(
     assert session.get(Work, "arxiv-2001-0003") is None
 
 
-async def test_run_build_filters_non_arxiv_before_judging(session: Session) -> None:
-    """Candidates without arxiv_id must be dropped before the judge sees them."""
+async def test_run_build_filters_unresolvable_before_judging(session: Session) -> None:
+    """Candidates without an arxiv_id OR doi must be dropped before the judge sees them.
+
+    DOI-only candidates are kept now that Unpaywall is in the resolver chain.
+    """
     arx = _candidate(title="A", arxiv_id="2001.0001")
     doi_only = WorkCandidate(
         title="DOI-only",
@@ -249,15 +258,20 @@ async def test_run_build_filters_non_arxiv_before_judging(session: Session) -> N
         provenance=Provenance(source_name="openalex", query="q"),
         doi="10.x/y",
     )
+    url_only = WorkCandidate(
+        title="URL-only",
+        source_url="https://example.com/blog-post",
+        provenance=Provenance(source_name="serper_web", query="q"),
+    )
     judge_seen: list[str] = []
 
     async def hunt(angle: Angle) -> HunterRunResult:
-        return await _stub_hunt(angle, cands=[arx, doi_only])
+        return await _stub_hunt(angle, cands=[arx, doi_only, url_only])
 
     async def judge(topic: str, cand: WorkCandidate) -> Verdict:
         del topic
         judge_seen.append(cand.title)
-        return _verdict(accept=True)
+        return _verdict(accept=False)  # don't ingest, just verify filter
 
     ingest, _ = _make_stub_ingest(session=session)
 
@@ -269,8 +283,8 @@ async def test_run_build_filters_non_arxiv_before_judging(session: Session) -> N
         ingest_fn=ingest,
     )
     session.commit()
-    assert judge_seen == ["A"]  # DOI-only candidate was filtered out
-    assert result.candidates_after_filter == 1
+    assert sorted(judge_seen) == ["A", "DOI-only"]  # url-only was filtered out
+    assert result.candidates_after_filter == 2
 
 
 async def test_run_build_caps_at_plan_max_works(session: Session) -> None:
@@ -386,4 +400,4 @@ async def test_run_build_run_row_kind_and_config(session: Session) -> None:
     assert run.config["topic"] == "diffusion"
     assert run.config["orientation"] == "foundations"
     assert run.config["max_works"] == 10
-    assert run.config["require_arxiv_id"] is True
+    assert run.config["require_resolvable_id"] is True

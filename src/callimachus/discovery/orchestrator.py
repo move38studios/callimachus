@@ -5,7 +5,7 @@ Sequence:
     plan
       → hunt(angle)  xN parallel  -> list[WorkCandidate]
       -> dedupe by candidate_id
-      -> filter (require_arxiv_id while we only have the arxiv resolver)
+      -> filter (require_resolvable_id: arxiv_id or doi)
       -> judge xN (concurrency-capped)
       -> ingest accepted   ->  Work rows
       -> patch judge_score + judge_reasoning + admitted_by_run_id on each Work
@@ -112,17 +112,21 @@ def _angle_brief(angle: Angle, plan: Plan) -> str:
 
 
 def _filter_resolvable(
-    candidates: list[WorkCandidate], *, require_arxiv_id: bool
+    candidates: list[WorkCandidate], *, require_resolvable_id: bool
 ) -> list[WorkCandidate]:
-    """Drop candidates the resolver chain currently can't fetch.
+    """Drop candidates the resolver chain can't fetch.
 
-    Until Unpaywall lands (M4), the only resolver in the registry is arxiv,
-    so non-arxiv candidates can't be ingested. We filter them out *before*
-    judging to save LLM tokens.
+    With arxiv (handles arxiv_id) and unpaywall (handles doi) both in the
+    registry, a candidate is resolvable if it has EITHER an arxiv_id or a
+    doi. We filter them out *before* judging to save LLM tokens.
+
+    Pass `require_resolvable_id=False` to skip the filter entirely — useful
+    for tests or for users who've installed third-party resolvers that
+    handle other identifiers.
     """
-    if not require_arxiv_id:
+    if not require_resolvable_id:
         return candidates
-    return [c for c in candidates if c.arxiv_id]
+    return [c for c in candidates if c.arxiv_id or c.doi]
 
 
 def _dedupe(candidates: list[WorkCandidate]) -> list[WorkCandidate]:
@@ -164,9 +168,9 @@ def make_hunt_fn(
 
     `source_names` overrides `plan.source_names` when set. Use this to
     restrict the hunter to a subset of registered sources — typically
-    bibliographic-only when require_arxiv_id-style filtering would discard
-    the rest anyway, so the agent doesn't burn tokens calling tools whose
-    output we silently drop.
+    bibliographic-only when require_resolvable_id-style filtering would
+    discard the rest anyway, so the agent doesn't burn tokens calling tools
+    whose output we silently drop.
     """
     effective_sources = source_names if source_names is not None else plan.source_names
 
@@ -244,7 +248,7 @@ async def run_build(
     judge_fn: JudgeFn,
     hunt_fn: HuntFn,
     ingest_fn: IngestFn,
-    require_arxiv_id: bool = True,
+    require_resolvable_id: bool = True,
     judge_concurrency: int = DEFAULT_JUDGE_CONCURRENCY,
 ) -> BuildResult:
     """Execute a build Plan end-to-end.
@@ -258,9 +262,11 @@ async def run_build(
             default that wires up `run_hunter`.
         ingest_fn: Per-candidate ingest callable. See `make_ingest_fn` for
             the default that wires up `ingest_one`.
-        require_arxiv_id: If True (default), filter candidates without
-            `arxiv_id` before judging. Reflects M2's "arxiv-only resolver"
-            constraint per DEV_PLAN.md.
+        require_resolvable_id: If True (default), filter candidates that
+            don't have an arxiv_id OR a doi before judging — the bundled
+            resolver chain (arxiv + unpaywall) needs one of those to fetch
+            the artifact. Disable when third-party resolvers handle other
+            identifiers.
         judge_concurrency: Max parallel judge calls.
 
     Returns a `BuildResult` summarising what was attempted, judged, accepted,
@@ -281,7 +287,7 @@ async def run_build(
             "angle_count": len(plan.angles),
             "orientation": plan.orientation,
             "max_works": plan.max_works,
-            "require_arxiv_id": require_arxiv_id,
+            "require_resolvable_id": require_resolvable_id,
         },
     )
     session.add(run)
@@ -334,12 +340,12 @@ async def run_build(
     )
 
     # 4. Filter to those the resolver chain can fetch
-    filtered = _filter_resolvable(unique, require_arxiv_id=require_arxiv_id)
+    filtered = _filter_resolvable(unique, require_resolvable_id=require_resolvable_id)
     log.info(
-        "build run %d: %d candidates remain after require_arxiv_id=%s filter",
+        "build run %d: %d candidates remain after require_resolvable_id=%s filter",
         run_id,
         len(filtered),
-        require_arxiv_id,
+        require_resolvable_id,
     )
 
     # 5. Judge — concurrency-capped, in input (rank) order
