@@ -485,7 +485,15 @@ async def _run_build_from_plan(
     ocr: OcrProvider | None = None if no_ocr else MistralOcr()
     judge_fn = make_default_judge()
 
-    hunt_fn = make_hunt_fn(plan=plan, registry=registry)
+    # Restrict hunters to bibliographic sources by default. Web sources like
+    # serper_web return blog posts / news that don't have a DOI or arxiv_id,
+    # so they'd be filtered before the judge anyway — skip the wasted tokens.
+    bibliographic_sources = (
+        plan.source_names
+        if plan.source_names is not None
+        else [s.name for s in registry.discovery_sources() if s.kind == "bibliographic"]
+    )
+    hunt_fn = make_hunt_fn(plan=plan, registry=registry, source_names=bibliographic_sources)
 
     with make_session(engine) as session:
         ingest_fn = make_ingest_fn(
@@ -528,6 +536,16 @@ def _print_build_result(result: BuildResult, plan: Plan) -> None:
     body_lines: list[str] = [headline, "", f"plan: [cyan]{plan.slug}[/]"]
     body_lines.append(f"run id: {result.run_id}")
     body_lines.append(f"elapsed: {result.elapsed_seconds:.1f}s")
+
+    # Hunter-stage token totals (judge tokens not tracked yet — see future M2.6)
+    hunter_in = sum(h.input_tokens or 0 for h in result.hunter_results)
+    hunter_out = sum(h.output_tokens or 0 for h in result.hunter_results)
+    hunter_req = sum(h.request_count or 0 for h in result.hunter_results)
+    if hunter_in or hunter_out:
+        body_lines.append(
+            f"hunter tokens: [magenta]{hunter_in:,} in / {hunter_out:,} out[/] "
+            f"across {hunter_req} requests"
+        )
     if result.errors:
         body_lines.append("")
         body_lines.append(f"[red]{len(result.errors)} error(s):[/]")

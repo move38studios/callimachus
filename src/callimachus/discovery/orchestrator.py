@@ -158,8 +158,17 @@ def make_hunt_fn(
     registry: SourceRegistry,
     hunter_model: str = MODEL_FAST,
     request_limit: int = HUNTER_REQUEST_LIMIT,
+    source_names: list[str] | None = None,
 ) -> HuntFn:
-    """Build the default HuntFn for `run_build`. Closes over plan + registry."""
+    """Build the default HuntFn for `run_build`. Closes over plan + registry.
+
+    `source_names` overrides `plan.source_names` when set. Use this to
+    restrict the hunter to a subset of registered sources — typically
+    bibliographic-only when require_arxiv_id-style filtering would discard
+    the rest anyway, so the agent doesn't burn tokens calling tools whose
+    output we silently drop.
+    """
+    effective_sources = source_names if source_names is not None else plan.source_names
 
     async def _hunt(angle: Angle) -> HunterRunResult:
         return await run_hunter(
@@ -170,7 +179,7 @@ def make_hunt_fn(
             year_from=plan.year_from,
             year_to=plan.year_to,
             kinds=plan.kinds,
-            source_names=plan.source_names,
+            source_names=effective_sources,
             model=hunter_model,
             request_limit=request_limit,
         )
@@ -285,9 +294,24 @@ async def run_build(
 
     errors: list[str] = []
 
-    # 2. Fan out hunters in parallel (we control concurrency, not the model)
+    # 2. Fan out hunters in parallel (we control concurrency, not the model).
+    # Wrap each hunt call so completion logs interleave as they finish, instead
+    # of a single line after asyncio.gather returns.
+    async def _hunt_with_log(angle: Angle) -> HunterRunResult:
+        log.info("build run %d: hunter starting — angle=%r", run_id, angle.name)
+        result = await hunt_fn(angle)
+        log.info(
+            "build run %d: hunter done — angle=%r, %d candidates, %.1fs, %d req",
+            run_id,
+            angle.name,
+            len(result.candidates),
+            result.elapsed_seconds,
+            result.request_count or 0,
+        )
+        return result
+
     hunter_results: list[HunterRunResult] = []
-    hunter_tasks = [hunt_fn(angle) for angle in plan.angles]
+    hunter_tasks = [_hunt_with_log(angle) for angle in plan.angles]
     raw = await asyncio.gather(*hunter_tasks, return_exceptions=True)
     for angle, outcome in zip(plan.angles, raw, strict=True):
         if isinstance(outcome, BaseException):
@@ -359,22 +383,52 @@ async def run_build(
 
     # 6. Ingest accepted candidates — serial (each is heavy)
     works_added = 0
-    for j in accepted:
+    total_to_ingest = len(accepted)
+    for i, j in enumerate(accepted, start=1):
+        label = j.candidate.title[:80] if j.candidate.title else j.candidate.candidate_id
+        log.info(
+            "build run %d: [%d/%d] ingesting (score=%.2f) %s",
+            run_id,
+            i,
+            total_to_ingest,
+            j.verdict.score,
+            label,
+        )
         try:
             result = await ingest_fn(j.candidate)
         except SourceUnavailable as exc:
             j.ingest_error = f"resolver unavailable: {exc}"
             errors.append(f"ingest {j.candidate.candidate_id}: {j.ingest_error}")
-            log.warning("orchestrator: ingest %r failed: %s", j.candidate.candidate_id, exc)
+            log.warning(
+                "build run %d: [%d/%d] ✗ resolver unavailable: %s",
+                run_id,
+                i,
+                total_to_ingest,
+                exc,
+            )
             continue
         except Exception as exc:
             j.ingest_error = f"{type(exc).__name__}: {exc}"
             errors.append(f"ingest {j.candidate.candidate_id}: {j.ingest_error}")
-            log.exception("orchestrator: ingest %r unexpected failure", j.candidate.candidate_id)
+            log.exception(
+                "build run %d: [%d/%d] ✗ ingest %r unexpected failure",
+                run_id,
+                i,
+                total_to_ingest,
+                j.candidate.candidate_id,
+            )
             continue
 
         j.ingested = True
         j.work_id = result.work_id
+        log.info(
+            "build run %d: [%d/%d] ✓ %s (%d chunks)",
+            run_id,
+            i,
+            total_to_ingest,
+            result.work_id,
+            result.chunks_indexed,
+        )
 
         # Patch the Work row with judge fields + run linkage
         work_row = session.get(Work, result.work_id)
