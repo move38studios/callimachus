@@ -54,6 +54,7 @@ arxiv = "callimachus.sources.bundled.arxiv:ArxivPlugin"
 openalex = "callimachus.sources.bundled.openalex:OpenAlexPlugin"
 serper_scholar = "callimachus.sources.bundled.serper:SerperScholarPlugin"
 serper_web = "callimachus.sources.bundled.serper:SerperWebPlugin"
+perplexity = "callimachus.sources.bundled.perplexity:PerplexityPlugin"
 
 [project.entry-points."callimachus.resolvers"]
 local_pdfs = "callimachus.sources.bundled.local_pdfs:LocalPdfsPlugin"
