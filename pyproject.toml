@@ -58,6 +58,7 @@ serper_web = "callimachus.sources.bundled.serper:SerperWebPlugin"
 [project.entry-points."callimachus.resolvers"]
 local_pdfs = "callimachus.sources.bundled.local_pdfs:LocalPdfsPlugin"
 arxiv = "callimachus.sources.bundled.arxiv:ArxivPlugin"
+unpaywall = "callimachus.sources.bundled.unpaywall:UnpaywallPlugin"
 
 [dependency-groups]
 dev = [
