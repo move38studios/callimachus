@@ -1,8 +1,14 @@
 # Architecture
 
+This document is structured in two halves: **Part 1** describes what's actually built and how the code is organized today (M1 + M2). **Part 2** describes the planned architecture for milestones we haven't reached yet (M3 chat, M4 snowball + dashboard, M5 MCP, M6 polish).
+
+If you're new, [`ONBOARDING.md`](ONBOARDING.md) is the right starting point. This doc is the deeper reference for *why* the code looks the way it does and *how* future pieces are intended to plug in.
+
+---
+
 ## Goals and non-goals
 
-**Goals**
+**Goals (long-lived):**
 
 - Be a long-lived **personal librarian**, not a one-shot build tool — a library grows, gets pruned, gets refreshed, gets cross-pollinated over time
 - Produce a deep, curated, queryable library of research on any number of related topics with a single command
@@ -10,186 +16,375 @@
 - Snowball through citations the way a good researcher would, with LLM-driven judgment
 - Output a self-contained directory — portable, inspectable, version-controllable
 - Support multiple LLM providers so users aren't locked into a single vendor
-- Make the agentic phase feel alive: streaming TUI with parallel hunter subagents
+- Make the agentic phase feel alive: streaming output, progress per paper
 - Make chat the dominant interface, with CLI shortcuts as typed equivalents
 - Make every library queryable from any chat agent via MCP
 
-**Non-goals (v0.1)**
+**Non-goals (v0.1):**
 
 - Real-time / continuously-refreshing libraries (refresh is on-demand)
 - Multi-user / collaborative libraries (single-user; explicit merging is v0.3)
 - Audio/video sources (deferred to v0.2)
 - Hosted / SaaS deployment
 
-## Core concepts
+---
 
-| Concept | Definition |
-| --- | --- |
-| **Library** | A directory containing everything Callimachus needs. Default `~/Callimachus/`. One per user is the encouraged pattern; multiple are supported via `--library`. |
-| **Collection** | A coherent subject within a library, with first-class identity: scope, embedding, overview, seed works, README. |
-| **Work** | A research artifact: paper, essay, report (later: talk, chapter). Belongs to one or more collections with per-collection relevance scores. |
-| **Bridge work** | A work scoring high in two or more collections — the cross-pollination payoff. |
-| **Run** | A single mutating operation on a library (build, extend, refresh, prune, re-judge). Every work carries the run that admitted it. |
-| **Callimachus** | The librarian agent — the persona you talk to, who can read, query, mutate, extend, refresh, explain. |
+# Part 1: As built (M1 + M2)
 
-## The two-and-a-half-phase architecture
+## Mental model
 
-### Phase 1 — Discovery (agentic)
+| Concept | Today | Planned |
+|---------|-------|---------|
+| **Library** | A directory containing `library.db`, `works/`, `archive/`, `plugins/`, `.callimachus/`. Default `~/Callimachus/`. One per user. Multiple supported via `CALLIMACHUS_LIBRARY` env or `--library` flag. | Same. |
+| **Work** | A paper (today: arxiv preprints, Unpaywall-resolvable DOIs). Lives at `works/{slug}/` with `original.{pdf,tar.gz}`, `paper.md`, `summary.md`, `metadata.yaml`. Indexed in `library.db`. | Add essays, reports (via plugins). Add talks, chapters in v0.2. |
+| **Collection** | Schema exists (`collections` table). Not used yet; a library has one implicit collection. | M4 — multi-collection within one library; bridge papers (high relevance in 2+ collections). |
+| **Run** | A single mutating operation. Today: only `kind="build"` runs exist. Schema supports extend, refresh, prune, rejudge, restore. Every Work carries `admitted_by_run_id`. | Other run kinds populate as M3+ mutations land. |
+| **Plan** | The frozen artifact of the M2 ceremony. Persisted as YAML at `.callimachus/plans/<slug>.yaml`. Reviewable + editable before deep build. | Same. |
+| **Callimachus** | The librarian agent persona. Doesn't exist as code yet — comes in M3. | M3 builds the agent + chat REPL. |
 
-Callimachus the orchestrator plans the run, spawns parallel hunter subagents to search from different angles, judges every candidate against the collection scope, and runs a snowball loop through citation graphs until convergence or budget cap.
+## The architecture today
 
-This is the phase the user *watches* in the TUI. It feels like a team of researchers working on your behalf.
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  calli build --topic X                                                  │
+│    ─────────────────────────────────────────────────────────────────    │
+│    DISCOVERY (agentic, M2)         │  INGEST (deterministic, M1)        │
+│                                    │                                    │
+│    scout (LLM + OpenAlex probe)    │  for each accepted candidate:      │
+│      → AngleTree                   │    resolve  (arxiv | unpaywall)    │
+│                                    │      → ResolvedFile                │
+│    ceremony (HITL Q&A)             │    download → bytes on disk        │
+│      → Plan                        │    extract  (LaTeX | OCR)          │
+│                                    │      → markdown                    │
+│    orchestrator                    │    enrich   (LLM)                  │
+│      ├─ N hunters (parallel)       │      → metadata.yaml + summary.md  │
+│      │    Pydantic AI sub-agent    │    chunk                           │
+│      │    tools per source         │    embed    (nomic, local)         │
+│      ├─ dedupe + filter            │    index    (Work + chunks +       │
+│      ├─ judge (parallel, capped)   │             vec_chunks)            │
+│      └─ ingest each accepted       │                                    │
+│                                    │                                    │
+│    Run row finalised               │                                    │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
-### Phase 2 — Pipeline (deterministic)
-
-Once discovery converges, accepted works feed a deterministic pipeline: download, extract to markdown, enrich (summaries + structured metadata), embed, index. Async with progress bars.
-
-### Phase 2.5 — Synthesis (small agentic pass)
-
-After the pipeline, a small agentic pass updates collection-level overview documents and (for builds that touched bridges) the cross-collection synthesis. Single-shot, cheap, optional.
-
-### Phase 3 — Continuous (Callimachus is now your librarian)
-
-After the build, the same Callimachus agent is available for chat, query, extend, refresh, prune, and any other mutation or read. Same agent, same primitives, longer-lived.
+The split is intentional: **discovery is agentic** (LLMs make decisions about what to search and what to keep), **ingest is deterministic** (a fixed pipeline of stages, each idempotent, each testable in isolation). The orchestrator stitches them together.
 
 ## Tech stack
 
 | Layer | Choice | Why |
-| --- | --- | --- |
+|-------|--------|-----|
 | Language | Python 3.11+ | PDF/embeddings ecosystem is Python-native |
-| Package manager | `uv` | Fast, reproducible, increasingly standard |
-| Agent harness | **Pydantic AI** | Multi-provider, mature, agent-delegation primitives, structured outputs via Pydantic |
-| LLM access (default) | OpenRouter (one key, many models). Per-role defaults: scout = `anthropic/claude-haiku-4.5` (one-shot angle generation, cheap); hunter + judge + enricher = `anthropic/claude-sonnet-4.6` (decision quality matters); end-of-build synthesis (M4+) = `anthropic/claude-opus-4.7`. The `--hunter-model` flag overrides per build. | Sonnet's quality on hunter query strategy is worth the ~3x token cost over Haiku — we tried Haiku first and saw too many max-retry deaths from cavalier query/retry choices. Haiku stays the default for one-shot generation tasks (scout). |
-| LLM access (alternatives) | Anthropic-direct, OpenAI-direct, Gemini-direct, local via Ollama | All supported through Pydantic AI's per-provider integrations |
-| Chat interface | **prompt_toolkit + Rich** (aider pattern) | Inline scrolling chat with streaming markdown; native terminal scrollback preserved; lightweight; matches what 2026 chat-first CLIs (aider, gptme) converge on |
-| Build dashboard | **Textual** | Multi-pane, async-native, real-time updates; right tool for the parallel-hunters dashboard where spatial layout matters |
-| Storage | **SQLite + sqlite-vec** | One file, universal tooling, vector + structured in one place |
-| ORM | **SQLModel + Alembic** | Pydantic-typed models, async support, proper migrations |
-| MCP server | **FastMCP** | Decorator-based, async-native, stdio + HTTP, the de-facto standard |
+| Package manager | `uv` | Fast, reproducible, no `requirements.txt`/`venv` dance |
+| Agent harness | **Pydantic AI** | Multi-provider, mature, agent-delegation primitives, structured outputs via Pydantic, `TestModel` for unit tests |
+| LLM access | OpenRouter (one key, many models) | Per-role defaults: scout = Haiku 4.5 (one-shot generation); hunter + judge + enricher = Sonnet 4.6 (decision quality); end-of-build synthesis (M4+) = Opus 4.7. `--hunter-model` flag overrides |
+| Storage | **SQLite + sqlite-vec** | One file you can copy. Vector + structured in one place. Sub-100ms queries up to ~50k chunks |
+| ORM | **SQLModel + Alembic** | Pydantic-typed models double as agent tool I/O. Real migrations |
 | Embeddings (default) | `nomic-embed-text-v1.5` (local, sentence-transformers) | Open weights, no key, ~500MB, runs on CPU |
-| Embeddings (opt-in) | Voyage AI `voyage-3` | Higher retrieval quality if user has a key |
-| PDF → markdown | arXiv LaTeX → Mistral OCR → Claude vision (fallback) | LaTeX is cleanest when available; Mistral OCR is cheap+great; vision for edge cases |
-| Discovery & resolvers | **Plugin system** (see [`PLUGINS.md`](PLUGINS.md)) | Today bundled: arXiv, OpenAlex, Serper Scholar/Web, Perplexity (discovery); arXiv, Unpaywall, local_pdfs (resolvers). Semantic Scholar + Crossref deferred to M4 with the snowball loop. Community-extensible. |
+| PDF → markdown | LaTeX (pylatexenc, with crude regex fallback) → Mistral OCR | LaTeX is cleanest when arxiv has source. Mistral OCR is cheap+good for the rest. Vision fallback deferred |
+| CLI | Typer | Modern, type-driven, decent help generation |
+| Output rendering | Rich | Streaming text, panels, tables. Used during build progress |
+| Discovery & resolvers | **Plugin system** (see [`PLUGINS.md`](PLUGINS.md)) | Bundled plugins use the same Protocols a third-party plugin would |
 
-### Why Pydantic AI over Claude Agent SDK
+### Why Pydantic AI over the Anthropic SDK directly
 
-Claude Agent SDK has the slickest agentic ergonomics, but Anthropic's Terms prohibit third-party developers from offering Claude.ai subscription auth, and the SDK is Claude-only. For an open-source tool we want users to plug in whatever model they have access to (Claude API, OpenAI, OpenRouter, local models). Pydantic AI gives us multi-provider support, mature agent + delegation primitives, and clean Pydantic-typed structured outputs, at the cost of some Claude-specific niceties (built-in MCP client, automatic compaction, sub-agent isolation). Those gaps are well-defined and easy to fill in our own code.
+Pydantic AI gives us multi-provider support, mature agent + sub-agent primitives, structured-output-as-Pydantic-models, and `TestModel` for unit tests — all in a tested framework we don't maintain. The Anthropic SDK would force us to roll our own retry, structured output, and test infrastructure, and lock us to one vendor. Pydantic AI's overhead (~100ms per agent run startup, slightly thicker stack traces) is worth it.
 
-### Why prompt_toolkit + Rich for chat (and not Textual)
-
-The chat interface — the `calli` librarian you talk to over months — is conversational, not spatial. The 2026 reference for this category is aider's stack: **`prompt_toolkit` for input** (multi-line, history, completion, key bindings, editor escape) plus **`Rich` for output** (`Live` + `Markdown` for streaming-markdown rendering, syntax-highlighted code blocks). This pattern preserves native terminal scrollback — copy/paste, search, pipe — which is the single most-mentioned complaint about Textual/Ink-based chat tools that take the alt-screen and lose history on quit. Validated in experiment 05.
-
-### Why Textual for the build dashboard
-
-Pydantic AI streams events; Textual renders them. Built-in support for split panes, live tables, scrolling logs, keyboard shortcuts, mouse, async. The discovery dashboard — orchestrator pane, parallel hunter panes, live works list, status bar — is spatial and concurrent. Textual's sweet spot. The user watches this for the duration of a build run, not ambiently.
-
-The two tools serve genuinely different use cases — one conversation, one dashboard — and the docs treat them as such. A future Toad-style fully-Textual chat with citation/works-list panes is plausible but not in scope.
+If you've never used Pydantic AI before, the ONBOARDING doc has a primer. The short version: an `Agent` wraps a model + tools + structured output type; you call `await agent.run(prompt, deps=…)` and get a typed `result.output` back.
 
 ### Why SQLite + sqlite-vec + SQLModel
 
-A library should be **one file you can copy**. SQLite gives that. `sqlite-vec` (the successor to sqlite-vss) is mature, fast for the scale we care about (sub-100ms vector queries up to ~50k chunks), and a typical library is 200–2000 works. Universal tooling: Datasette gives a free web UI, every language has a driver, `sqlite3 library.db "SELECT ..."` works from any terminal.
+A library should be **one file you can copy**. SQLite gives that. `sqlite-vec` (the successor to sqlite-vss) is mature and fast at our scale. Universal tooling: Datasette gives a free web UI, every language has a driver.
 
-SQLModel sits on top of SQLAlchemy with Pydantic models — same models double as the librarian agent's tool I/O, no duplicate definitions. Alembic handles migrations because the schema *will* evolve.
+SQLModel sits on top of SQLAlchemy with Pydantic models — the same models double as the librarian agent's tool I/O when M3 lands. Alembic handles migrations because the schema *will* evolve.
 
-### Why FastMCP
+### Why the deterministic / agentic split
 
-FastMCP is the standard MCP framework for Python — decorator-based (`@server.tool()`), async-native, supports both stdio (for local hosts like Claude Code) and HTTP (for remote). ~30 lines wraps the librarian's tool surface. By the same author as Pydantic, idiomatic with the rest of our stack.
+Every step that can be deterministic is deterministic — download, extract, enrich (single LLM call per paper), chunk, embed, index. This makes ingest cheap to reason about, fast to test (mock the LLM, the rest runs end-to-end on disk in <1s), and re-runnable.
 
-## Plugin architecture (sources and resolvers)
+The agentic part is concentrated in discovery: the scout decides what angles to probe, the hunter decides what queries to issue across what sources, the judge decides what to keep. That's where the variance lives. The orchestrator coordinates but doesn't itself use an LLM.
 
-Discovery sources and PDF resolvers are pluggable. The bundled sources implement the same Protocols any third-party plugin does — there is no privileged "core" path. Full spec in [`PLUGINS.md`](PLUGINS.md); summary here.
+## The bundled plugin set
 
-Two interfaces:
+Six discovery sources, three resolvers, all entry-point-registered in `pyproject.toml` and loaded by `src/callimachus/sources/registry.py`.
 
-- **`DiscoverySource`** — `search(query, ...) -> list[WorkCandidate]`. Optional `get_references`, `get_citations`, `get_citation_contexts` for citation-graph-aware sources.
-- **`Resolver`** — `can_resolve(work) -> bool`, `resolve(work) -> ResolvedFile`. Tried in priority order until one returns bytes.
+**Discovery sources:**
 
-Plugins register via Python entry points (for distributed `pip`-installable plugins) or by dropping `.py` files in `~/Callimachus/plugins/` (for personal, unpacked plugins). Each plugin owns its config namespace under `callimachus.yaml`, validated by a Pydantic model the plugin ships.
+| Plugin | Kind | Notes |
+|--------|------|-------|
+| `arxiv` | preprint | Atom API. 1 req/3s rate-limit lock per plugin instance. Doubles as resolver. |
+| `openalex` | bibliographic | ~250M-work catalogue, no auth. Polite-pool email recommended (`OPENALEX_MAILTO`). The scout's probe source for evidence-backing each angle. |
+| `serper_scholar` | bibliographic | Google Scholar via Serper API. Needs `SERPER_API_KEY`. |
+| `serper_web` | web | General Google search. Auto-disabled by `calli build` for academic libraries (the `require_resolvable_id` filter would drop blog posts anyway). |
+| `perplexity` | bibliographic | Natural-language queries via OpenRouter (`perplexity/sonar-pro`). Citations come back as `(url, title)` pairs; we extract arxiv_id or DOI per URL. Reuses `OPENROUTER_API_KEY`. |
+| `local_pdfs` | vault | Configure with paths to scan. Doubles as resolver. |
 
-### Bundled plugins (current state, as of M2)
+**Resolvers:**
 
-**Bibliographic backbone** — the rigorous spine of the library:
-- `arxiv` — preprints + LaTeX source for clean extraction (also a resolver, confidence 1.0 for arxiv_id matches)
-- `openalex` — comprehensive (~250M works), free, no key required (polite-pool email recommended). Doubles as the scout's deterministic probe source for evidence-backing each angle.
-- `serper_scholar` — Google Scholar via the Serper API. Returns clean academic candidates with citedBy counts, pdfUrl, publicationInfo. Needs `SERPER_API_KEY`.
-- `unpaywall` — open-access PDF resolver for any DOI, confidence 0.7. Lifts the corpus beyond arxiv-only.
+| Plugin | Confidence | Notes |
+|--------|-----------|-------|
+| `arxiv` | 1.0 if `arxiv_id` set, else 0.0 | LaTeX source preferred (cleanest extraction), PDF fallback. |
+| `unpaywall` | 0.7 if `doi` set, else 0.0 | Lower than arxiv so arxiv wins on overlap. Browser-like User-Agent for the PDF fetch step (some publishers 403 our polite-pool UA). |
+| `local_pdfs` | 1.0 if a matching local file exists, else 0.0 | Title-fingerprint matching. |
 
-**Natural-language web discovery** — what bibliographic indexes miss:
-- `perplexity` — natural-language queries via OpenRouter (`perplexity/sonar-pro`). Citations come back as URL+title; we extract arxiv_id or DOI per URL. Reuses `OPENROUTER_API_KEY`. Best for "best papers on X" style queries that benefit from LLM curation.
-- `serper_web` — general Google search. Auto-disabled for academic builds (web hits don't carry an arxiv_id or DOI for the resolver chain).
+The registry sorts resolvers by descending confidence per call and tries them in order; first success wins. `SourceUnavailable` from one resolver moves on to the next; if all return confidence 0 or fail, the candidate is dropped from this run.
 
-**Local:**
-- `local_pdfs` — point at any directory of PDFs you already have; they become discoverable and resolvable
+## M2 components in detail
 
-**Deferred to M4** (the snowball-loop milestone):
-- `semantic_scholar` — citation graph + **citation contexts** (the literal sentences citing each work — the unlock for seminality judging)
-- `crossref` — DOI resolution and structured metadata for non-arxiv works at scale
+`src/callimachus/discovery/` has six modules, each ~200 lines.
 
-Not bundled, not in scope for core: Google Scholar direct (no API, scraping fragile and ToS-hostile — we use Serper as the legitimate access path). Anything domain-specific (PubMed, PhilPapers, IEEE) ships as community plugins. Anything the project doesn't take a position on (Sci-Hub, Anna's Archive, institutional proxies, paid databases) is also a community plugin — users decide.
+### `plan.py` — the build-plan artifact
 
-### How plugins flow through the system
+Pydantic models: `Angle`, `AngleTree`, `Plan`. YAML serialization. `slugify()` makes filename-safe identifiers from topic strings. Plans persist at `<library>/.callimachus/plans/<slug>.yaml` so users can review/edit before kicking off the deep build (terraform plan/apply pattern).
 
-- The orchestrator queries a `SourceRegistry`; gets enabled discovery sources back. Briefs each hunter on which sources to weight for its angle.
-- Hunters call `search()` on their assigned sources in parallel.
-- Every candidate carries `provenance: { source_name, query, raw_score }`; the judge can weight by source reliability.
-- The pipeline's resolve step iterates resolvers in priority order; the first to return wins.
-- Plugin failures degrade gracefully: a source that times out or errors is logged and skipped for the rest of the run; a resolver that fails moves to the next in priority. The mechanism is `pydantic_ai.ModelRetry("reason")` raised from the plugin call (see `PLUGINS.md`) — the agent sees the failure as a recoverable signal rather than a crash.
-- Per-run plugin metrics (candidates contributed, PDFs fetched, errors, latency) are written to the run log and surfaced in `calli plugin doctor`.
+### `scout.py` — topic → AngleTree
 
-### The orchestrator
+Two-stage. Stage 1: one Haiku call generates 5-8 angle hypotheses + adjacent-field suggestions. Stage 2: parallel OpenAlex probes attach real evidence (sample titles + hit counts) per angle. The scout never decides what to keep; it shows the user what exists so the ceremony can lock in a Plan.
 
-A single Pydantic AI agent (typically Claude Opus 4.7) — Callimachus himself — that plans and supervises. Tools:
+Probe failures per angle are swallowed (logged, returned with no sample evidence). Hypothesis-stage failure propagates.
 
-- `plan_research(collection_scope) -> ResearchPlan`
-- `consult_perplexity(question) -> Synthesis` *(optional, planning phase)*
-- `spawn_hunter(angle, brief, sources) -> HunterReport` — runs in parallel with siblings
-- `judge_and_admit(work_candidate) -> Verdict`
-- `snowball_from(work_id) -> list[WorkCandidate]`
-- `check_convergence() -> ConvergenceStatus`
-- `update_overview(collection_id)` — regenerate collection synthesis after a phase
+### `ceremony.py` — HITL Q&A → Plan
 
-### The hunters
+Four questions: which angles matter, anchor keywords/authors, orientation (foundations / recent / both), max-works cap. The `Prompter` Protocol lets the CLI use `CliPrompter` (input/print) and tests use `QueuedPrompter` (canned answers). `auto_plan()` short-circuits the whole ceremony for hands-off mode.
 
-Pydantic AI sub-agents (Sonnet 4.6 by default — `--hunter-model` overrides) spawned in parallel for different angles. Tools are registered dynamically per source registered in the `SourceRegistry`; the agent sees:
+`parse_*` helpers (`parse_angle_selection`, `parse_keywords`, `parse_orientation`, `parse_max_works`) are pure and parameterised-tested.
 
-```
-search_arxiv(query)
-search_openalex(query)
-search_serper_scholar(query)
-search_perplexity(query)
-```
+### `judge.py` — single LLM call, structured Verdict
 
-A hunter is briefed with a focused angle ("foundations of score-based generative modelling, late 2010s") plus seed query terms from the plan. The agent picks 2-4 source calls per angle, varying phrasing across sources (keyword for arxiv/openalex; natural-language for perplexity; targeted phrasing for scholar). Tool returns are compact text summaries of new vs duplicate hits, not full candidate JSON — keeps the agent's token usage low. Full candidate objects accumulate in deps-scoped state.
+`Verdict { accept: bool, score: 0-1, reasoning: str, notes: str | None }`. One Sonnet call per candidate. Auto-rejects candidates with no title or no source URL before calling the LLM. The `JudgeFn` callable abstraction lets tests pass a stub.
+
+### `hunter.py` — Pydantic AI sub-agent per angle
+
+The hunter is built per-call by `make_hunter_agent(enabled_sources=…)`. It registers one `search_<source_name>` tool per discovery source. Tool returns are compact text (`"openalex['x'] → 18 hits, 12 new"`); full WorkCandidate objects accumulate in deps-scoped state keyed by `candidate_id` so duplicates collapse for free.
 
 `SourceUnavailable` from any tool is wrapped to `pydantic_ai.ModelRetry` so the agent can recover by switching sources. Per-hunter `UsageLimits(request_limit=20)`. Tool retry budget is 4 (raised from default 1 after seeing arxiv 503s eat whole hunters in early runs).
 
-The hunter does **no LLM judgment** — it gathers, dedupes by `candidate_id`, and applies a deterministic rank (pdf > abstract > year > authors, citation count breaks ties). The judge module decides accept/reject downstream.
+The hunter does **no LLM judgment** — it gathers, dedupes, and applies a deterministic rank (pdf > abstract > year > authors, citation count breaks ties). The judge module decides accept/reject downstream.
 
-### The judge
+### `orchestrator.py` — Plan → indexed library
 
-A focused single-shot LLM call (Sonnet 4.6) with a Pydantic structured output. It scores each candidate on:
+`run_build(plan, *, session, judge_fn, hunt_fn, ingest_fn, …)` is the entry point. Flow:
 
-1. **Relevance** to the collection scope (0–10)
-2. **Seminality** — judged from citation contexts ("the seminal work of X" vs "see also [12]"), influential-citation count, cross-bibliography frequency in the current library
-3. **Novelty within library** — does it add a perspective not already covered? Diversity bonus.
-4. **Recency vs foundationality** — weighted by user's `prefer_recent` / `prefer_foundational` setting
-5. **Cross-collection relevance** — if the library has multiple collections, does this work also score on others? If yes, flag as `bridge`.
+1. Create `Run` row (`kind="build"`)
+2. Fan out one hunter per angle in parallel via `asyncio.gather`
+3. Aggregate + dedupe candidates by `candidate_id`
+4. Filter to candidates the resolver chain can fetch (`require_resolvable_id`: arxiv_id OR doi)
+5. Judge with bounded concurrency (default 5 parallel calls)
+6. Sort accepted by score desc; iterate down the list until we hit `plan.max_works` *successes* (not attempts), with a max-attempts cap (default 2× max_works) so a high-failure-rate run doesn't go forever
+7. After each successful ingest, patch the `Work` row with `judge_score`, `judge_reasoning`, `admitted_by_run_id`
+8. Finalize the `Run` row with `ended_at`, `works_added`, and a JSON `notes` blob containing per-stage stats
 
-Output: `Verdict { score, reasoning, accept, snowball_candidate, bridge_collections }`. Only works above a snowball threshold get promoted as new seeds.
+`hunt_fn`, `judge_fn`, `ingest_fn` are injected callables — `make_hunt_fn`, `make_default_judge`, `make_ingest_fn` wire the real defaults; tests pass stubs that hit a real SQLite + sqlite-vec session without touching LLMs or disk.
 
-The judge is **kind-aware**: a paper is scored against different criteria than an essay. For essays/reports, peer review isn't a signal; author reputation and citation-by-papers are weighted higher.
+## The pipeline (M1 deterministic stages)
+
+`src/callimachus/pipeline/`. Each stage is a pure function (or async fn for I/O); each is idempotent on its own; the per-paper `ingest_one` orchestrates them sequentially.
+
+| Stage | Module | Inputs → Outputs |
+|-------|--------|------------------|
+| Resolve | `sources/registry.py::SourceRegistry.resolve` | `WorkCandidate` → `ResolvedFile` (bytes + content_type) |
+| Download | `pipeline/download.py` | `ResolvedFile` → bytes on disk under `works/{id}/` |
+| Extract | `pipeline/extract.py` | LaTeX archive or PDF → `paper.md` (markdown) |
+| Enrich | `pipeline/enrich.py` | markdown → `Enrichment` (Pydantic) → `metadata.yaml` + frontmatter prepended to `paper.md` + `summary.md` |
+| Chunk | `pipeline/chunk.py` | markdown → `list[MarkdownChunk]` (~2000 chars, paragraph-aware, section-tracked) |
+| Embed | `pipeline/embed.py` | chunks → 768-d vectors (`Embedder` Protocol; `NomicEmbedder` is the default) |
+| Index | `pipeline/index.py` | candidate + enrichment + chunks + embeddings → `Work` row + `Chunk` rows + `vec_chunks` virtual-table entries |
+
+**Extract notes:**
+- arxiv LaTeX: pylatexenc preferred. Falls back to a crude regex stripper if pylatexenc crashes (seen on certain `\href` patterns) — lossy but never crashes the build.
+- PDF: routed to the configured `OcrProvider`. `MistralOcr` is the bundled implementation (uploads via signed URL → `ocr.process` → returns markdown + base64 images).
+- Images extracted by OCR are written under `works/{id}/images/` with markdown refs rewritten.
+
+**Enrichment** is one LLM call per paper (Sonnet 4.6 default). Returns title, authors, year, venue, summary, key_claims, methods, datasets, keywords. Renders as YAML frontmatter that gets prepended to `paper.md` (Jekyll/Obsidian compatible).
+
+**Chunking** is paragraph-aware with sliding overlap. We prepend a Contextual Retrieval lite header (`[Paper: title] [Section: section]\n\n`) at embed-time only — the prompt context steers the embedding without bloating storage.
+
+**Embeddings** prefix is `search_document:` for indexed text, `search_query:` for queries (nomic convention, mandatory).
+
+## Storage schema
+
+Single SQLite file (`library.db`) with `sqlite-vec` loaded on connection. SQLModel classes in `src/callimachus/storage/models.py`. Alembic migrations in `src/callimachus/storage/migrations/`.
+
+Tables actually used today:
+
+```sql
+-- Works: papers, essays, reports
+CREATE TABLE works (
+  id              TEXT PRIMARY KEY,        -- canonical slug, e.g. arxiv-2006-11239
+  kind            TEXT NOT NULL,           -- paper | essay | report (talk + chapter in v0.2)
+  doi             TEXT UNIQUE,
+  arxiv_id        TEXT,
+  title           TEXT NOT NULL,
+  authors         JSON NOT NULL,           -- [{name, orcid?, affiliation?}, ...]
+  year            INTEGER,
+  venue           TEXT,
+  abstract        TEXT,
+  summary         TEXT,
+  key_claims      JSON,
+  methods         JSON,
+  datasets        JSON,
+  source_url      TEXT NOT NULL,           -- for rehydration
+  pdf_path        TEXT,                    -- relative to library root, NULL if rehydrated-out
+  markdown_path   TEXT NOT NULL,
+  judge_score     REAL,
+  judge_reasoning TEXT,
+  added_at        TIMESTAMP,
+  admitted_by_run_id INTEGER REFERENCES runs(id),
+  archived_at     TIMESTAMP,               -- soft-delete; NULL means active
+  bridge          BOOLEAN DEFAULT 0,       -- M4: high relevance in 2+ collections
+  extra           JSON                     -- catch-all
+);
+
+-- Chunks for vector search
+CREATE TABLE chunks (
+  id       INTEGER PRIMARY KEY,
+  work_id  TEXT REFERENCES works(id),
+  ord      INTEGER,
+  text     TEXT,
+  section  TEXT
+);
+
+CREATE VIRTUAL TABLE vec_chunks USING vec0(
+  chunk_id   INTEGER PRIMARY KEY,
+  embedding  FLOAT[768]
+);
+
+-- Run history (every mutation is a Run)
+CREATE TABLE runs (
+  id              INTEGER PRIMARY KEY,
+  kind            TEXT,                    -- build | extend | refresh | prune | rejudge | restore
+  collection_id   TEXT REFERENCES collections(id),
+  started_at      TIMESTAMP,
+  ended_at        TIMESTAMP,
+  config          JSON,
+  cost_usd        REAL DEFAULT 0,          -- vestigial column; not populated (no USD math)
+  works_added     INTEGER,
+  works_archived  INTEGER,
+  works_retagged  INTEGER,
+  notes           TEXT                     -- JSON blob: per-stage stats, errors
+);
+```
+
+Tables that exist but aren't used yet (M4):
+
+```sql
+CREATE TABLE collections (...)             -- multi-collection
+CREATE TABLE work_collections (...)        -- many-to-many works ↔ collections
+```
+
+Vector search (used by `calli query` and the librarian's `search_library` tool):
+
+```sql
+SELECT works.title, works.summary, distance
+FROM vec_chunks
+JOIN chunks ON chunks.id = vec_chunks.chunk_id
+JOIN works ON works.id = chunks.work_id
+WHERE embedding MATCH ? AND k = 20 AND works.archived_at IS NULL
+ORDER BY distance;
+```
+
+## Folder layout — what's on disk today
+
+```
+~/Callimachus/                       # default library, configurable via CALLIMACHUS_LIBRARY
+  library.db                         # SQLite + sqlite-vec
+  works/
+    arxiv-2006-11239/
+      original.tar.gz                # or original.pdf
+      paper.md                       # full text + YAML frontmatter
+      summary.md
+      metadata.yaml                  # full enrichment
+      images/                        # only when OCR extracted images
+  collections/                       # M4: per-collection folders
+  archive/                           # M3+: soft-deleted works
+  plugins/                           # local plugin .py files (auto-loaded by registry)
+  .callimachus/
+    plans/<slug>.yaml                # M2: build plans, reviewable + editable
+```
+
+## CLI commands today
+
+```
+calli init [path]                    # create library + DB
+calli ingest <seed.yaml>             # M1: manual ingest from a YAML list of identifiers
+calli build --topic X                # M2: scout + ceremony → plan.yaml
+calli build --from-plan <slug>       # M2: orchestrator runs the plan
+calli build --topic X --auto         # M2: skip ceremony, run with sensible defaults
+calli build --hunter-model <id>      # override hunter LLM (default: openrouter:anthropic/claude-sonnet-4.6)
+calli query "..."                    # vector search; -k N for top-k, -L PATH for library
+calli list                           # all works in library
+```
+
+Helper flags on most commands: `-L PATH` / `--library PATH`, `-v` / `--verbose`.
+
+## Logging and run transparency
+
+Standard `logging` throughout. The CLI configures a Rich handler at INFO (default) or DEBUG (`-v`). Noisy third-party libraries (httpx, openai, anthropic) are quieted to WARNING unless verbose.
+
+What's instrumented today:
+- Per-paper progress lines during ingest (`[i/N] ingesting (score=0.92) <title>`)
+- Per-hunter start/done lines with token + request counts
+- Final summary panel: works added, attempts, judge-accept count, hunter token totals
+- Run row in `library.db` with `notes` JSON containing all of the above
+
+What's not instrumented yet:
+- Judge token usage (only hunter tokens are summed)
+- `calli log` command for run history
+- Per-source candidate-contribution metrics
+
+---
+
+# Part 2: Future architecture (M3+)
+
+These sections describe how planned milestones will plug into the architecture above. Treat them as design intent — implementation may diverge as we hit reality.
+
+## M3 — Chat with your library
+
+The librarian is a long-lived Pydantic AI agent that owns the library and exposes a tool surface. The chat REPL (`calli chat`), the existing one-shot `calli query`, and (M5) the MCP server are all invocations of this agent.
+
+### Tool surface (planned)
+
+**Read tools** (always exposed):
+
+| Tool | Purpose |
+|------|---------|
+| `search_library(query, k=10, filters?)` | Semantic search; filters by year, venue, kind |
+| `get_work(id)` | Full metadata + summary |
+| `get_work_full(id)` | Full markdown |
+| `find_related(id, k=10)` | Embedding-based related works |
+| `summarise_topic(query)` | Topic-scoped synthesis across the whole library |
+| `cite(query)` | BibTeX entries for top-k matches |
+| `library_summary()` | Library-level overview (used at chat startup) |
+| `inspect_work(id)` | Metadata + judge reasoning + run history |
+
+**Mutation tools** (gated, off by default for MCP; on for local chat):
+
+| Tool | Purpose |
+|------|---------|
+| `prune(filter)` | Soft-delete via `archived_at` |
+| `restore(filter)` | Undo prune |
+
+Full extend / refresh / rejudge tools wait for M4 (they need the discovery agent + collection schema).
+
+### Chat REPL
+
+`prompt_toolkit` for input (multi-line, history, completion, key bindings, editor escape) + `Rich` for output (`Live` + `Markdown` for streaming-markdown rendering). The aider stack — validated in `experiments/05`. Native terminal scrollback preserved (the dominant complaint about Textual/Ink-based chat tools that take the alt-screen).
+
+Welcome screen on `calli chat` shows the `library_summary()` output: work count, last build date, top topics. Slash commands `/help`, `/clear`, `/save`, `/exit`.
+
+## M4 — Snowball + multi-collection + dashboard
 
 ### Snowball loop
 
-```
-seeds = orchestrator.initial_top_n(plan, n=15)
+```python
+seeds = top_n_by_score(library, n=15)
 
 while budget_remains and not_converged:
     candidates = pool from refs(seeds) ∪ forward_cites(seeds)
     candidates = enrich_with_citation_contexts(candidates, current_library)
     candidates = dedupe(candidates)
 
-    verdicts = [judge(c, collection_context) for c in candidates]  # batched
+    verdicts = batch_judge(candidates, collection_context)
     accepted = [c for c, v in verdicts if v.accept]
     new_seeds = [c for c, v in verdicts if v.snowball_candidate]
 
@@ -205,290 +400,23 @@ while budget_remains and not_converged:
 Two important guards:
 
 - **Selective seed promotion** — not every accepted work becomes a seed. Only those scoring high on seminality. Otherwise snowball explodes into noise.
-- **Topic drift detector** — periodically embed newly accepted works, compare to the collection embedding. Drift over threshold → prune the branch and tell the orchestrator.
+- **Topic drift detector** — periodically embed newly accepted works, compare to the collection embedding. Drift over threshold → prune the branch.
 
-### Citation context — the unlock
+Requires the **`semantic_scholar`** plugin (citation contexts — the literal sentences each citation appears in, the unlock for seminality judging) and **`crossref`** (DOI metadata at scale). Both deferred from M2.
 
-Semantic Scholar's API exposes `citationContexts`: the literal sentence from each citing paper that mentions a given citation. "Building on the seminal work of [Smith 2018]…" carries different signal from "see also [12]". The judge reads these contexts when available. No other free source provides this consistently.
+### Multi-collection
 
-## Pipeline in detail
+A library has one or more collections. A work can belong to multiple collections with per-collection relevance scores. **Bridge works** score high in two or more collections.
 
-After discovery converges, accepted works feed a deterministic pipeline. All async, parallelised, with progress bars.
+`calli collection add "name" --keywords "..."` extends an existing library. The discovery run reads the existing library context, refuses to re-add known works, *will* re-tag existing works for the new collection. A bridge pass explicitly looks for works scoring high on two collection embeddings.
 
-1. **Resolve** — find a downloadable URL (Unpaywall first, then arXiv, then publisher OA)
-2. **Download** — fetch PDF (or LaTeX archive when arXiv has source)
-3. **Extract**
-   - arXiv with LaTeX source → render to markdown directly (cleanest, math intact)
-   - Web essays/reports → readability extraction → markdown
-   - Otherwise → Mistral OCR API
-   - Edge cases (encrypted, weird scans) → Claude vision fallback
-4. **Enrich** — single LLM call per work produces:
-   - Structured metadata into YAML frontmatter (title, authors, year, venue, DOI, ...)
-   - 1–2 paragraph summary
-   - Bullet list of key claims and contributions
-   - Tagged methods, datasets, entities
-5. **Embed** — chunk into ~500-token windows with 100-token overlap; embed each chunk; store with work FK
-6. **Index** — write metadata, chunks, embeddings, citations, collection memberships into `library.db`
+### Build dashboard (Textual)
 
-Each step is idempotent and per-work checkpointed in `.callimachus/state.json`. Resuming picks up where it left off.
+Multi-pane TUI: orchestrator pane + parallel hunter panes + live works list + status bar. Replaces today's streaming-log Rich progress for `calli build`. The `experiments/09` and `experiments/10` slots in the dev plan are reserved for this.
 
-## Storage schema
+The chat (M3) and the dashboard (M4) are deliberately different tools: chat is conversational, dashboard is spatial + concurrent. Both are valid Python TUI; they don't share a framework.
 
-A single SQLite file (`library.db`) with `sqlite-vec` loaded on connection.
-
-```sql
--- Collections: first-class subjects within a library
-CREATE TABLE collections (
-  id              TEXT PRIMARY KEY,        -- slug
-  name            TEXT NOT NULL,
-  keywords        JSON,
-  notes           TEXT,
-  embedding       BLOB,                    -- topic vector for drift + bridges
-  overview_path   TEXT,                    -- collections/{slug}/overview.md
-  added_at        TIMESTAMP,
-  added_by_run_id INTEGER REFERENCES runs(id)
-);
-
--- Works: papers, essays, reports, etc.
-CREATE TABLE works (
-  id              TEXT PRIMARY KEY,        -- canonical slug
-  kind            TEXT NOT NULL,           -- paper | essay | report | talk | chapter
-  doi             TEXT UNIQUE,
-  arxiv_id        TEXT,
-  title           TEXT NOT NULL,
-  authors         JSON NOT NULL,
-  year            INTEGER,
-  venue           TEXT,
-  abstract        TEXT,
-  summary         TEXT,                    -- LLM summary
-  key_claims      JSON,
-  methods         JSON,
-  datasets        JSON,
-  source_url      TEXT NOT NULL,           -- for rehydration
-  pdf_path        TEXT,                    -- relative to library root, NULL if rehydrated-out
-  markdown_path   TEXT NOT NULL,
-  judge_score     REAL,
-  judge_reasoning TEXT,
-  added_at        TIMESTAMP,
-  admitted_by_run_id INTEGER REFERENCES runs(id),
-  archived_at     TIMESTAMP,               -- soft-delete; NULL means active
-  bridge          BOOLEAN DEFAULT 0,
-  metadata        JSON
-);
-
--- Many-to-many: a work can belong to multiple collections
-CREATE TABLE work_collections (
-  work_id         TEXT REFERENCES works(id),
-  collection_id   TEXT REFERENCES collections(id),
-  score           REAL,                    -- per-collection relevance 0-10
-  is_seed         BOOLEAN DEFAULT 0,
-  PRIMARY KEY (work_id, collection_id)
-);
-
--- Chunks for vector search
-CREATE TABLE chunks (
-  id              INTEGER PRIMARY KEY,
-  work_id         TEXT REFERENCES works(id),
-  ord             INTEGER,
-  text            TEXT,
-  section         TEXT
-);
-
-CREATE VIRTUAL TABLE vec_chunks USING vec0(
-  chunk_id        INTEGER PRIMARY KEY,
-  embedding       FLOAT[768]
-);
-
--- Citation graph
-CREATE TABLE citations (
-  citing_work     TEXT REFERENCES works(id),
-  cited_work      TEXT REFERENCES works(id),
-  context         TEXT,                    -- the citing sentence
-  PRIMARY KEY (citing_work, cited_work)
-);
-
--- Run history (every mutation is a run)
-CREATE TABLE runs (
-  id              INTEGER PRIMARY KEY,
-  kind            TEXT,                    -- build | extend | refresh | prune | rejudge | restore
-  collection_id   TEXT REFERENCES collections(id),
-  started_at      TIMESTAMP,
-  ended_at        TIMESTAMP,
-  config          JSON,
-  cost_usd        REAL,                    -- vestigial column from M1.0; not populated in v0.1 (Callimachus doesn't translate tokens to USD; pricing isn't its concern)
-  works_added     INTEGER,
-  works_archived  INTEGER,
-  works_retagged  INTEGER,
-  notes           TEXT
-);
-
-CREATE TABLE run_log (
-  id              INTEGER PRIMARY KEY,
-  run_id          INTEGER REFERENCES runs(id),
-  ts              TIMESTAMP,
-  phase           TEXT,
-  event           TEXT,
-  payload         JSON
-);
-```
-
-Vector search:
-
-```sql
-SELECT works.title, works.summary, distance
-FROM vec_chunks
-JOIN chunks ON chunks.id = vec_chunks.chunk_id
-JOIN works ON works.id = chunks.work_id
-WHERE embedding MATCH ? AND k = 20 AND works.archived_at IS NULL
-ORDER BY distance;
-```
-
-Collection-scoped vector search:
-
-```sql
-SELECT works.title FROM vec_chunks
-JOIN chunks ON ...
-JOIN works ON ...
-JOIN work_collections wc ON wc.work_id = works.id
-WHERE embedding MATCH ? AND k = 20
-  AND wc.collection_id = ?
-  AND works.archived_at IS NULL
-ORDER BY distance;
-```
-
-Bridge works:
-
-```sql
-SELECT w.* FROM works w
-WHERE w.bridge = 1 AND w.archived_at IS NULL
-ORDER BY w.judge_score DESC;
-```
-
-## The librarian — Callimachus the agent
-
-A long-lived Pydantic AI agent that owns the library. The chat interface (`calli`), the one-shot CLI (`calli query`), the MCP server (`calli serve --mcp`), and the build/extend/refresh CLI subcommands are all invocations of this agent or its tools.
-
-### Tool surface
-
-**Read tools** (always exposed, including over MCP):
-
-| Tool | Purpose |
-| --- | --- |
-| `search_library(query, k=10, filters?)` | Semantic search; filters by collection, year, venue, kind, bridge |
-| `get_work(id_or_slug)` | Full metadata + summary |
-| `get_work_full(id_or_slug)` | Full markdown |
-| `find_related(id_or_slug, k=10)` | Citation- and embedding-based related works |
-| `summarise_collection(id)` | Synthesis of one collection |
-| `summarise_topic(query)` | Topic-scoped synthesis across the whole library |
-| `bridges(collection_a, collection_b)` | List bridge works between two collections |
-| `cite(query)` | BibTeX entries for top-k matches |
-| `library_summary()` | Library-level overview (used at chat startup) |
-| `inspect_paper(id)` | Show full metadata + judge reasoning + run history |
-
-**Mutation tools** (gated for MCP — opt in to expose):
-
-| Tool | Purpose |
-| --- | --- |
-| `add_collection(name, keywords, notes)` | Add a new collection (triggers a discovery run) |
-| `prune(filters, archive=True)` | Soft-delete works matching a filter |
-| `restore(filter)` | Bring archived works back |
-| `refresh(collection?, since?)` | Find work since the last build |
-| `rejudge(criteria)` | Re-score the library with new criteria |
-| `bridge_libraries(other_library_path)` | Cross-library intersection report (read-only on the other) |
-| `add_note(text)` | Append to `notes.md` for mid-run steering |
-
-### CLI as shortcuts
-
-| CLI | Librarian action |
-| --- | --- |
-| `calli` | Open chat in default library |
-| `calli init [name]` | Create new library + first collection |
-| `calli collection add ...` | `add_collection(...)` |
-| `calli collection list` | List collections |
-| `calli refresh [--collection X]` | `refresh(...)` |
-| `calli prune ...` | `prune(...)` |
-| `calli restore ...` | `restore(...)` |
-| `calli query "..."` | One-shot read |
-| `calli bridge LIB_A LIB_B` | `bridge_libraries(...)` |
-| `calli serve --mcp` | Expose librarian as MCP server |
-| `calli serve --web` | Local web UI |
-| `calli export ...` | Tarball export |
-| `calli import ...` | Tarball import |
-| `calli rehydrate` | Re-download missing PDFs from source URLs |
-| `calli log` | Read `runs` and event log (token + model totals per run; no USD math) |
-| `calli doctor` | Check API keys, dependencies, library integrity |
-
-The CLI exists for users who prefer commands or want to script. The chat is the dominant interface.
-
-## Human in the loop
-
-Four checkpoints during a discovery run, each skippable independently or globally with `--auto`:
-
-1. **Plan review** — after `plan_research`, before any hunters spawn. Shows angles, queries, criteria, expected work count. User edits or accepts.
-2. **Seed approval** — after first discovery + judging pass. Top ~30 candidates with one-line summaries. User: include / exclude / mark-as-seed (deeper snowball).
-3. **Per-iteration review** *(optional, off by default)* — after each snowball pass.
-4. **Final prune** — before the pipeline phase. Full work list with one-line summaries. User drops duds.
-
-### `notes.md` mid-flight steering
-
-Callimachus re-reads `.callimachus/notes.md` at the start of each snowball iteration. The user edits it in any editor while the run is in progress to nudge direction without restarting. Lighter weight than a checkpoint, more flexible than restarting.
-
-### Notifications
-
-Optional desktop notification (or webhook) when a checkpoint is reached, so users don't have to babysit the TUI for hours. Configured in `.env`.
-
-## Run transparency (no cost translation)
-
-Callimachus reports honest runtime info — input/output tokens per model, per-stage timings, per-source candidate counts, errors — and **does not translate tokens to USD**. Pricing changes too often, varies by deployment (OpenRouter vs direct vs Bedrock vs Vertex), and isn't load-bearing for the product. Users who want a budget number multiply tokens by their provider's current per-token price.
-
-What the run log contains:
-- Plan review shows expected work count + planned angles
-- TUI status bar shows live token + model usage during a run
-- `--max-works N` and `--max-hours N` are the hard caps
-- Per-phase token + model totals written to `.callimachus/runs/{iso-timestamp}.jsonl`
-- `calli log` shows historic runs with totals — you can pipe to your own cost calculator if you want one
-
-## Resumability
-
-- Per-work checkpoint after each pipeline step (download → extract → enrich → embed → index)
-- Discovery state checkpointed at the end of each snowball iteration
-- `calli` notices an in-progress run on startup and offers to resume
-- A crash mid-work is recovered by re-running that work's incomplete step (idempotent)
-
-## Backup and sharing
-
-### Tier 1 — git-friendly default
-
-`.gitignore` excludes `works/*/original.pdf` and `.callimachus/state.json` (also `.callimachus/runs/` if user wants minimal repo). Everything else commits to plain git. Typical committed size for a 500-work library: ~500MB.
-
-`calli rehydrate` re-downloads PDFs from `works.source_url`. The library's intelligence (markdown, summaries, embeddings, citation graph, judge reasoning) is what version-controls; PDFs rehydrate.
-
-### Tier 2 — full snapshot
-
-`calli export` produces a tarball of the entire library including PDFs. `calli import` restores anywhere. Per-collection export is supported for selective sharing.
-
-### Tier 3 — git LFS
-
-Documented in `docs/BACKUP.md` for users who want versioned PDFs. Not the default; we don't push everyone into LFS quotas.
-
-## Provider abstraction
-
-LLM calls go through a thin internal interface:
-
-```python
-class LLMProvider(Protocol):
-    async def complete(self, ...): ...
-    async def complete_structured(self, ...) -> BaseModel: ...
-    async def stream(self, ...) -> AsyncIterator[Event]: ...
-```
-
-Pydantic AI implements this for all providers it supports. Switching is a config change. Provider-specific perks (e.g. Anthropic prompt caching) activate when available, transparently.
-
-**Provider-specific caveats the wrapper must handle:**
-
-- **Gemini + structured output**: Pydantic AI's docs warn that Gemini can't combine tools and structured output. In practice (experiment 04) Gemini 2.5 Pro routed via OpenRouter returned a valid structured `Verdict` with default `ToolOutput` mode, so the warning may not apply to current Gemini versions or may be auto-handled. **Don't pre-emptively code around it.** If we see real failures when routing the judge through Gemini, the wrapper can switch that path to `NativeOutput` or `PromptedOutput` mode at that point.
-
-## MCP server
+## M5 — MCP server
 
 `calli serve --mcp` exposes the librarian's read tools (and optionally mutation tools) over the FastMCP stdio transport. Once registered with Claude Code / Cursor / Claude Desktop / any MCP host, the library becomes a first-class tool the host's chat agent can call.
 
@@ -499,161 +427,59 @@ from fastmcp import FastMCP
 mcp = FastMCP("callimachus")
 
 @mcp.tool()
-async def search_library(query: str, k: int = 10, collection: str | None = None) -> list[Work]:
+async def search_library(query: str, k: int = 10) -> list[Work]:
     ...
 
 @mcp.tool()
 async def find_related(work_id: str, k: int = 10) -> list[Work]:
     ...
-
-# ... etc
 ```
 
 Mutation tools default to off over MCP. `calli serve --mcp --allow-mutations` opts in.
 
-## Folder layout
+Cross-library bridge (`calli bridge LIB_A LIB_B`) is also M5 — read-only over both libraries, produces a markdown report of intersection ideas.
 
-### Library on disk
+## M6 — Polish + ship v0.1
 
-```
-~/Callimachus/                       # default library path
-  callimachus.yaml                   # global config + per-library settings
-  README.md                          # auto-generated, regenerated on changes
-  collections/
-    {collection-slug}/
-      collection.yaml                # name, scope, keywords, notes, embedding ref
-      overview.md                    # synthesis, regenerated as collection grows
-      seeds.yaml                     # the seed works that anchored it
-  works/
-    {work-slug}/                     # canonical: {firstauthor}-{year}-{shorttitle}
-      original.pdf                   # gitignored by default
-      paper.md                       # full text + YAML frontmatter
-      summary.md
-      metadata.yaml                  # collections, scores, judge reasoning, source URL
-  index/
-    library.db                       # SQLite + sqlite-vec, the queryable index
-  archive/                           # soft-deleted works (recoverable)
-    {work-slug}/...
-  plugins/                           # local user plugins (drop-in .py files)
-  .callimachus/
-    state.json                       # checkpointing
-    notes.md                         # editable mid-run, agents re-read each iteration
-    runs/{iso-timestamp}.jsonl       # full event log per run (tokens, models, timings)
-    cache/                           # API response cache
-```
+- **`calli log`** + **`calli inspect <work>`** for first-class run + work introspection
+- **Backup / sharing**:
+  - Tier 1 (default): git-friendly — `.gitignore` excludes PDFs + state.json; `calli rehydrate` re-downloads from `source_url`
+  - Tier 2: full snapshot via `calli export` / `calli import`
+  - Tier 3: git LFS, documented in `docs/BACKUP.md`
+- **Library config file** (`callimachus.yaml`) for per-library plugin enables/disables, source-specific config, model overrides
+- **`calli plugin {list,install,enable,disable,doctor}`** CLI
+- **Resume after crash** — surface in-progress runs at startup, offer to resume
 
-### Repository layout (planned)
+## Future phases (v0.2+)
 
-```
-callimachus/
-  src/callimachus/
-    cli.py                           # entrypoints, all subcommands
-    chat/
-      app.py                         # the prompt_toolkit + Rich chat for the librarian
-      keybindings.py                 # Enter/Alt+Enter, Shift+Enter via CSI u, etc.
-      slash_commands.py              # /help /clear /save /history etc.
-      kitty_protocol.py              # enable/disable CSI u disambiguation mode
-    tui/
-      build_app.py                   # the Textual dashboard for discovery + pipeline runs
-    librarian/
-      agent.py                       # the Callimachus agent definition
-      tools/
-        read.py                      # search, get, find_related, summarise, cite
-        mutate.py                    # extend, prune, refresh, rejudge
-        meta.py                      # library_summary, inspect, log, cost
-    discovery/
-      orchestrator.py                # the orchestrator agent
-      hunters.py                     # hunter subagent factory
-      judge.py                       # judge prompt + Pydantic schema
-      snowball.py                    # the snowball loop
-      drift.py                       # topic drift detector
-    sources/
-      protocols.py                   # DiscoverySource, Resolver, WorkCandidate types
-      registry.py                    # plugin discovery and loading (entry points + local files)
-      bundled/                       # the built-in plugins; same protocols as third-party
-        openalex.py
-        semantic_scholar.py
-        arxiv.py
-        crossref.py
-        unpaywall.py
-        exa.py
-        perplexity.py
-        local_pdfs.py
-    pipeline/
-      download.py
-      extract/
-        latex.py
-        mistral_ocr.py
-        readability.py               # for essays/reports
-        claude_vision.py
-      enrich.py
-      embed.py
-      index.py
-      synthesis.py                   # phase 2.5 overview generation
-    storage/
-      models.py                      # SQLModel classes
-      db.py                          # connection, vec extension loading
-      migrations/                    # Alembic
-      schema.sql                     # canonical DDL (generated from models)
-    query/
-      vector.py                      # sqlite-vec query helpers
-      sql.py
-    mcp/
-      server.py                      # FastMCP wrapper
-    providers/
-      __init__.py                    # the LLMProvider protocol
-      anthropic.py                   # caching-aware
-      openai.py
-      gemini.py
-      openrouter.py
-      ollama.py
-    backup/
-      export.py
-      import_.py
-      rehydrate.py
-    config.py
-    cost.py
-    state.py
-  docs/
-    ARCHITECTURE.md
-    USER_STORIES.md
-    PLUGINS.md
-    PROMPTS.md                       # all system prompts, versioned
-    DATA_SCHEMA.md                   # detailed schema docs
-    BACKUP.md                        # tiers, LFS setup
-  examples/
-    example-plugin/                  # reference implementation: tests, config, docs
-  tests/
-  pyproject.toml
-  README.md
-  .gitignore
-  .env.example
-```
+**v0.2: Talks + book chapters as new work kinds**
+- YouTube via yt-dlp + Whisper for transcription
+- Book chapters via TOC parsing + chapter-aware extraction
+- Same enrichment + embedding + index pipeline
+- New `kind` values: `talk`, `chapter` with `parent_work` for chapters
 
-## Phase 2 — talks and book chapters (deferred)
+**v0.3+: Collaborative libraries, library-of-libraries, in-place reading UI**
 
-Same shape as papers, different ingestion. Both become new `kind` values for `works`.
+## Provider abstraction (notes for when we generalize beyond OpenRouter)
 
-**Talks (YouTube, conference recordings):**
-1. YouTube Data API search per angle (or direct URL drop)
-2. Quality scoring rubric (channel reputation, view/like ratio, length thresholds, transcript availability)
-3. yt-dlp to fetch audio
-4. Whisper (Groq Whisper API for speed, local for free) for transcription
-5. Same enrichment + embedding + index pipeline
-6. Stored under `works/{video-id}/` like papers, with `kind: talk`
+LLM calls today route through Pydantic AI's OpenRouter provider. To add Anthropic-direct, OpenAI-direct, Gemini-direct, etc., it's a config change — Pydantic AI implements all of them.
 
-**Book chapters:**
-1. User points at a PDF (or a directory of PDFs); chapter detection via TOC parsing or LLM
-2. Same extract → enrich → embed pipeline
-3. `kind: chapter`, with `parent_work` linking chapters back to their book
+Provider-specific caveats the wrapper would need to handle:
+- **Gemini + structured output**: Pydantic AI's docs warn that Gemini can't combine tools and structured output. In practice (experiment 04) Gemini 2.5 Pro routed via OpenRouter returned a valid structured `Verdict` with default `ToolOutput` mode, so the warning may not apply to current Gemini versions. **Don't pre-emptively code around it** — if real failures show up when routing the judge through Gemini, the wrapper switches that path to `NativeOutput` or `PromptedOutput` mode at that point.
+- **Anthropic prompt caching**: applies transparently when routing direct; not exposed via OpenRouter as of this writing. Worth revisiting if costs become a concern.
+
+---
 
 ## Open questions to revisit during build
 
-- Default snowball depth and convergence thresholds — needs tuning against real topics
-- How aggressively to dedupe arXiv preprint vs published version (DOI mapping is imperfect)
-- Whether to support multiple topic embeddings *per* collection (e.g. allow two parallel themes within one collection)
-- Best chunking strategy for academic papers (semantic vs sliding-window vs section-aware)
-- How to expose the citation graph in the chat (text-based vs terminal graphics; chat is inline-scrolling so we lose alt-screen rendering options)
-- Whether to ship a Hermes Agent skill alongside the MCP server for the multi-platform messaging crowd
-- Per-collection model overrides (e.g. use Opus for "creativity", Sonnet for everything else)
-- When library scale demands migration off sqlite-vec (suggest LanceDB at ~50k chunks)
+These are things we're aware of but haven't decided yet. Some surface in `LEARNINGS.md` entries as we hit them.
+
+- **Default snowball depth and convergence thresholds** — needs tuning against real topics in M4
+- **Dedupe across arXiv preprint vs published version** — DOI mapping is imperfect
+- **Best chunking strategy for academic papers** — semantic vs sliding-window vs section-aware (we have section-aware now; bake-off deferred)
+- **Citation graph rendering in chat** — text-based vs terminal graphics
+- **Per-collection model overrides** (e.g. use Opus for "creativity", Sonnet for everything else)
+- **Library size cap** — when does sqlite-vec performance demand a migration to LanceDB? (~50k chunks suspected)
+- **Judge calibration** — current Sonnet judge has ~55% accept rate, probably too lenient. Could be tighter.
+- **Per-publisher resolver tactics** — ACM/Elsevier/MDPI 403 the Unpaywall fetch even with browser UA. Worth pursuing?
+- **Token budget caps** — `--budget-tokens N` would be a useful guard before users get a surprise bill

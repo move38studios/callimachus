@@ -2,6 +2,24 @@
 
 A staged build for Callimachus, structured around **small, independently-validatable experiments** before integration. Every assumption gets proven in isolation before it gets stitched into the product.
 
+## Status snapshot — May 2026
+
+| Milestone | Status | Headline |
+|-----------|--------|----------|
+| **M1** Storage + plugin system + ingest pipeline | ✅ done | `calli ingest seeds.yaml` works end-to-end |
+| **M2** Topic → library | ✅ done | `calli build --topic X` ships scout + HITL ceremony + parallel hunters + judge + ingest |
+| **M2.6** Resilience + breadth | ✅ done | Sonnet hunter, Unpaywall, Perplexity, try-more-on-failure, browser UA, OCR + LaTeX hardening |
+| **M3** Chat with your library | 🔜 next | Librarian agent + read tools + `calli chat` REPL + prune mutations |
+| **M4** Snowball + multi-collection + dashboard | 🟦 future | Citation graph snowball, bridge papers, Textual TUI |
+| **M5** MCP server | 🟦 future | Use library from any chat agent (Claude Code, Cursor, etc.) |
+| **M6** Polish + ship v0.1 | 🟦 future | `calli log`, `calli inspect`, backup tiers, library config file |
+
+**Tests:** ~360 unit + ~12 live, all green.
+**Bundled plugins:** 6 discovery sources (arxiv, openalex, serper_scholar, serper_web, perplexity, local_pdfs) + 3 resolvers (arxiv, unpaywall, local_pdfs).
+**LLM defaults:** scout = Haiku 4.5, hunter + judge + enricher = Sonnet 4.6, synthesis (M4+) = Opus 4.7. All via OpenRouter.
+
+For the higher-level "what works today" view see [`USER_STORIES.md`](USER_STORIES.md). For the code-architecture view see [`ARCHITECTURE.md`](ARCHITECTURE.md). For onboarding see [`ONBOARDING.md`](ONBOARDING.md).
+
 ## Working principles
 
 - **Prove components in isolation.** Each piece of the stack — agent harness, TUI, storage, embeddings, each discovery source, each pipeline step — gets a small `experiments/NN-name/` directory with a hello-world that proves the thing works the way we think it does.

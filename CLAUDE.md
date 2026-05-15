@@ -2,9 +2,13 @@
 
 This file is your standing brief when working on Callimachus. Read once per session.
 
+> **Human readers:** the friendlier version of this is [`docs/ONBOARDING.md`](docs/ONBOARDING.md). It walks through environment setup, codebase tour, LLM-specific concepts, and our tooling preferences. This file is the terse coding-rules reference Claude reads at session start; the two are consistent but ONBOARDING is the better starting point for a human.
+
 ## What we're building
 
-Callimachus: an open-source autonomous librarian that builds, grows, and queries deep research libraries. Personal-Library-of-Alexandria model. Full picture in `README.md` and `docs/`. Build phased in `docs/DEV_PLAN.md`.
+Callimachus: an open-source autonomous librarian that builds, grows, and queries deep research libraries. Personal-Library-of-Alexandria model. Full picture in `README.md`, status in `docs/DEV_PLAN.md`, UX in `docs/USER_STORIES.md`, code in `docs/ARCHITECTURE.md`.
+
+**Where we are:** M1 + M2 done — `calli build --topic X` ships a working topic→library pipeline. M3 (chat with library) is next.
 
 ## The golden rule
 
