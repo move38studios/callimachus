@@ -91,7 +91,7 @@ async def _probe_angle(
     source = registry.get_discovery(probe_source_name)
     if source is None:
         log.debug(
-            "scout: probe source %r not registered; returning angle %d " "without sample evidence",
+            "scout: probe source %r not registered; returning angle %d without sample evidence",
             probe_source_name,
             angle_idx,
         )

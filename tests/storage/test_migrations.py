@@ -38,15 +38,15 @@ def test_migration_roundtrip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     engine = make_engine(db_url)
     after_upgrade = _table_names(engine)
     expected = {"works", "chunks", "collections", "work_collections", "runs"}
-    assert expected.issubset(
-        after_upgrade
-    ), f"missing tables after upgrade: {expected - after_upgrade}"
+    assert expected.issubset(after_upgrade), (
+        f"missing tables after upgrade: {expected - after_upgrade}"
+    )
     # Alembic's bookkeeping table
     assert "alembic_version" in after_upgrade
 
     # Downgrade and verify our tables are gone
     command.downgrade(cfg, "base")
     after_downgrade = _table_names(engine)
-    assert expected.isdisjoint(
-        after_downgrade
-    ), f"tables still present after downgrade: {expected & after_downgrade}"
+    assert expected.isdisjoint(after_downgrade), (
+        f"tables still present after downgrade: {expected & after_downgrade}"
+    )

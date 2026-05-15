@@ -172,8 +172,7 @@ class UnpaywallPlugin:
         content_type = pdf_response.headers.get("content-type", "").lower()
         if "pdf" not in content_type and not pdf_response.content.startswith(b"%PDF"):
             raise SourceUnavailable(
-                f"unpaywall: response from {pdf_url!r} is not a PDF "
-                f"(content-type={content_type!r})"
+                f"unpaywall: response from {pdf_url!r} is not a PDF (content-type={content_type!r})"
             )
 
         return ResolvedFile(

@@ -633,8 +633,7 @@ def build_cmd(
         )
         if not auto:
             console.print(
-                f"[dim]Review {saved_at} then run: "
-                f"[bold]calli build --from-plan {plan.slug}[/][/]"
+                f"[dim]Review {saved_at} then run: [bold]calli build --from-plan {plan.slug}[/][/]"
             )
             return
     else:

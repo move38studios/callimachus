@@ -117,9 +117,9 @@ async def test_extract_pdf_uploads_signs_and_deletes() -> None:
     # pydantic validator on file.content rejects BytesIO even though it's
     # nominally an IO subclass.
     upload_content = client.files.uploaded[0]["file"]["content"]
-    assert isinstance(
-        upload_content, bytes
-    ), f"file.content must be bytes for Mistral SDK; got {type(upload_content).__name__}"
+    assert isinstance(upload_content, bytes), (
+        f"file.content must be bytes for Mistral SDK; got {type(upload_content).__name__}"
+    )
     assert upload_content == b"%PDF stub bytes"
 
     # OCR call: document_url + include_image_base64
