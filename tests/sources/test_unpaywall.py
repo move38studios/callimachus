@@ -100,6 +100,7 @@ def _attach_mock_transport(plugin: UnpaywallPlugin, handler: MockHandler) -> Non
 async def test_resolve_happy_path_returns_pdf_bytes() -> None:
     plugin = UnpaywallPlugin()
     pdf_bytes = b"%PDF-1.4\nfake pdf bytes"
+    pdf_request_headers: dict[str, str] = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
         if "api.unpaywall.org" in str(request.url):
@@ -112,6 +113,7 @@ async def test_resolve_happy_path_returns_pdf_bytes() -> None:
                 },
             )
         if "example.org/paper.pdf" in str(request.url):
+            pdf_request_headers.update(dict(request.headers))
             return httpx.Response(
                 200, content=pdf_bytes, headers={"content-type": "application/pdf"}
             )
@@ -124,6 +126,10 @@ async def test_resolve_happy_path_returns_pdf_bytes() -> None:
     assert resolved.content_type == "application/pdf"
     assert resolved.source_url == "https://example.org/paper.pdf"
     assert resolved.resolved_by == "unpaywall"
+    # PDF fetch must use a browser-like User-Agent + PDF Accept (some
+    # publishers 403 the polite-pool 'callimachus/0.1 (mailto:...)' UA).
+    assert "Mozilla" in pdf_request_headers.get("user-agent", "")
+    assert "application/pdf" in pdf_request_headers.get("accept", "")
     await plugin.close()
 
 

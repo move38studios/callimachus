@@ -34,6 +34,16 @@ log = logging.getLogger(__name__)
 UNPAYWALL_API_URL = "https://api.unpaywall.org/v2/{doi}"
 DEFAULT_EMAIL = "callimachus@move38studios.dev"
 
+# When fetching the actual PDF from a publisher (after Unpaywall told us where
+# it lives), some publishers (MDPI, certain Elsevier endpoints) sniff the
+# User-Agent and 403 anything that doesn't look like a browser. We send a
+# real-looking UA for the PDF fetch only — the Unpaywall API itself
+# appreciates the polite-pool mailto UA, so we keep that there.
+_BROWSER_UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_2_1) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+)
+
 
 def _get(obj: Any, *keys: str) -> Any:
     """Walk a JSON dict via keys, returning None on any miss. (Same helper as openalex.py.)"""
@@ -138,9 +148,16 @@ class UnpaywallPlugin:
                 f"unpaywall: no open-access PDF available for DOI {candidate.doi!r}"
             )
 
-        # Fetch the actual PDF
+        # Fetch the actual PDF — use a browser-like User-Agent + Accept since
+        # some publishers (MDPI, certain Elsevier paths) 403 the polite-pool UA.
         try:
-            pdf_response = await client.get(pdf_url)
+            pdf_response = await client.get(
+                pdf_url,
+                headers={
+                    "User-Agent": _BROWSER_UA,
+                    "Accept": "application/pdf,*/*;q=0.8",
+                },
+            )
             pdf_response.raise_for_status()
         except httpx.HTTPError as exc:
             raise SourceUnavailable(f"unpaywall: PDF fetch failed for {pdf_url!r}: {exc}") from exc

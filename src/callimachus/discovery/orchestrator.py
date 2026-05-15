@@ -56,6 +56,12 @@ log = logging.getLogger(__name__)
 # Concurrency defaults — bounded to avoid pummelling LLM rate limits.
 DEFAULT_JUDGE_CONCURRENCY = 5
 
+# When ingest fails for a candidate, we keep trying down the score-ranked
+# accepted list until we hit plan.max_works successes — but with a cap
+# so a high-failure-rate run doesn't go forever. Default cap = 2x
+# max_works (so for max_works=15 we attempt at most 30 candidates).
+DEFAULT_MAX_ATTEMPTS_MULTIPLIER = 2
+
 HuntFn = Callable[[Angle], Awaitable[HunterRunResult]]
 IngestFn = Callable[[WorkCandidate], Awaitable[IngestResult]]
 
@@ -80,9 +86,9 @@ class BuildResult:
     candidates_total: int
     candidates_after_filter: int
     candidates_judged: int
-    judge_accepted: int  # how many the judge said yes to, BEFORE the max_works cap
-    candidates_accepted: int  # how many made it past the cap (= ingest attempts)
-    works_added: int
+    judge_accepted: int  # how many the judge said yes to (full pool, no cap)
+    candidates_attempted: int  # how many we tried to ingest (until max_works successes or cap)
+    works_added: int  # successful ingests
     hunter_results: list[HunterRunResult]
     judged: list[JudgedCandidate]
     elapsed_seconds: float
@@ -250,6 +256,7 @@ async def run_build(
     ingest_fn: IngestFn,
     require_resolvable_id: bool = True,
     judge_concurrency: int = DEFAULT_JUDGE_CONCURRENCY,
+    max_attempts_multiplier: int = DEFAULT_MAX_ATTEMPTS_MULTIPLIER,
 ) -> BuildResult:
     """Execute a build Plan end-to-end.
 
@@ -268,6 +275,11 @@ async def run_build(
             the artifact. Disable when third-party resolvers handle other
             identifiers.
         judge_concurrency: Max parallel judge calls.
+        max_attempts_multiplier: Bound the ingest attempt count at
+            `max(plan.max_works * multiplier, plan.max_works + 5)`. Lets
+            the orchestrator try further down the judge-accepted list when
+            high-scored picks fail at the resolver (publisher 403s, etc.).
+            Set to 1 to restore the strict cap behaviour.
 
     Returns a `BuildResult` summarising what was attempted, judged, accepted,
     and ingested. The `Run` row is persisted on the session before this
@@ -373,30 +385,39 @@ async def run_build(
             judged.append(JudgedCandidate(candidate=cand, verdict=outcome))
 
     accepted_all = [j for j in judged if j.verdict.accept]
-    # Sort accepted by score descending so highest-confidence first when capped
+    # Sort accepted by score descending so the highest-confidence picks try first
     accepted_all.sort(key=lambda j: j.verdict.score, reverse=True)
     judge_accepted_total = len(accepted_all)
-    if judge_accepted_total > plan.max_works:
+
+    # 6. Ingest — keep going down the judge-accepted list until we hit
+    # plan.max_works successes OR the attempt cap. This lets us recover
+    # from the long tail of publisher-blocked DOIs without leaving
+    # accepted-but-untried candidates on the table.
+    target_successes = plan.max_works
+    max_attempts = max(target_successes * max_attempts_multiplier, target_successes + 5)
+    max_attempts = min(max_attempts, judge_accepted_total)
+
+    if judge_accepted_total > target_successes:
         log.info(
-            "build run %d: judge accepted %d, capping at plan.max_works=%d",
+            "build run %d: judge accepted %d; will try up to %d to fill %d slots",
             run_id,
             judge_accepted_total,
-            plan.max_works,
+            max_attempts,
+            target_successes,
         )
-        accepted = accepted_all[: plan.max_works]
-    else:
-        accepted = accepted_all
 
-    # 6. Ingest accepted candidates — serial (each is heavy)
     works_added = 0
-    total_to_ingest = len(accepted)
-    for i, j in enumerate(accepted, start=1):
+    attempted_count = 0
+    for j in accepted_all[:max_attempts]:
+        if works_added >= target_successes:
+            break
+        attempted_count += 1
         label = j.candidate.title[:80] if j.candidate.title else j.candidate.candidate_id
         log.info(
             "build run %d: [%d/%d] ingesting (score=%.2f) %s",
             run_id,
-            i,
-            total_to_ingest,
+            works_added + 1,  # display the slot we're trying to fill
+            target_successes,
             j.verdict.score,
             label,
         )
@@ -406,10 +427,9 @@ async def run_build(
             j.ingest_error = f"resolver unavailable: {exc}"
             errors.append(f"ingest {j.candidate.candidate_id}: {j.ingest_error}")
             log.warning(
-                "build run %d: [%d/%d] ✗ resolver unavailable: %s",
+                "build run %d: ✗ resolver unavailable for %r: %s",
                 run_id,
-                i,
-                total_to_ingest,
+                j.candidate.candidate_id,
                 exc,
             )
             continue
@@ -417,21 +437,20 @@ async def run_build(
             j.ingest_error = f"{type(exc).__name__}: {exc}"
             errors.append(f"ingest {j.candidate.candidate_id}: {j.ingest_error}")
             log.exception(
-                "build run %d: [%d/%d] ✗ ingest %r unexpected failure",
+                "build run %d: ✗ ingest %r unexpected failure",
                 run_id,
-                i,
-                total_to_ingest,
                 j.candidate.candidate_id,
             )
             continue
 
         j.ingested = True
         j.work_id = result.work_id
+        works_added += 1
         log.info(
             "build run %d: [%d/%d] ✓ %s (%d chunks)",
             run_id,
-            i,
-            total_to_ingest,
+            works_added,
+            target_successes,
             result.work_id,
             result.chunks_indexed,
         )
@@ -449,7 +468,14 @@ async def run_build(
                 result.work_id,
             )
 
-        works_added += 1
+    if works_added < target_successes and attempted_count >= max_attempts:
+        log.warning(
+            "build run %d: hit attempt cap (%d) before filling %d slots — only %d added",
+            run_id,
+            max_attempts,
+            target_successes,
+            works_added,
+        )
 
     # 7. Finalise the Run row
     elapsed = time.perf_counter() - started
@@ -461,7 +487,8 @@ async def run_build(
         "candidates_after_filter": len(filtered),
         "candidates_judged": len(judged),
         "judge_accepted": judge_accepted_total,
-        "candidates_accepted": len(accepted),
+        "candidates_attempted": attempted_count,
+        "max_attempts_cap": max_attempts,
         "errors": errors,
     }
     run.ended_at = datetime.now(UTC)
@@ -484,7 +511,7 @@ async def run_build(
         candidates_after_filter=len(filtered),
         candidates_judged=len(judged),
         judge_accepted=judge_accepted_total,
-        candidates_accepted=len(accepted),
+        candidates_attempted=attempted_count,
         works_added=works_added,
         hunter_results=hunter_results,
         judged=judged,

@@ -219,7 +219,7 @@ async def test_run_build_happy_path_writes_run_and_patches_work_rows(
     assert result.candidates_total == 2 * 3  # 2 angles x 3 cands each
     assert result.candidates_after_filter == 3  # dedup -> 3
     assert result.candidates_judged == 3
-    assert result.candidates_accepted == 2
+    assert result.candidates_attempted == 2
     assert result.works_added == 2
     assert result.errors == []
     assert {c.title for c in ingest_calls} == {"A", "B"}
@@ -231,7 +231,7 @@ async def test_run_build_happy_path_writes_run_and_patches_work_rows(
     assert run.works_added == 2
     assert run.ended_at is not None
     notes = json.loads(run.notes or "{}")
-    assert notes["candidates_accepted"] == 2
+    assert notes["candidates_attempted"] == 2
     assert notes["hunter_token_totals"]["input_tokens"] >= 100
 
     # Work rows patched with judge fields + admitted_by_run_id
@@ -318,7 +318,7 @@ async def test_run_build_caps_at_plan_max_works(session: Session) -> None:
         ingest_fn=ingest,
     )
     session.commit()
-    assert result.candidates_accepted == 3
+    assert result.candidates_attempted == 3
     assert result.works_added == 3
     titles_ingested = sorted(c.title for c in ingest_calls)
     assert titles_ingested == ["0", "1", "2"]  # top 3 by score
@@ -341,12 +341,82 @@ async def test_run_build_records_ingest_failures_in_errors(session: Session) -> 
         ingest_fn=ingest,
     )
     session.commit()
-    assert result.candidates_accepted == 1
+    assert result.candidates_attempted == 1
     assert result.works_added == 0
     assert any("ingest" in e for e in result.errors)
     # Judged record retains the verdict even though ingest failed
     assert result.judged[0].ingested is False
     assert "resolver unavailable" in (result.judged[0].ingest_error or "")
+
+
+async def test_run_build_keeps_trying_when_ingest_fails(session: Session) -> None:
+    """When the top-scored picks fail at ingest, fall through to lower-scored ones.
+
+    With max_works=3 and 5 accepts, if the top 2 fail (publisher 403 etc),
+    we should try down the list and end up with 3 successes from picks 3-5.
+    """
+    cands = [_candidate(title=str(i), arxiv_id=f"2001.000{i}") for i in range(5)]
+
+    async def hunt(angle: Angle) -> HunterRunResult:
+        return await _stub_hunt(angle, cands=cands)
+
+    # Highest-score picks fail; lower-score ones succeed
+    scores = {"0": 0.95, "1": 0.85, "2": 0.75, "3": 0.65, "4": 0.55}
+
+    async def judge(topic: str, cand: WorkCandidate) -> Verdict:
+        del topic
+        return _verdict(accept=True, score=scores[cand.title])
+
+    ingest, ingest_calls = _make_stub_ingest(session=session, fail_titles={"0", "1"})
+    plan = _plan(angles=[_angle("one")], max_works=3)
+
+    result = await run_build(
+        plan=plan,
+        session=session,
+        judge_fn=judge,
+        hunt_fn=hunt,
+        ingest_fn=ingest,
+    )
+    session.commit()
+    # Tried 5 (the top 2 failed, then 3 more succeeded)
+    assert result.candidates_attempted == 5
+    assert result.works_added == 3
+    # The 3 successful ingests are 2, 3, 4 (top scorers 0 and 1 failed)
+    titles_ingested = sorted(c.title for c in ingest_calls)
+    assert titles_ingested == ["2", "3", "4"]
+    # judge_accepted is the full pre-cap pool
+    assert result.judge_accepted == 5
+
+
+async def test_run_build_respects_max_attempts_cap(session: Session) -> None:
+    """If everyone fails, stop at the attempt cap rather than burning the whole list."""
+    cands = [_candidate(title=str(i), arxiv_id=f"2001.000{i}") for i in range(20)]
+
+    async def hunt(angle: Angle) -> HunterRunResult:
+        return await _stub_hunt(angle, cands=cands)
+
+    async def judge(topic: str, cand: WorkCandidate) -> Verdict:
+        del topic, cand
+        return _verdict(accept=True, score=0.9)
+
+    # Every ingest fails
+    fail_all = {str(i) for i in range(20)}
+    ingest, ingest_calls = _make_stub_ingest(session=session, fail_titles=fail_all)
+    # max_works=5 -> default cap = max(5*2, 5+5) = 10 attempts
+    plan = _plan(angles=[_angle("one")], max_works=5)
+
+    result = await run_build(
+        plan=plan,
+        session=session,
+        judge_fn=judge,
+        hunt_fn=hunt,
+        ingest_fn=ingest,
+    )
+    session.commit()
+    # Stopped at cap, not burned through all 20
+    assert result.candidates_attempted == 10
+    assert result.works_added == 0
+    assert len(ingest_calls) == 0  # all failed before reaching ingest_calls.append
 
 
 async def test_run_build_records_hunter_failures_in_errors(session: Session) -> None:
