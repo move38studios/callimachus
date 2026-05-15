@@ -1,6 +1,6 @@
 # Plugins
 
-Callimachus's discovery sources and PDF resolvers are a plugin system. The bundled sources (OpenAlex, Semantic Scholar, arXiv, Crossref, Unpaywall, Exa, Perplexity) are themselves plugins — they implement the same Protocols any third-party plugin does. The judge and the rest of the pipeline don't know or care where a candidate work came from or who fetched its bytes.
+Callimachus's discovery sources and PDF resolvers are a plugin system. The bundled sources (OpenAlex, arXiv, Serper, Perplexity, Unpaywall, local PDFs) are themselves plugins — they implement the same Protocols any third-party plugin does. The judge and the rest of the pipeline don't know or care where a candidate work came from or who fetched its bytes.
 
 This document covers:
 
@@ -271,14 +271,18 @@ These ship with `callimachus` itself and are enabled by default:
 
 | Plugin | Type | Purpose |
 | --- | --- | --- |
-| `openalex` | discovery (bibliographic) | Comprehensive academic catalogue, no key |
-| `semantic_scholar` | discovery + citation graph | Citation contexts, influential-cite count |
-| `arxiv` | discovery + resolver | Preprints + LaTeX source for clean extraction |
-| `crossref` | discovery (metadata only) | DOI resolution, structured metadata |
-| `unpaywall` | resolver | Open-access PDF discovery for any DOI |
-| `exa` | discovery (web, neural) | Grey literature, blog posts, lab pages |
-| `perplexity` | discovery (planning-phase synthesis) | "Lay of the land" before hunters spawn. Routes via OpenRouter (`perplexity/sonar`) by default; honours `PERPLEXITY_API_KEY` for direct API access if set. |
-| `local_pdfs` | discovery + resolver | Point at any directory of PDFs you already have |
+| `arxiv` | discovery + resolver | Preprints + LaTeX source for clean extraction. PDF fallback. Confidence 1.0 when `arxiv_id` is set. |
+| `openalex` | discovery (bibliographic) | Comprehensive ~250M-work academic catalogue. No key needed (polite-pool email recommended via `OPENALEX_MAILTO`). Also the scout's probe source. |
+| `serper_scholar` | discovery (bibliographic) | Google Scholar via Serper API. Needs `SERPER_API_KEY` (free tier: 2,500 queries). Lazy-checked at search time. |
+| `serper_web` | discovery (web) | General Google search via Serper. Auto-disabled by `calli build` for academic libraries since web hits don't carry an arxiv_id or DOI for the resolver chain. |
+| `perplexity` | discovery (bibliographic) | Natural-language queries via OpenRouter (`perplexity/sonar-pro`). Citations come back with URL+title; we extract arxiv_id or DOI per URL. Reuses `OPENROUTER_API_KEY`. |
+| `unpaywall` | resolver | Open-access PDF discovery for any DOI. Confidence 0.7 when `doi` is set. Polite-pool email via `UNPAYWALL_EMAIL`. |
+| `local_pdfs` | discovery + resolver | Point at any directory of PDFs you already have. Currently scope-restricted: configure via constructor, not yaml. |
+
+**Not yet built** (referenced in older parts of the docs):
+- `semantic_scholar` — planned for M4 (the citation-graph snowball loop needs `citationContexts`)
+- `crossref` — planned for M4 alongside Semantic Scholar
+- `exa` — deferred; Perplexity covers the natural-language web-search role for now
 
 ## Known community plugins
 

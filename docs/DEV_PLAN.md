@@ -298,7 +298,7 @@ Scope:
 - Hunter sub-agent: parameterised by angle, calls source plugins, returns ranked candidates
 - Orchestrator: takes a plan, fans out hunters in parallel (per the experiment-06 pattern), judges aggregated candidates, calls `ingest_one` for accepted
 - Run log: every build writes a `Run` row (`kind="build"`, `started_at`, `ended_at`, `works_added`, `notes`) with per-stage token + model totals in `notes` JSON. Each ingested `Work` carries `admitted_by_run_id`. **No USD math anywhere.**
-- Filter accepted candidates to those with `arxiv_id` so the existing resolver chain works without adding Unpaywall yet (deferred to M4)
+- Filter accepted candidates to those with `arxiv_id` so the existing resolver chain works without adding Unpaywall yet (initially deferred to M4 — actually pulled forward in M2.6c)
 
 Out of scope for M2 (deferred): snowball, citation contexts, Exa/Perplexity, multi-collection, full Textual dashboard.
 
@@ -339,12 +339,34 @@ $ calli build --from-plan creativity --auto
 
 #### M2 sub-phases
 
-- **M2.0 — OpenAlex source plugin.** Search + metadata. No resolver (we'll route to arxiv resolver via matched arxiv_id). Real-network gated test. ~1 hour.
-- **M2.1 — Judge module.** `src/callimachus/discovery/judge.py` — single-shot LLM call returning a `Verdict` schema. Re-uses the M1.3c enrichment pattern. Tests with stub LLM. ~1 hour.
-- **M2.2 — Hunter agent.** `discovery/hunter.py` — Pydantic AI sub-agent, one tool per source plugin. Returns ranked candidates. ~2 hours.
-- **M2.3 — Scout agent + clarification ceremony.** `discovery/scout.py` — shallow-probe agent that explores ~5–10 plausible angles for a topic and returns an "angle tree". `discovery/ceremony.py` — interactive question loop that takes scout output + user answers and produces a `Plan` Pydantic model. Plan persists as YAML. ~3 hours.
-- **M2.4 — Orchestrator + run log.** `discovery/orchestrator.py` — takes a Plan, spawns hunters in parallel, judges, calls `ingest_one`. Every build writes a `Run` row + per-paper `admitted_by_run_id`. ~2 hours.
-- **M2.5 — `calli build` CLI.** Two-step (`--topic` → ceremony → plan; `--from-plan` → run). `--auto` flag for hands-off mode that skips the ceremony with default angles. End-to-end smoke test. ~2 hours.
+All M2 sub-phases shipped, ✅:
+
+- **M2.0 ✅** OpenAlex bundled DiscoverySource (~250M-work catalogue, no auth). 19 unit tests + 1 live.
+- **M2.0a ✅** Serper bundled DiscoverySources (Scholar + Web). 23 unit tests + 2 live.
+- **M2.1 ✅** Judge module — single LLM call → `Verdict`. 10 unit tests + 2 live.
+- **M2.2 ✅** Hunter sub-agent — Pydantic AI agent, one tool per source. 9 unit tests + 1 live.
+- **M2.3 ✅** Scout + ceremony — `plan.py` / `scout.py` / `ceremony.py`. Plans persist as YAML to `.callimachus/plans/<slug>.yaml`. 48 unit tests + 1 live.
+- **M2.4 ✅** Orchestrator + run log — `discovery/orchestrator.py`. 11 unit tests.
+- **M2.5 ✅** `calli build` CLI — two-step (`--topic` → ceremony → plan; `--from-plan` → run). `--auto` for hands-off. 6 unit tests + manual end-to-end run on "LLM ethics" topic.
+
+End of M2: 358 unit tests + ~12 live tests, all green.
+
+**Lessons from the first real build (LLM ethics, 2026-05-13):**
+- The `[a-z]+/\d+` arxiv ID regex was way too permissive — matched "org/10" out of `doi.org/10.x/y` URLs. Tightened to require either an arxiv URL prefix or a whole-string bare ID. 6 regression cases added.
+- Hunter `tool_retries=1` was too tight — two consecutive arxiv 503s killed entire angles. Raised to 4.
+- Build summary hid post-cap vs pre-cap accept counts. Fixed: shows both ("judge accepted N, capped to plan.max_works").
+
+#### M2.6 — post-build resilience and source breadth
+
+After the LLM-ethics smoke, several improvements made the build more honest and more capable:
+
+- **M2.6a ✅** Resilience top-3: per-paper progress lines during ingest, auto-restrict to bibliographic sources for academic builds, hunter token totals in summary panel.
+- **M2.6b ✅** Hunter on Sonnet 4.6 (was Haiku 4.5). `--hunter-model` CLI flag for override.
+- **M2.6c ✅** Unpaywall resolver — DOI → OA PDF. 13 unit tests + 1 live. Pulled the M4-deferred plugin forward because the arxiv-only constraint was leaving too much value on the table.
+- **M2.6d ✅** Drop arxiv-only constraint: filter renamed `require_resolvable_id` (arxiv_id OR doi). Roughly doubles the addressable corpus on non-arxiv-heavy topics.
+- **M2.6e ✅** Perplexity discovery source via OpenRouter. 22 unit tests + 1 live. Lets the hunter run natural-language queries for topics where keyword search underperforms.
+
+End of M2.6: hunter has 4 discovery tools (arxiv, openalex, serper_scholar, perplexity), resolver chain handles arxiv_id and doi, build streams progress, summary is honest about capping.
 
 ### M3 — Chat (talk to your library)
 
@@ -373,7 +395,7 @@ Goal: depth. Snowball makes libraries deep; multi-collection makes one Callimach
 
 Scope:
 - Snowball loop with citation contexts (Semantic Scholar plugin), selective seed promotion, topic-drift detection, convergence/budget caps
-- Add Unpaywall + Crossref source plugins (resolves DOI-only candidates beyond arxiv)
+- Add Crossref source plugin (DOI metadata for non-arxiv works at scale; Unpaywall resolver already shipped in M2.6)
 - Multi-collection: `calli collection add "name" --keywords ...` extends an existing library; bridge-paper detection (high relevance in 2+ collections); per-collection overview docs
 - Build dashboard: Textual TUI with orchestrator pane + parallel hunter panes + live works list + status bar (the experiment-09/10 design). Replaces the M2 Rich progress for `calli build`
 - Refresh + rejudge: librarian mutation tools added in M3 are now extended with `refresh` (find work since last build) and `rejudge` (re-score with new criteria)

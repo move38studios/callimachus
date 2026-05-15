@@ -59,7 +59,7 @@ After the build, the same Callimachus agent is available for chat, query, extend
 | Language | Python 3.11+ | PDF/embeddings ecosystem is Python-native |
 | Package manager | `uv` | Fast, reproducible, increasingly standard |
 | Agent harness | **Pydantic AI** | Multi-provider, mature, agent-delegation primitives, structured outputs via Pydantic |
-| LLM access (default) | OpenRouter (one key, many models). Per-role defaults: hunters + orchestrator = `anthropic/claude-haiku-4.5` (cheap, fast, plenty good for harness mechanics); judge = `anthropic/claude-sonnet-4.6` (quality matters for relevance/seminality scoring); end-of-build synthesis = `anthropic/claude-opus-4.7`. | Cost-optimized routing — Haiku for high-volume mechanics, Sonnet for nuanced judgment, Opus only for the final pass. Matches open-source positioning. |
+| LLM access (default) | OpenRouter (one key, many models). Per-role defaults: scout = `anthropic/claude-haiku-4.5` (one-shot angle generation, cheap); hunter + judge + enricher = `anthropic/claude-sonnet-4.6` (decision quality matters); end-of-build synthesis (M4+) = `anthropic/claude-opus-4.7`. The `--hunter-model` flag overrides per build. | Sonnet's quality on hunter query strategy is worth the ~3x token cost over Haiku — we tried Haiku first and saw too many max-retry deaths from cavalier query/retry choices. Haiku stays the default for one-shot generation tasks (scout). |
 | LLM access (alternatives) | Anthropic-direct, OpenAI-direct, Gemini-direct, local via Ollama | All supported through Pydantic AI's per-provider integrations |
 | Chat interface | **prompt_toolkit + Rich** (aider pattern) | Inline scrolling chat with streaming markdown; native terminal scrollback preserved; lightweight; matches what 2026 chat-first CLIs (aider, gptme) converge on |
 | Build dashboard | **Textual** | Multi-pane, async-native, real-time updates; right tool for the parallel-hunters dashboard where spatial layout matters |
@@ -69,7 +69,7 @@ After the build, the same Callimachus agent is available for chat, query, extend
 | Embeddings (default) | `nomic-embed-text-v1.5` (local, sentence-transformers) | Open weights, no key, ~500MB, runs on CPU |
 | Embeddings (opt-in) | Voyage AI `voyage-3` | Higher retrieval quality if user has a key |
 | PDF → markdown | arXiv LaTeX → Mistral OCR → Claude vision (fallback) | LaTeX is cleanest when available; Mistral OCR is cheap+great; vision for edge cases |
-| Discovery & resolvers | **Plugin system** (see [`PLUGINS.md`](PLUGINS.md)) | Bundled: OpenAlex, Semantic Scholar, arXiv, Crossref, Unpaywall, Exa, Perplexity, local PDFs. Community-extensible. |
+| Discovery & resolvers | **Plugin system** (see [`PLUGINS.md`](PLUGINS.md)) | Today bundled: arXiv, OpenAlex, Serper Scholar/Web, Perplexity (discovery); arXiv, Unpaywall, local_pdfs (resolvers). Semantic Scholar + Crossref deferred to M4 with the snowball loop. Community-extensible. |
 
 ### Why Pydantic AI over Claude Agent SDK
 
@@ -106,23 +106,26 @@ Two interfaces:
 
 Plugins register via Python entry points (for distributed `pip`-installable plugins) or by dropping `.py` files in `~/Callimachus/plugins/` (for personal, unpacked plugins). Each plugin owns its config namespace under `callimachus.yaml`, validated by a Pydantic model the plugin ships.
 
-### Bundled plugins
+### Bundled plugins (current state, as of M2)
 
 **Bibliographic backbone** — the rigorous spine of the library:
-- `openalex` — primary, comprehensive, free, no key
-- `semantic_scholar` — citation graph + influential-citation count + **citation contexts** (the actual sentences in which papers cite each other — the unlock for seminality judging)
-- `arxiv` — preprints + LaTeX source for clean extraction (also a resolver)
-- `crossref` — DOI resolution and structured metadata
-- `unpaywall` — open-access PDF resolver for any DOI
+- `arxiv` — preprints + LaTeX source for clean extraction (also a resolver, confidence 1.0 for arxiv_id matches)
+- `openalex` — comprehensive (~250M works), free, no key required (polite-pool email recommended). Doubles as the scout's deterministic probe source for evidence-backing each angle.
+- `serper_scholar` — Google Scholar via the Serper API. Returns clean academic candidates with citedBy counts, pdfUrl, publicationInfo. Needs `SERPER_API_KEY`.
+- `unpaywall` — open-access PDF resolver for any DOI, confidence 0.7. Lifts the corpus beyond arxiv-only.
 
-**Neural web discovery** — what bibliographic indexes miss:
-- `exa` — semantic web search; finds grey literature, lab pages, technical reports, blog deep-dives, recent stuff that hasn't propagated
-- `perplexity` — used at the planning phase only: "lay of the land" synthesis before hunters spawn. Default routing is **via OpenRouter** (`perplexity/sonar`) so users only need their existing `OPENROUTER_API_KEY`. A separate `PERPLEXITY_API_KEY` is supported as an opt-in for users who want to hit Perplexity's API directly (different rate limits / native search filters).
+**Natural-language web discovery** — what bibliographic indexes miss:
+- `perplexity` — natural-language queries via OpenRouter (`perplexity/sonar-pro`). Citations come back as URL+title; we extract arxiv_id or DOI per URL. Reuses `OPENROUTER_API_KEY`. Best for "best papers on X" style queries that benefit from LLM curation.
+- `serper_web` — general Google search. Auto-disabled for academic builds (web hits don't carry an arxiv_id or DOI for the resolver chain).
 
 **Local:**
 - `local_pdfs` — point at any directory of PDFs you already have; they become discoverable and resolvable
 
-Not bundled, not in scope for core: Google Scholar (no API, scraping fragile and ToS-hostile). Anything domain-specific (PubMed, PhilPapers, IEEE) ships as community plugins. Anything the project doesn't take a position on (Sci-Hub, Anna's Archive, institutional proxies, paid databases) is also a community plugin — users decide.
+**Deferred to M4** (the snowball-loop milestone):
+- `semantic_scholar` — citation graph + **citation contexts** (the literal sentences citing each work — the unlock for seminality judging)
+- `crossref` — DOI resolution and structured metadata for non-arxiv works at scale
+
+Not bundled, not in scope for core: Google Scholar direct (no API, scraping fragile and ToS-hostile — we use Serper as the legitimate access path). Anything domain-specific (PubMed, PhilPapers, IEEE) ships as community plugins. Anything the project doesn't take a position on (Sci-Hub, Anna's Archive, institutional proxies, paid databases) is also a community plugin — users decide.
 
 ### How plugins flow through the system
 
@@ -147,18 +150,20 @@ A single Pydantic AI agent (typically Claude Opus 4.7) — Callimachus himself �
 
 ### The hunters
 
-Pydantic AI sub-agents (Sonnet 4.6 to keep cost reasonable) spawned in parallel for different angles. Each hunter has:
+Pydantic AI sub-agents (Sonnet 4.6 by default — `--hunter-model` overrides) spawned in parallel for different angles. Tools are registered dynamically per source registered in the `SourceRegistry`; the agent sees:
 
 ```
-search_openalex(query, year_from?, venue?)
-search_semantic_scholar(query, year_from?)
-search_arxiv(query, category?)
-search_exa(query, kind="academic" | "general")
-get_citation_contexts(work_id)
-get_work_metadata(doi_or_id)
+search_arxiv(query)
+search_openalex(query)
+search_serper_scholar(query)
+search_perplexity(query)
 ```
 
-A hunter is briefed with a focused angle ("foundations of score-based generative modelling, late 2010s") and which sources to lean on (a "recent state-of-the-art" hunter weights Exa + arXiv; a "foundations" hunter weights citation graph). Returns a ranked list of candidates with reasoning.
+A hunter is briefed with a focused angle ("foundations of score-based generative modelling, late 2010s") plus seed query terms from the plan. The agent picks 2-4 source calls per angle, varying phrasing across sources (keyword for arxiv/openalex; natural-language for perplexity; targeted phrasing for scholar). Tool returns are compact text summaries of new vs duplicate hits, not full candidate JSON — keeps the agent's token usage low. Full candidate objects accumulate in deps-scoped state.
+
+`SourceUnavailable` from any tool is wrapped to `pydantic_ai.ModelRetry` so the agent can recover by switching sources. Per-hunter `UsageLimits(request_limit=20)`. Tool retry budget is 4 (raised from default 1 after seeing arxiv 503s eat whole hunters in early runs).
+
+The hunter does **no LLM judgment** — it gathers, dedupes by `candidate_id`, and applies a deterministic rank (pdf > abstract > year > authors, citation count breaks ties). The judge module decides accept/reject downstream.
 
 ### The judge
 
