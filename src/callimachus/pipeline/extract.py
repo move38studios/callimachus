@@ -116,7 +116,28 @@ def latex_to_markdown(latex_text: str) -> str:
     pylatexenc gives plain text with reasonable structure preservation
     (paragraphs, sections, math via Unicode). We treat that as "good
     enough markdown" for v0.1 — enrichment + embedding can work with it.
+
+    pylatexenc's render-time handlers crash on certain non-standard LaTeX
+    (e.g. `\\href{url}` with one arg instead of two). When that happens we
+    fall back to a crude regex-based stripper — the result is lower
+    quality but the paper still flows through the pipeline. The judge has
+    already accepted the paper at this point; quietly losing it because
+    of a parser quirk is worse than ingesting a slightly-noisy copy.
     """
+    try:
+        return _latex_to_markdown_via_pylatexenc(latex_text)
+    except Exception as exc:
+        log.warning(
+            "latex_to_markdown: pylatexenc render crashed (%s: %s); "
+            "falling back to crude regex strip",
+            type(exc).__name__,
+            exc,
+        )
+        return _latex_to_markdown_crude(latex_text)
+
+
+def _latex_to_markdown_via_pylatexenc(latex_text: str) -> str:
+    """The good path: pylatexenc with structure-preserving config."""
     converter = LatexNodes2Text(
         keep_comments=False,
         math_mode="text",  # render math as Unicode where possible
@@ -125,7 +146,67 @@ def latex_to_markdown(latex_text: str) -> str:
     # so cast through `object` to a guaranteed `str`.
     raw_text: object = converter.latex_to_text(latex_text)  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
     text = cast("str", raw_text)
-    # Normalise multiple blank lines down to two
+    return _normalise_blank_lines(text)
+
+
+# Match a LaTeX command with one brace-group arg: \cmd{content}.
+# Greedy on command name (\section, \href*, etc), non-greedy on the body.
+_LATEX_CMD_WITH_ARG = re.compile(r"\\([a-zA-Z]+)\*?\s*\{([^{}]*)\}")
+# Match a LaTeX command with no args: \\, \par, \noindent, etc.
+_LATEX_CMD_BARE = re.compile(r"\\([a-zA-Z]+)\*?")
+# Comments — % to end of line, but not \% (escaped)
+_LATEX_COMMENT = re.compile(r"(?<!\\)%.*")
+# Math envs we strip entirely (best-effort for crude path)
+_MATH_ENV = re.compile(
+    r"\\begin\{(equation|align|gather|multline|displaymath)\*?\}" r".*?" r"\\end\{\1\*?\}",
+    re.DOTALL,
+)
+# Common noise envs to strip wholesale
+_NOISE_ENV = re.compile(
+    r"\\begin\{(figure|table|tabular|thebibliography)\*?\}" r".*?" r"\\end\{\1\*?\}",
+    re.DOTALL,
+)
+# Commands whose argument should be DROPPED (citations, refs)
+_DROP_ARG_CMDS = {"cite", "citep", "citet", "ref", "label", "bibliography", "bibliographystyle"}
+# Commands whose argument should be KEPT inline (sections, emphasis, etc).
+# Handled by the general _LATEX_CMD_WITH_ARG substitution.
+
+
+def _latex_to_markdown_crude(latex_text: str) -> str:
+    """Regex-based fallback when pylatexenc crashes. Best-effort — never crashes."""
+    text = latex_text
+
+    # Strip math + noise envs first (they'd otherwise have their commands stripped
+    # one by one and leave gibberish)
+    text = _MATH_ENV.sub("", text)
+    text = _NOISE_ENV.sub("", text)
+    # Strip comments
+    text = _LATEX_COMMENT.sub("", text)
+
+    # Drop \cite{...}, \ref{...}, \label{...}, etc. (citation noise)
+    def _drop_or_keep(match: re.Match[str]) -> str:
+        cmd = match.group(1).lower()
+        if cmd in _DROP_ARG_CMDS:
+            return ""
+        return match.group(2)
+
+    # Repeat a few times to handle nested commands like \section{\textbf{foo}}
+    for _ in range(4):
+        new_text = _LATEX_CMD_WITH_ARG.sub(_drop_or_keep, text)
+        if new_text == text:
+            break
+        text = new_text
+
+    # Strip remaining bare commands (\\, \par, \noindent, etc.)
+    text = _LATEX_CMD_BARE.sub("", text)
+    # Strip remaining lone braces
+    text = re.sub(r"[{}]", "", text)
+
+    return _normalise_blank_lines(text)
+
+
+def _normalise_blank_lines(text: str) -> str:
+    """Collapse runs of blank lines to one; strip leading/trailing blanks."""
     out_lines: list[str] = []
     blank_streak = 0
     for line in text.splitlines():
@@ -136,7 +217,6 @@ def latex_to_markdown(latex_text: str) -> str:
         else:
             blank_streak = 0
             out_lines.append(line.rstrip())
-    # Strip leading/trailing blank lines
     while out_lines and not out_lines[0]:
         out_lines.pop(0)
     while out_lines and not out_lines[-1]:

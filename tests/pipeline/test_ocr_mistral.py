@@ -113,6 +113,14 @@ async def test_extract_pdf_uploads_signs_and_deletes() -> None:
     # Upload: file uploaded with purpose=ocr
     assert len(client.files.uploaded) == 1
     assert client.files.uploaded[0]["purpose"] == "ocr"
+    # Regression: content must be raw bytes, not io.BytesIO. Mistral SDK 2.x's
+    # pydantic validator on file.content rejects BytesIO even though it's
+    # nominally an IO subclass.
+    upload_content = client.files.uploaded[0]["file"]["content"]
+    assert isinstance(
+        upload_content, bytes
+    ), f"file.content must be bytes for Mistral SDK; got {type(upload_content).__name__}"
+    assert upload_content == b"%PDF stub bytes"
 
     # OCR call: document_url + include_image_base64
     last = client.ocr.last_call

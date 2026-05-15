@@ -107,6 +107,49 @@ def test_latex_to_markdown_strips_leading_and_trailing_blanks() -> None:
     assert md.endswith("\n")
 
 
+def test_latex_to_markdown_falls_back_when_pylatexenc_crashes() -> None:
+    """Regression: pylatexenc's \\href handler crashes on one-arg \\href usage.
+
+    Seen in arxiv 2307.15217 (Open Problems and Fundamental Limitations of RLHF).
+    The fallback should produce *some* readable text instead of crashing.
+    """
+    # \href with a single arg — exactly the pattern that crashed pylatexenc
+    bad_latex = (
+        "\\section{Introduction}\n"
+        "We discuss \\href{https://example.org/x}.\n"
+        "Background \\cite{Smith2020}.\n"
+        "Conclusion."
+    )
+    md = latex_to_markdown(bad_latex)
+    # Crude path drops \href entirely, keeps the surrounding prose, drops \cite
+    assert "Introduction" in md
+    assert "We discuss" in md
+    assert "Conclusion" in md
+    assert "\\href" not in md
+    assert "\\cite" not in md
+
+
+def test_latex_to_markdown_crude_strips_math_and_noise_envs() -> None:
+    """Crude fallback should strip equation/figure/table envs wholesale."""
+    from callimachus.pipeline.extract import (
+        _latex_to_markdown_crude,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    latex = (
+        "Some prose.\n"
+        "\\begin{equation}\n  E = mc^2\n\\end{equation}\n"
+        "More prose.\n"
+        "\\begin{figure}\n  \\includegraphics{foo.png}\n\\end{figure}\n"
+        "Final."
+    )
+    md = _latex_to_markdown_crude(latex)
+    assert "Some prose" in md
+    assert "More prose" in md
+    assert "Final" in md
+    assert "E = mc^2" not in md
+    assert "includegraphics" not in md
+
+
 # ---------- extract_to_markdown end-to-end ----------
 
 

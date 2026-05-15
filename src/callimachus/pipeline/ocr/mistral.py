@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import base64
-import io
 import logging
 import os
 import re
@@ -115,11 +114,18 @@ class MistralOcr:
     # ----- sync internals (run via asyncio.to_thread) -----
 
     def _extract_pdf_sync(self, client: Mistral, pdf_bytes: bytes) -> OcrResult:
-        """Upload PDF, get signed URL, run OCR, clean up."""
+        """Upload PDF, get signed URL, run OCR, clean up.
+
+        `content` is raw bytes, not io.BytesIO — Mistral SDK 2.x's pydantic
+        validator on `file.content` accepts `bytes | IO | BufferedReader`,
+        but rejects `io.BytesIO` even though it's a valid IO subclass
+        (typing.IO doesn't pass `isinstance` checks reliably). Raw bytes
+        is the unambiguous path.
+        """
         uploaded = client.files.upload(  # pyright: ignore[reportUnknownMemberType]
             file={
                 "file_name": "callimachus_doc.pdf",
-                "content": io.BytesIO(pdf_bytes),
+                "content": pdf_bytes,
             },
             purpose="ocr",
         )
